@@ -1,11 +1,25 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
-import Landing from './Landing.jsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.jsx";
+import Landing from "./Landing.jsx";
+import Signup from "./sign-up/Signup.jsx";
 
-createRoot(document.getElementById('root')).render(
+const pageLinks = [
+  { name: "Hone", url: "/home" },
+  { name: "Jobs", url: "/Jobs" },
+  { name: "Applications", url: "/Applications" },
+  { name: "Profile", url: "/Profile" },
+];
+
+const accountActionLinks = [
+  { name: "Signup", url: "/Signup" },
+  { name: "Login", url: "/Login" },
+];
+
+createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Landing />
-  </StrictMode>,
-)
+    {/* <Landing /> */}
+    <Signup />
+  </StrictMode>
+);

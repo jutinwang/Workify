@@ -1,0 +1,21 @@
+.left-side-container {
+    background-color: #FFD5B6;
+    opacity: 50%;
+}
+
+.right-side-container {
+    background-color:white;
+}
+
+.split-container {
+    display: flex; /* Enables Flexbox layout */
+    height: 100vh; /* Makes the container take up the full viewport height */
+    width: 100%; /* Makes the container take up the full viewport width */
+  }
+  
+  .left-side-container,
+  .right-side-container {
+    width: 50%; 
+    box-sizing: border-box; /* Ensures padding is included in the element's total width/height */
+    
+  }
