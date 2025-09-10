@@ -1,21 +1,46 @@
 .left-side-container {
-    background-color: #FFD5B6;
-    opacity: 50%;
+  background-color: #ffd5b680;
+  color: #000000;
 }
 
 .right-side-container {
-    background-color:white;
+  background-color: white;
+  color: #000000;
+}
+
+.text-container {
+  margin-top: 30vh;
+  margin-left: 3.6rem;
+  margin-right: 1.6rem;
+  text-align: left;
+}
+
+.subtext {
+  margin-top: 3vh;
+  font-size: 20px;
+  font-family: 'Reddit Sans', sans-serif;
+}
+.text-blocks {
+  display: flex;
+  flex-direction: column;
+  font-size: 48px;
+  font-family: "PT Sans";
 }
 
 .split-container {
-    display: flex; /* Enables Flexbox layout */
-    height: 100vh; /* Makes the container take up the full viewport height */
-    width: 100%; /* Makes the container take up the full viewport width */
-  }
-  
-  .left-side-container,
-  .right-side-container {
-    width: 50%; 
-    box-sizing: border-box; /* Ensures padding is included in the element's total width/height */
-    
-  }
+  display: flex; /* Enables Flexbox layout */
+  height: 100vh; /* Makes the container take up the full viewport height */
+  width: 100%; /* Makes the container take up the full viewport width */
+}
+
+.left-side-container,
+.right-side-container {
+  width: 50%;
+  box-sizing: border-box; /* Ensures padding is included in the element's total width/height */
+}
+
+.logo-workify {
+  font-family: Rosarivo, serif;
+  font-size: 24px;
+  opacity: 100% !important;
+}
