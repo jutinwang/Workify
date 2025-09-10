@@ -9,7 +9,7 @@
 }
 
 .text-container {
-  margin-top: 30vh;
+  margin-top: 20vh;
   margin-left: 3.6rem;
   margin-right: 1.6rem;
   text-align: left;
@@ -45,6 +45,7 @@
   font-family: 'Reddit Sans', sans-serif;
 }
 .text-blocks {
+  margin-top: 10vh;
   display: flex;
   flex-direction: column;
   font-size: 48px;
@@ -67,4 +68,86 @@
   font-family: Rosarivo, serif;
   font-size: 24px;
   opacity: 100% !important;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+  text-align: center;
+}
+
+.form-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #000;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left; /* Ensure all form elements are left-aligned */
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+}
+
+.form-group {
+  flex: 1;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #000;
+  text-align: left; /* Left-align the label text */
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 25px;
+  background-color: #B8D4E3;
+  font-size: 14px;
+  box-sizing: border-box;
+  text-align: left; /* Ensure input text is left-aligned */
+}
+
+.register-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: #B8D4E3;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
+  cursor: pointer;
+}
+
+.register-btn:hover {
+  background-color: #A5C9DA;
+}
+
+.login-link {
+  margin-top: 20px;
+  font-size: 14px;
+  text-align: left;
+  color: #000;
+}
+
+.login-link a {
+  color: #000;
+  text-decoration: underline;
+}
+
+.sign-up-form-container {
+  margin-top: 20vh;
 }
