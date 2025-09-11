@@ -1,6 +1,8 @@
 .left-side-container {
   background-color: #ffd5b680;
   color: #000000;
+  background-image: radial-gradient( ellipse farthest-corner at 10px 10px , #ffd5b680, #ffd5b680 50%, #ffc29680 50%);
+  background-size: 10px 10px;
 }
 
 .right-side-container {
@@ -8,60 +10,22 @@
   color: #000000;
 }
 
-.text-container {
-  margin-top: 20vh;
-  margin-left: 3.6rem;
-  margin-right: 1.6rem;
-  text-align: left;
-}
-
-.brand-row {
-  display: flex;
-  gap: 18px;
-  flex-wrap: wrap;
-  margin-top: 16px;
-}
-
-.brand-chip {
-  width: 120px;
-  height: 56px;
-  border-radius: 14px;
-  background: #E9EDF0;  /* light gray background */
-  display: grid;
-  place-items: center;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
-}
-
-.brand-chip img {
-  max-height: 38px;
-  max-width: 50px;
-  display: block;
-  opacity: 0.95;
-}
-
-.subtext {
-  margin-top: 3vh;
-  font-size: 20px;
-  font-family: 'Reddit Sans', sans-serif;
-}
-.text-blocks {
-  margin-top: 10vh;
-  display: flex;
-  flex-direction: column;
-  font-size: 48px;
-  font-family: "PT Sans";
-}
-
 .split-container {
-  display: flex; /* Enables Flexbox layout */
-  height: 100vh; /* Makes the container take up the full viewport height */
-  width: 100%; /* Makes the container take up the full viewport width */
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.left-side-container,
 .right-side-container {
-  width: 50%;
-  box-sizing: border-box; /* Ensures padding is included in the element's total width/height */
+  width: 60%;
+  box-sizing: border-box;
+  padding: 2em;
+}
+.left-side-container{
+  width: 40%;
+  box-sizing: border-box;
+  padding: 2em;
 }
 
 .logo-workify {
@@ -70,84 +34,12 @@
   opacity: 100% !important;
 }
 
-.form-container {
+.tab-section{
+  height: 20%;
   width: 100%;
-  max-width: 400px;
-  margin: auto;
-  text-align: center;
 }
 
-.form-title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #000;
-}
-
-.signup-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  text-align: left; /* Ensure all form elements are left-aligned */
-}
-
-.form-row {
-  display: flex;
-  gap: 20px;
-}
-
-.form-group {
-  flex: 1;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #000;
-  text-align: left; /* Left-align the label text */
-}
-
-.form-group input {
+.signup-form-conatainer{
+  height: 80%;
   width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 25px;
-  background-color: #B8D4E3;
-  font-size: 14px;
-  box-sizing: border-box;
-  text-align: left; /* Ensure input text is left-aligned */
-}
-
-.register-btn {
-  width: 100%;
-  padding: 14px;
-  background-color: #B8D4E3;
-  border: none;
-  border-radius: 25px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #000;
-  cursor: pointer;
-}
-
-.register-btn:hover {
-  background-color: #A5C9DA;
-}
-
-.login-link {
-  margin-top: 20px;
-  font-size: 14px;
-  text-align: left;
-  color: #000;
-}
-
-.login-link a {
-  color: #000;
-  text-decoration: underline;
-}
-
-.sign-up-form-container {
-  margin-top: 20vh;
 }

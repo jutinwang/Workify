@@ -1,0 +1,30 @@
+.signup-form{
+    width: 80%;
+    height: 100%;
+    box-sizing: border-box;
+}
+.field{
+    width: 100%;
+    padding: 0.5em;
+    box-sizing: border-box;
+}
+.field > input{
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid black;
+    padding: 0.5em;
+    width: 100%;
+    box-sizing: border-box;
+    color: black;
+    font-size: 1em;
+}
+.field > input:focus {
+    outline: none;
+    box-shadow: none;
+    border-bottom: 1px solid black;
+}
+.submit-button-container{
+    width: 100%;
+    padding: 0.5em;
+    box-sizing: border-box;
+}
