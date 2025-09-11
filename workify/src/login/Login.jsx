@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./Login.css";
-import Hero from "../sign-up/Hero";
+import Hero from "./HeroLogin";
 import LoginForm from "./LoginForm";
 
 const Login = () => {

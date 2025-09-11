@@ -16,21 +16,8 @@ const LoginForm = () => {
         setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
     };
 
-    // const validate = () => {
-    //     const e = {};
-    //     if (!form.fullName.trim()) e.fullName = "Name required.";
-    //     if (!emailRegex.test(form.email)) e.email = "Enter a valid email.";
-    //     if (form.password.length < 8) e.password = "Min 8 characters.";
-    //     if (form.password !== form.confirm) e.confirm = "Passwords do not match.";
-    //     if (!form.agree) e.agree = "You must accept the terms.";
-    //     return e;
-    // };
-
     const onSubmit = async (e) => {
         e.preventDefault();
-        // const v = validate();
-        // setErrors(v);
-        // if (Object.keys(v).length) return;
 
         setSubmitting(true);
         try {
