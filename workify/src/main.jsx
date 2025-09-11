@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import Landing from "./Landing.jsx";
 import Signup from "./sign-up/Signup.jsx";
+import Login from "./login/Login.jsx"
 
 const pageLinks = [
   { name: "Hone", url: "/home" },
@@ -19,6 +20,7 @@ const accountActionLinks = [
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     {/* <Landing /> */}
-    <Signup />
+    {/* <Signup /> */}
+    <Login />
   </StrictMode>
 );
