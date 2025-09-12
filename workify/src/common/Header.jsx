@@ -1,15 +1,15 @@
-import Signup from "../sign-up/Signup";
+import './Header.css'
 
 export default function Header() {
 
   return (
     <div className="navbar">
       <div className="logo">
-        <img src="Workify_Temp_Logo.png"></img>
+        Workify
       </div>
       <ul className="nav-links">
         <li>
-          <a href="#">Home</a>
+          <a href="/">Home</a>
         </li>
         <li>
           <a href="#">Jobs</a>
@@ -17,13 +17,9 @@ export default function Header() {
         <li>
           <a href="#">Applications</a>
         </li>
-        <li>
-          <a href="#">Profile</a>
-        </li>
       </ul>
-      <div className="account-btns">
-        <button className="login-btn">Log In</button>
-        <button className="signup-btn" href={Signup.jsx} >Sign Up</button>
+      <div className='nav-profile'>
+        <a href='/profile'>Profile</a>
       </div>
     </div>
   );

@@ -41,7 +41,6 @@ const ProfileHeader = () => (
 const Profile = () => {
   return (
     <div className="main">
-      <Header />
       <div className="page-container">
         <ProfileHeader />
         

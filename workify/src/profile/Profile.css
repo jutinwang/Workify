@@ -1,3 +1,9 @@
+.main{
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+  overflow: hidden;
+}
 .page-container {
     padding-left: 3.6rem;
     padding-right: 3.6rem;

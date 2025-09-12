@@ -1,42 +1,30 @@
-
 .navbar {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 8vh;
     justify-content: space-between;
     display: flex;
     align-items: center;
-    padding: 0 40px;
+    padding: 0 2em;
     box-sizing: border-box;
-  }
-  
-  img {
-      width: 200px;
-      height: 100px;
-  }
-  
-  .nav-links {
-    list-style: none;
-    display: flex;
-    gap: 30px;
-  }
-  
-  .nav-links a {
-      float: left;
-      text-align: center;
-      color: black;
-      padding: 14px 16px;
-      text-decoration: none;
-      font-size: 20px;
-  }
-
-  .account-btns {
-    gap: 10px;
-    display: flex;
 }
-
-.signup-btn, .login-btn {
-    border-radius: 25px;
-    padding: 12px 22px;
-    background-color: #BAD8E0;
+.nav-links {
+  list-style: none;
+  display: flex;
+  margin: 0;
+}
+  
+.nav-links a{
+    float: left;
+    text-align: center;
     color: black;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 1em;
+}
+.nav-links a:hover{
+  opacity: 0.6;
+}
+.nav-profile > a{
+  text-decoration: none;
+  color: black;
 }
