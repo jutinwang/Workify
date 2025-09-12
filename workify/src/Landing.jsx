@@ -5,8 +5,6 @@ import Header from './common/Header.jsx'
 function Landing() {
   return (
     <div className="landingpage-container">
-      <Header />
-
       <div className="maincontent">
         <div className="maincontent-text">
           <h1>
