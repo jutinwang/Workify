@@ -28,3 +28,17 @@
   text-decoration: none;
   color: black;
 }
+
+.nav-links :hover,
+.nav-profile :hover {
+  text-decoration: underline;
+  cursor: hand;
+
+}
+
+
+
+.logo :hover{
+  cursor: pointer;
+
+}
