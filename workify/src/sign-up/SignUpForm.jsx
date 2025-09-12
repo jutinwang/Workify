@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useNavigate} from 'react-router-dom';
 import './SignUpForm.css';
 import outlookLogo from "../assets/outlook_logo.png";
 
@@ -26,6 +27,8 @@ const SignupForm = () => {
     const [errors, setErrors] = useState({});
     const [submitting, setSubmitting] = useState(false);
 
+    const navigate = useNavigate();
+
     const pwStrength = useMemo(() => passwordScore(form.password), [form.password]);
 
     const handleChange = (e) => {
@@ -52,7 +55,7 @@ const SignupForm = () => {
         setSubmitting(true);
         try {
             console.log("Submitting:", form);
-            alert("Signed up! (replace with API call)");
+            navigate("/profile");  
         } catch (err) {
             alert("Signup failed: " + err.message);
         } finally {
@@ -140,7 +143,7 @@ const SignupForm = () => {
                 </div>
 
                 <div className="submit-button-container">
-                    <button type="submit" disabled={submitting}>
+                    <button className="submitButton" type="submit" disabled={submitting}>
                         {submitting ? "Signing up..." : "Sign Up"}
                     </button>
                 </div>

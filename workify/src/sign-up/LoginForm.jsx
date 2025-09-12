@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import {useNavigate} from 'react-router-dom';
 import './LoginForm.css';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -11,6 +12,8 @@ const LoginForm = () => {
     const [errors, setErrors] = useState({});
     const [submitting, setSubmitting] = useState(false);
 
+    const navigate = useNavigate();
+
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
@@ -22,7 +25,7 @@ const LoginForm = () => {
         setSubmitting(true);
         try {
             console.log("Submitting:", form);
-            alert("Logged in! (replace with API call)");
+            navigate("/profile");  
         } catch (err) {
             alert("Login failed: " + err.message);
         } finally {
