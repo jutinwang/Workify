@@ -4,6 +4,7 @@ import "./index.css";
 import Landing from "./Landing.jsx";
 import Signup from "./sign-up/Signup.jsx";
 import Login from "./login/Login.jsx"
+import Profile from "./profile/profile.jsx";
 
 const pageLinks = [
   { name: "Hone", url: "/home" },
@@ -21,6 +22,7 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     {/* <Landing /> */}
     {/* <Signup /> */}
-    <Login />
+    {/*<Login />*/}
+     <Profile />
   </StrictMode>
 );
