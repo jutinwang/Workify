@@ -82,13 +82,14 @@
     background: #fff;
     font-weight: 500;
 }
-  
 .social-btn:hover {
     background: #f7f7f7;
 }
-  
 .social-btn .icon {
     width: 20px;
     height: 20px;
 }
-  
+.error{
+    color: red;
+    font-size: 0.75em;
+}

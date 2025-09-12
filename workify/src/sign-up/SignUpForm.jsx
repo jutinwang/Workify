@@ -79,7 +79,7 @@ const SignupForm = () => {
                         required
                         placeholder="Full Name"
                     />
-                    {errors.fullName && <p className="error">{errors.fullName}</p>}
+                    {errors.fullName && <div className="error">{errors.fullName}</div>}
                 </div>
 
                 <div className="field">
@@ -93,7 +93,7 @@ const SignupForm = () => {
                         placeholder="Email"
                         required
                     />
-                    {errors.email && <p className="error">{errors.email}</p>}
+                    {errors.email && <div className="error">{errors.email}</div>}
                 </div>
 
                 <div className="field">
@@ -122,7 +122,7 @@ const SignupForm = () => {
                         placeholder="Confirm Password"
                         required
                     />
-                    {errors.confirm && <p className="error">{errors.confirm}</p>}
+                    {errors.confirm && <div className="error">{errors.confirm}</div>}
                 </div>
 
                 <div className="field checkbox">
@@ -135,7 +135,7 @@ const SignupForm = () => {
                     />
                         I agree to the Terms & Privacy Policy
                     </label>
-                    {errors.agree && <p className="error">{errors.agree}</p>}
+                    {errors.agree && <div className="error">{errors.agree}</div>}
                 </div>
 
                 <div className="submit-button-container">
