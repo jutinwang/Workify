@@ -1,0 +1,50 @@
+/* .hero-text-container{
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+.logo-workify{
+    font-size: 2em;
+    font-weight: 700;
+    background-color: #ffd5b680;
+    width: fit-content;
+}
+.hero-text-blocks{
+    font-size: 2em;
+    display: flex;
+    flex-direction: column;
+    font-weight: 300;
+}
+.hero-text-blocks > div{
+    background-color: #ffd5b680;
+    width: fit-content;
+}
+.hero-job-container{
+    width: 100%;
+    box-sizing: border-box;
+}
+.hero-job-container-blurb{
+    background-color: #ffd5b680;
+    width: fit-content;
+}
+.hero-job-row{
+    display: flex;
+    width: 50%;
+    justify-content: space-between;
+    box-sizing: border-box;
+    padding: 2em 0;
+}
+.brand-chip{
+    width: 10%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.brand-chip img{
+    width: 100%;
+    height: auto;
+} */

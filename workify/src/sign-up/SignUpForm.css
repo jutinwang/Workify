@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+.signup-form-container{
+    height: 100%;
+    width: 100%;
+}
+.signup-form{
+    width: 100%;
+    height: fit-content;
+    box-sizing: border-box;
+}
+.signup-form-container > hr {
+    border: none;
+    border-top: 3px double #333333;
+    color: #333333;
+    overflow: visible;
+    text-align: center;
+    height: 5px;
+}
+.signup-form-container > hr::after {
+    background: white;
+    content: "Or";
+    padding: 0 4px;
+    position: relative;
+    font-size: 0.75em;
+    top: -15px;
+}
+.field{
+    width: 100%;
+    padding: 0.5em;
+    box-sizing: border-box;
+}
+.field > input{
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid black;
+    padding: 0.5em;
+    width: 100%;
+    box-sizing: border-box;
+    color: black;
+    font-size: 1em;
+}
+.field > input:focus {
+    outline: none;
+    box-shadow: none;
+    border-bottom: 2px solid red;
+}
+
+.field > input:focus::placeholder{
+    color: red;
+}
+.checkbox{
+    margin: 0.5em 0;
+}
+.submit-button-container{
+    width: 100%;
+    padding: 0.5em;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+}
+.submit-button-container > button{
+    padding: 1em;
+    border: none;
+    border-radius: 16px;
+    background-color: #BAD8E0;
+    border-color: #c0c0c0;
+    border: solid;
+    border-width: 2px;
+    outline: none;
+}
+.social-signup {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    color: black;
+    justify-content: space-around;
+}
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 16px;
+    cursor: pointer;
+    background-color: #BAD8E0;
+    font-weight: 500;
+    border-color: #c0c0c0;
+    border: solid;
+    border-width: 2px;
+}
+.social-btn:hover {
+    background: #f7f7f7;
+}
+.social-btn .icon {
+    width: 20px;
+    height: 20px;
+}
+.error{
+    color: red;
+    font-size: 0.75em;
+}
+
+label {
+    font-family: "PT Sans";
+}

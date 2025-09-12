@@ -1,0 +1,44 @@
+.navbar {
+    width: 100vw;
+    height: 8vh;
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+    padding: 0 2em;
+    box-sizing: border-box;
+}
+.nav-links {
+  list-style: none;
+  display: flex;
+  margin: 0;
+}
+  
+.nav-links a{
+    float: left;
+    text-align: center;
+    color: black;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 1em;
+}
+.nav-links a:hover{
+  opacity: 0.6;
+}
+.nav-profile > a{
+  text-decoration: none;
+  color: black;
+}
+
+.nav-links :hover,
+.nav-profile :hover {
+  text-decoration: underline;
+  cursor: hand;
+
+}
+
+
+
+.logo :hover{
+  cursor: pointer;
+
+}
