@@ -1,4 +1,4 @@
-/* .login-form{
+.login-form{
     width: 80%;
     height: 100%;
     box-sizing: border-box;
@@ -10,8 +10,11 @@
     padding: 0.5em;
     box-sizing: border-box;
     border-radius: 10px;
-    background-color: #BAD8E0;
+    /* background-color: #BAD8E0; */
     margin-bottom: 10px;
+    border-color: #c0c0c0;
+    border: solid;
+    border-width: 2px;
 }
 
 .field > input{
@@ -50,4 +53,4 @@ h1 {
     margin-top: 30px;
     height: 50px;
     font-weight: bold;
-} */
+}
