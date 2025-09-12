@@ -21,8 +21,7 @@ const accountActionLinks = [
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     {/* <Landing /> */}
-    {/* <Signup /> */}
-    {/*<Login />*/}
-     <Profile />
+  <Profile />
+  {/* <Signup /> */}
   </StrictMode>
 );

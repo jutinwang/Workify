@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./Login.css";
 import Hero from "./HeroLogin";
-import LoginForm from "./LoginForm";
+// import LoginForm from "./LoginForm";
 
 const Login = () => {
   return (
@@ -14,7 +14,7 @@ const Login = () => {
           Tab Section
         </div>
         <div className="signup-form-conatainer">
-          <LoginForm />
+          {/* <LoginForm /> */}
         </div>
       </div>
     </div>

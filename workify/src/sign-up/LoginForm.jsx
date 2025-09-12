@@ -32,9 +32,7 @@ const LoginForm = () => {
 
     return (
         <div className="form">
-            <h1>Login to your account</h1>
             <form className="login-form" onSubmit={onSubmit} noValidate>
-                <p><strong>Email</strong></p>
                 <div className="field">
                     <label htmlFor="email" />
                     <input
@@ -49,7 +47,6 @@ const LoginForm = () => {
                     {errors.email && <p className="error">{errors.email}</p>}
                 </div>
 
-                <p><strong>Password</strong></p>
                 <div className="field">
                     <label htmlFor="password" />
                     <input

@@ -59,84 +59,112 @@ const SignupForm = () => {
         }
     };
 
+    const handleGoogleSignup = () => {
+        console.log("Redirect to Google signup");
+    };
+      const handleOutlookSignup = () => {
+        console.log("Redirect to Outlook signup");
+    };
+
     return (
-        <form className="signup-form" onSubmit={onSubmit} noValidate>
-            <div className="field">
-                <label htmlFor="fullName" />
-                <input
-                    id="fullName"
-                    name="fullName"
-                    value={form.fullName}
-                    onChange={handleChange}
-                    required
-                    placeholder="Full Name"
-                />
-                {errors.fullName && <p className="error">{errors.fullName}</p>}
-            </div>
+        <div className="signup-form-container">
+            <form className="signup-form" onSubmit={onSubmit} noValidate>
+                <div className="field">
+                    <label htmlFor="fullName" />
+                    <input
+                        id="fullName"
+                        name="fullName"
+                        value={form.fullName}
+                        onChange={handleChange}
+                        required
+                        placeholder="Full Name"
+                    />
+                    {errors.fullName && <p className="error">{errors.fullName}</p>}
+                </div>
 
-            <div className="field">
-                <label htmlFor="email" />
-                <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    placeholder="Email"
-                    required
-                />
-                {errors.email && <p className="error">{errors.email}</p>}
-            </div>
+                <div className="field">
+                    <label htmlFor="email" />
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={form.email}
+                        onChange={handleChange}
+                        placeholder="Email"
+                        required
+                    />
+                    {errors.email && <p className="error">{errors.email}</p>}
+                </div>
 
-            <div className="field">
-                <label htmlFor="password" />
-                <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    value={form.password}
-                    onChange={handleChange}
-                    placeholder="Password"
-                    required
-                />
-                    {/* <p className="pw-strength">Strength: {pwStrength}/5</p>
-                {errors.password && <p className="error">{errors.password}</p>} */}
-            </div>
+                <div className="field">
+                    <label htmlFor="password" />
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        value={form.password}
+                        onChange={handleChange}
+                        placeholder="Password"
+                        required
+                    />
+                        {/* <p className="pw-strength">Strength: {pwStrength}/5</p>
+                    {errors.password && <p className="error">{errors.password}</p>} */}
+                </div>
 
-            <div className="field">
-                <label htmlFor="confirm" />
-                <input
-                    id="confirm"
-                    name="confirm"
-                    type="password"
-                    value={form.confirm}
-                    onChange={handleChange}
-                    placeholder="Confirm Password"
-                    required
-                />
-                {errors.confirm && <p className="error">{errors.confirm}</p>}
-            </div>
+                <div className="field">
+                    <label htmlFor="confirm" />
+                    <input
+                        id="confirm"
+                        name="confirm"
+                        type="password"
+                        value={form.confirm}
+                        onChange={handleChange}
+                        placeholder="Confirm Password"
+                        required
+                    />
+                    {errors.confirm && <p className="error">{errors.confirm}</p>}
+                </div>
 
-            <div className="field checkbox">
-                <label>
-                <input
-                    type="checkbox"
-                    name="agree"
-                    checked={form.agree}
-                    onChange={handleChange}
-                />
-                    I agree to the Terms & Privacy Policy
-                </label>
-                {errors.agree && <p className="error">{errors.agree}</p>}
-            </div>
+                <div className="field checkbox">
+                    <label>
+                    <input
+                        type="checkbox"
+                        name="agree"
+                        checked={form.agree}
+                        onChange={handleChange}
+                    />
+                        I agree to the Terms & Privacy Policy
+                    </label>
+                    {errors.agree && <p className="error">{errors.agree}</p>}
+                </div>
 
-            <div className="submit-button-container">
-                <button type="submit" disabled={submitting}>
-                    {submitting ? "Signing up..." : "Sign Up"}
+                <div className="submit-button-container">
+                    <button type="submit" disabled={submitting}>
+                        {submitting ? "Signing up..." : "Sign Up"}
+                    </button>
+                </div>
+                
+            </form>
+            <hr />
+            <div className="social-signup">
+                <button className="social-btn google" onClick={handleGoogleSignup}>
+                    <img
+                        src="https://www.svgrepo.com/show/475656/google-color.svg"
+                        alt="Google"
+                        className="icon"
+                    />
+                    Sign up with Google
+                </button>
+                <button className="social-btn outlook" onClick={handleOutlookSignup}>
+                    <img
+                        src="https://www.svgrepo.com/show/349379/outlook.svg"
+                        alt="Outlook"
+                        className="icon"
+                    />
+                    Sign up with Outlook
                 </button>
             </div>
-            
-        </form>
+        </div>
     );
 };
 

@@ -4,7 +4,7 @@ import LoginForm from "./LoginForm";
 import "./AuthTabs.css";
 
 const AuthTabs = () => {
-    const [activeTab, setActiveTab] = useState("signup"); // "signup" or "login"
+    const [activeTab, setActiveTab] = useState("signup");
 
     return (
         <div className="auth-tabs">
@@ -24,7 +24,7 @@ const AuthTabs = () => {
             </div>
 
             <div className="tab-content">
-                {activeTab === "signup" ? <SignupForm /> : <LoginForm />}
+                {activeTab === "signup" ? <SignupForm /> : <LoginForm />} 
             </div>
         </div>
     );

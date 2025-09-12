@@ -18,12 +18,12 @@
 }
 
 .right-side-container {
-  width: 60%;
+  width: 40%;
   box-sizing: border-box;
   padding: 2em;
 }
 .left-side-container{
-  width: 40%;
+  width: 60%;
   box-sizing: border-box;
   padding: 2em;
 }
