@@ -61,9 +61,11 @@
 .submit-button-container > button{
     padding: 1em;
     border: none;
-    border-radius: 8px;
-    background-color: #6B6B6B;
-    color: white;
+    border-radius: 16px;
+    background-color: #BAD8E0;
+    border-color: #c0c0c0;
+    border: solid;
+    border-width: 2px;
     outline: none;
 }
 .social-signup {
@@ -80,11 +82,13 @@
     gap: 8px;
     padding: 0.75rem;
     border: 1px solid #ccc;
-    border-radius: 8px;
+    border-radius: 16px;
     cursor: pointer;
-    color: white;
-    background-color: #6B6B6B;
+    background-color: #BAD8E0;
     font-weight: 500;
+    border-color: #c0c0c0;
+    border: solid;
+    border-width: 2px;
 }
 .social-btn:hover {
     background: #f7f7f7;
