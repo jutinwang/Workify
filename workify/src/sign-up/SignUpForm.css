@@ -61,6 +61,7 @@
 .submit-button-container > button{
     padding: 1em;
     border: none;
+    border-radius: 8px;
     outline: none;
 }
 .social-signup {
@@ -79,7 +80,7 @@
     border: 1px solid #ccc;
     border-radius: 8px;
     cursor: pointer;
-    background: #fff;
+    background-color: #6B6B6B;
     font-weight: 500;
 }
 .social-btn:hover {

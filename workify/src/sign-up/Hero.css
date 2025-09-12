@@ -35,13 +35,73 @@
     padding: 2em 0;
 }
 .brand-chip{
-    width: 10%;
-    border-radius: 50%;
+    background: white;
+    padding: 20px;
+    border-radius: 16px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100px !important;
+    height: 70px !important;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+    box-sizing: border-box;
 }
-.brand-chip img{
+.brand-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.brand-chip img {
+    max-width: 50px;
+    max-height: 50px;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+.brand-chip:hover img {
+    transform: scale(1.05);
+}
+
+.marquee-container {
     width: 100%;
-    height: auto;
+    overflow: hidden;
+    background: transparent;
+    padding: 20px 0;
+    position: relative;
+}
+
+.marquee-content {
+    display: flex;
+    gap: 24px;
+    animation: marquee 30s linear infinite;
+    width: fit-content;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-33.33%);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .marquee-content {
+        animation-duration: 15s;
+        gap: 16px;
+    }
+    
+    .brand-chip {
+        width: 60px !important;
+        height: 60px !important;
+        padding: 15px;
+        border-radius: 12px !important;
+    }
+    
+    .brand-chip img {
+        max-width: 40px;
+        max-height: 40px;
+    }
 }

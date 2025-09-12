@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import './SignUpForm.css';
+import outlookLogo from "../assets/outlook_logo.png";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -157,7 +158,7 @@ const SignupForm = () => {
                 </button>
                 <button className="social-btn outlook" onClick={handleOutlookSignup}>
                     <img
-                        src="https://www.svgrepo.com/show/349379/outlook.svg"
+                        src = {outlookLogo}
                         alt="Outlook"
                         className="icon"
                     />
