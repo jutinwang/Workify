@@ -62,6 +62,8 @@
     padding: 1em;
     border: none;
     border-radius: 8px;
+    background-color: #6B6B6B;
+    color: white;
     outline: none;
 }
 .social-signup {
@@ -80,6 +82,7 @@
     border: 1px solid #ccc;
     border-radius: 8px;
     cursor: pointer;
+    color: white;
     background-color: #6B6B6B;
     font-weight: 500;
 }
