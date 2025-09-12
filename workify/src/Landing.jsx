@@ -1,6 +1,6 @@
+import { Route, Routes, useLocation, Link } from 'react-router-dom';
 import "./Landing.css";
 import Header from './common/Header.jsx'
-
 
 function Landing() {
   return (
@@ -15,9 +15,11 @@ function Landing() {
             You can apply on other platforms, but you can find a job on Workify.
             Workify doesn’t just find work for you, it finds what works for you.
           </p>
-          <button className="explore-btn">
-            Explore Opportunities <span>→</span>
-          </button>
+          <Link to="/signup">
+            <button className="explore-btn">
+              Explore Opportunities <span>→</span>
+            </button>
+          </Link>
         </div>
 
         {/* Placeholder for whatever we put here */}
