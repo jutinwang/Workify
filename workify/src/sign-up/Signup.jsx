@@ -11,12 +11,6 @@ const Signup = () => {
         <Hero />
       </div>
       <div className="right-side-container">
-        {/* <div className="tab-section">
-          Tab Section
-        </div>
-        <div className="signup-form-conatainer">
-          <SignupForm />
-        </div> */}
         <AuthTabs />
       </div>
     </div>

@@ -9,7 +9,6 @@
 .logo-workify{
     font-size: 2em;
     font-weight: 700;
-    background-color: #ffd5b680;
     width: fit-content;
 }
 .hero-text-blocks{
@@ -19,7 +18,6 @@
     font-weight: 300;
 }
 .hero-text-blocks > div{
-    background-color: #ffd5b680;
     width: fit-content;
 }
 .hero-job-container{
@@ -27,7 +25,6 @@
     box-sizing: border-box;
 }
 .hero-job-container-blurb{
-    background-color: #ffd5b680;
     width: fit-content;
 }
 .hero-job-row{
