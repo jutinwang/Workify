@@ -1,0 +1,24 @@
+.filter-card-header{
+    display: flex;
+    align-items: center;
+}
+.filter-card{
+    padding: 1em;
+    border: 1px solid black;
+    border-radius: 8px;
+}
+.filter-card-header > div{
+    width: fit-content;
+    font-size: 1.2em;
+}
+.filter-icon{
+    margin-right: 0.5em;
+}
+.select-wrap{
+    margin: 0.5em 0;
+    width: 100%;
+}
+.select-wrap > select{
+    width: 100%;
+    padding: 0.5em;
+}
