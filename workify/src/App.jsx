@@ -5,6 +5,7 @@ import Landing from "./Landing.jsx"
 import Signup from "./sign-up/Signup.jsx";
 import Profile from './profile/profile.jsx';
 import Header from './common/Header.jsx';
+import Jobs from './jobs/Jobs.jsx';
 
 export default function App() {
 
@@ -19,6 +20,7 @@ export default function App() {
                 <Route path="/" element={<Landing />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/jobs" element={<Jobs />} />
             </Routes>
         </>
     );
