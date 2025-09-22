@@ -6,6 +6,7 @@ import Signup from "./sign-up/Signup.jsx";
 import Profile from './profile/profile.jsx';
 import Header from './common/Header.jsx';
 import Jobs from './jobs/Jobs.jsx';
+import ProfileWizard from './profile/ProfileSetupWizard/ProfileWizard.jsx';
 
 export default function App() {
 
@@ -19,7 +20,7 @@ export default function App() {
             <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/signup" element={<Signup />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/profile" element={<ProfileWizard />} />
                 <Route path="/jobs" element={<Jobs />} />
             </Routes>
         </>

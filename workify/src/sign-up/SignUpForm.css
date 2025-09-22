@@ -27,23 +27,27 @@
 }
 .field{
     width: 100%;
-    padding: 0.5em;
+    padding: 0.5em 0;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 .field > input{
     background-color: transparent;
     border: none;
-    border-bottom: 1px solid black;
-    padding: 0.5em;
+    border: 1px solid #c0c0c0;
+    padding: 0.7em 0.5em;
     width: 100%;
     box-sizing: border-box;
     color: black;
     font-size: 1em;
+    border-radius: 0.5em;
 }
 .field > input:focus {
     outline: none;
     box-shadow: none;
-    border-bottom: 2px solid red;
+    /* border-bottom: 2px solid red; */
 }
 
 .field > input:focus::placeholder{
