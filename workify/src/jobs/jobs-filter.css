@@ -1,11 +1,15 @@
-.filter-card-header{
-    display: flex;
-    align-items: center;
+.jobs-filter-section{
+    width: 100%;
+    height: fit-content;
+    padding: 1.5em;
+    box-sizing: border-box;
+}
+.filter-card-left{
+    width: 40%;
+    background-color: bisque;
 }
 .filter-card{
     padding: 1em;
-    border: 1px solid black;
-    border-radius: 8px;
 }
 .filter-card-header > div{
     width: fit-content;

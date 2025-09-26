@@ -8,22 +8,9 @@ export default function JobsFilter({ filters, setFilters }) {
     return (
         <aside className="jobs-filter-section">
             <div className="filter-card">
-                <div className="filter-card-header">
-                    <svg
-                        className="filter-icon"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                    >
-                        <path
-                        d="M3 5a1 1 0 0 1 1-1h16a1 1 0 0 1 .8 1.6l-6.8 9.07V20a1 1 0 0 1-1.45.9l-3-1.5A1 1 0 0 1 9 18.5v-3.83L3.2 5.6A1 1 0 0 1 3 5z"
-                        fill="currentColor"
-                        />
-                    </svg>
-                    <div>Filters</div>
+                <div className="filter-card-left">
+                    
                 </div>
-                <hr />
                 <div className="filter-field">
                     <label htmlFor="jobType">Job Type</label>
                     <div className="select-wrap">

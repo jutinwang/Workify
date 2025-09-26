@@ -4,12 +4,7 @@
     overflow: hidden;
     display: flex;
     box-sizing: border-box;
-}
-.jobs-filter-section{
-    width: 30%;
-    height: fit-content;
-    padding: 1.5em;
-    box-sizing: border-box;
+    flex-direction: column;
 }
 .jobs-list-container{
     width: 70%;

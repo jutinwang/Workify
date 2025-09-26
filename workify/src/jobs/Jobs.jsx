@@ -17,8 +17,7 @@ const JOBS = [
         level: "Mid",
         salary: { min: "120,000", max: "180,000" },
         skills: ["Python", "JavaScript", "React", "AWS", "Docker"],
-        summary:
-            "We are looking for a passionate Software Engineer to join our team building cutting-edge apps.",
+        summary: "We are looking for a passionate Software Engineer to join our team building cutting-edge apps.",
         posted: "about 1 month ago",
         link: "#",
     },
@@ -32,8 +31,7 @@ const JOBS = [
         level: "Entry",
         salary: { min: "90,000", max: "140,000" },
         skills: ["React", "TypeScript", "CSS", "Vite"],
-        summary:
-            "Join our frontend team to build amazing UIs with React and TypeScript.",
+        summary: "Join our frontend team to build amazing UIs with React and TypeScript.",
         posted: "about 1 month ago",
         link: "#",
     },
@@ -45,7 +43,7 @@ const Jobs = () => {
         jobType: JOB_TYPES[0],
         level: LEVELS[0],
         remoteOnly: false,
-      });
+    });
     
     const filtered = useMemo(() => {
         return JOBS.filter(j => {
