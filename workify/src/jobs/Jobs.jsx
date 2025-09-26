@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import JobsFilter from "./JobsFilter";
 import JobCard from "./JobCard";
-// import JobDetails from "./JobDetails";
+import JobDetails from "./JobDetails";
 import "./jobs.css";
 
 const JOB_TYPES = [
@@ -46,7 +46,7 @@ const JOBS = [
     link: "#",
   },
   {
-    id: 2,
+    id: 3,
     title: "Frontend Developer",
     company: "TechStart Inc.",
     location: "Remote",
@@ -61,7 +61,7 @@ const JOBS = [
     link: "#",
   },
   {
-    id: 2,
+    id: 4,
     title: "Frontend Developer",
     company: "TechStart Inc.",
     location: "Remote",
@@ -76,7 +76,7 @@ const JOBS = [
     link: "#",
   },
   {
-    id: 2,
+    id: 5,
     title: "Frontend Developer",
     company: "TechStart Inc.",
     location: "Remote",
@@ -91,7 +91,7 @@ const JOBS = [
     link: "#",
   },
   {
-    id: 2,
+    id: 6,
     title: "Frontend Developer",
     company: "TechStart Inc.",
     location: "Remote",
@@ -106,7 +106,7 @@ const JOBS = [
     link: "#",
   },
   {
-    id: 2,
+    id: 7,
     title: "Frontend Developer",
     company: "TechStart Inc.",
     location: "Remote",
@@ -163,7 +163,10 @@ const Jobs = () => {
           </div>
         </div>
         <div className="job-details-container">
-          {/* <JobDetails job={selectedJob} /> */}
+          <JobDetails 
+            job={selectedJob} 
+            onClose={() => setSelectedJob(null)}
+          />
         </div>
       </div>
     </div>

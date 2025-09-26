@@ -1,15 +1,20 @@
 import './job-card.css';
 
-export default function JobCard({ job }) {
+export default function JobCard({ job, isSelected, onClick }) {
     const initials = job.company
       ?.split(" ")
       .map(w => w[0])
       .slice(0, 2)
       .join("")
       .toUpperCase();
+
+    const handleViewDetails = (e) => {
+      e.preventDefault();
+      onClick();
+    };
   
     return (
-        <article className="job-card">
+        <article className={`job-card ${isSelected ? 'job-card--selected' : ''}`}>
             {/* Header */}
             <div className="job-head">
             <div className="job-avatar">{initials}</div>
@@ -59,11 +64,13 @@ export default function JobCard({ job }) {
             {/* Footer */}
             <div className="job-foot">
             <span className="posted">• {job.posted}</span>
-            <a className="btn btn--dark" href={job.link} target="_blank" rel="noreferrer">
+            <button 
+              className="btn btn--dark" 
+              onClick={handleViewDetails}
+            >
                 View Details
-            </a>
+            </button>
             </div>
         </article>
     );
 }
-  

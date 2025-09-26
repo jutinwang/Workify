@@ -82,10 +82,10 @@
 }
 
 .job-details-container {
-  width: 40%;
-  height: fit-content;
+  width: 50%;
+  height: 100%;
   background-color: #fafafa;
-  overflow-y: scroll;
+  overflow: hidden;
 }
 
 .jobs-grid {
