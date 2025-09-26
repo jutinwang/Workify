@@ -14,9 +14,9 @@ const PositionWriting = () => {
 
     return (
         <div className="positionwriting-container">
-            <h3>Create Job Posting</h3>
+            <h3>Create Coop Posting</h3>
             <div className="textInput">
-                <p>Job Description</p>
+                <p>Coop Description</p>
                 <textarea className="textInput"
                     ref={textareaRef}
                     value={text}

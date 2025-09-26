@@ -102,7 +102,7 @@ function Stats() {
 }
 
 function JobPostings() {
-const jobs = ["Job 1", "Job 2", "Job 3", "Job 4", "Job 5", "Job 6"];
+const jobs = ["Coop 1", "Coop 2", "Coop 3", "Coop 4", "Coop 5", "Coop 6"];
 
   const settings = {
     infinite: true,
@@ -123,7 +123,7 @@ const jobs = ["Job 1", "Job 2", "Job 3", "Job 4", "Job 5", "Job 6"];
 
   return (
     <div>
-      <h3 className="slide-title">Jobs Posted</h3>
+      <h3 className="slide-title">Coops Posted</h3>
       <div className="job-board">
         <Slider {...settings}>
           {jobs.map((job, index) => (

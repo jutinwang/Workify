@@ -20,7 +20,8 @@ export default function App() {
         <>
             {!hideHeader && !hideHeaderTemp && <Header />}
             <Routes>
-                <Route path="/" element={<PositionWriting />} />
+                <Route path="/" element={<EmployerProfile />} />
+                <Route path="/writing" element={<PositionWriting />} />
                 <Route path="/landing" element={<Landing />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/profile" element={<EmployerProfile />} />
