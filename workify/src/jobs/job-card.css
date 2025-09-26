@@ -53,6 +53,7 @@
 .job-head {
   display: flex;
   gap: 12px;
+  position: relative;
 }
 .job-avatar {
   width: 40px;
@@ -169,4 +170,25 @@
 }
 .btn--dark:hover {
   filter: brightness(0.95);
+}
+
+.bookmark-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  color: #94a3b8;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bookmark-btn:hover {
+  background: #f1f5f9;
+  color: #475569;
 }
