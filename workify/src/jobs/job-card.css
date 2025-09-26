@@ -190,5 +190,9 @@
 
 .bookmark-btn:hover {
   background: #f1f5f9;
-  color: #475569;
+  color: #3b82f6;
+}
+
+.bookmark-btn svg path[fill="currentColor"] {
+  color: #3b82f6;
 }

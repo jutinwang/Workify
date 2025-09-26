@@ -27,7 +27,7 @@ export default function JobsFilter({ filters, setFilters }) {
           />
         </div>
         <span className="results-count">
-          Showing: {6} of {18} available results{" "}
+          Showing: {7} of {18} available results{" "}
         </span>
       </div>
 
