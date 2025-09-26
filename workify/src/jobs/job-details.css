@@ -28,6 +28,7 @@
   overflow-y: auto;
   background: #fff;
   border-left: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
 }
 
 .job-details-header {
@@ -173,7 +174,7 @@
 }
 
 .jd-btn {
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   border-radius: 8px;
   font-weight: 600;
   font-size: 0.875rem;
@@ -185,7 +186,7 @@
   justify-content: center;
   transition: all 0.2s;
   white-space: nowrap;
-  min-width: 80px;
+  min-width: 100px;
 }
 
 .btn-close {
@@ -205,16 +206,12 @@
   color: #374151;
 }
 
-.btn-primary {
-  background: #3b82f6;
-  color: black;
-}
 
 .btn-primary:hover {
   background: #2563eb;
-  color: black;
+  border-color: #2563eb;
 }
-
+.btn-primary,
 .btn-secondary {
   background: #f3f4f6;
   color: #374151;

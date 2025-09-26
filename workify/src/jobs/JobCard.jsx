@@ -14,7 +14,7 @@ export default function JobCard({ job, isSelected, onClick }) {
     };
   
     return (
-        <article className={`job-card ${isSelected ? 'job-card--selected' : ''}`}>
+        <article className={`job-card ${isSelected ? 'job-card--selected' : ''}`} onClick={handleViewDetails}>
             {/* Header */}
             <div className="job-head">
             <div className="job-avatar">{initials}</div>
@@ -64,12 +64,6 @@ export default function JobCard({ job, isSelected, onClick }) {
             {/* Footer */}
             <div className="job-foot">
             <span className="posted">• {job.posted}</span>
-            <button 
-              className="btn btn--dark" 
-              onClick={handleViewDetails}
-            >
-                View Details
-            </button>
             </div>
         </article>
     );
