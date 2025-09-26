@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+.positionwriting-container {
+  width: 80%;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+}
+
+.positionwriting-container h3 {
+  margin-bottom: 20px;
+}
+
+.textInput {
+  margin-bottom: 20px;
+}
+
+.textInput p {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.textbox {
+  width: 100%;
+  height: 150px;
+  border: 1.5px solid #333;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* Tags box */
+.tags-container {
+  border: 1.5px solid #333;
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.tag {
+  background-color: #f9d4b7;
+  padding: 8px 14px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.tag span {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Buttons */
+.button-container {
+  display: flex;
+  gap: 12px;
+}
+
+.cancel-btn,
+.post-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1.5px solid #333;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background-color: #fff;
+}
+
+.post-btn {
+  background-color: #BAD8E0;
+  border: none;
+}
