@@ -1,6 +1,7 @@
-import { Route, Routes, useLocation, Link } from 'react-router-dom';
+import { Route, Routes, useLocation, Link } from "react-router-dom";
 import "./Landing.css";
-import Header from './common/Header.jsx'
+import Header from "./common/Header.jsx";
+import Carousel from "./components/Carousel.jsx";
 
 function Landing() {
   return (
@@ -22,14 +23,8 @@ function Landing() {
           </Link>
         </div>
 
-        {/* Placeholder for whatever we put here */}
         <div className="hero-image">
-          <div className="image-placeholder"></div>
-          <div className="dots">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
+          <Carousel />
         </div>
       </div>
     </div>

@@ -1,24 +1,111 @@
-.filter-card-header{
-    display: flex;
-    align-items: center;
+/* Layout */
+.jobs-filter-section {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  align-items: start;
+  gap: 1.5rem;
+  padding: 12px 0;
+  border-bottom: 1px solid #e6e6e6;
 }
-.filter-card{
-    padding: 1em;
-    border: 1px solid black;
-    border-radius: 8px;
+
+.jf-left {
+  display: flex;
+  padding: 2.4rem;
+  flex-direction: column;
+  gap: 8px;
 }
-.filter-card-header > div{
-    width: fit-content;
-    font-size: 1.2em;
+
+.jf-right {
+  display: flex;
+  padding-right: 2.4rem;
+  padding: 2.4rem 0 2.4rem 0;
+  flex-direction: column;
+  gap: 8px;
 }
-.filter-icon{
-    margin-right: 0.5em;
+
+.jf-left h3,
+.jf-right h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 650;
+  color: #1f1f1f;
 }
-.select-wrap{
-    margin: 0.5em 0;
+
+/* Search input (with icon) */
+.search-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 320px; /* close to screenshot width */
+  border: 1px solid #bdbdbd;
+  border-radius: 6px;
+  padding: 8px 10px;
+  background: #fff;
+}
+
+.search-input .search-icon {
+  opacity: 0.7;
+}
+.search-input input {
+  border: 0;
+  outline: 0;
+  flex: 1;
+  font-size: 14px;
+  background: transparent;
+}
+
+/* Filters row (inline pills) */
+.filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.select-wrap {
+  position: relative;
+}
+
+/* Make native <select> look like the pill buttons in the image */
+.select-wrap select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  font-size: 14px;
+  line-height: 1;
+  padding: 10px 36px 10px 14px; /* room for arrow on right */
+  border: 1px solid #bdbdbd;
+  border-radius: 8px;
+  background: #fff /* caret icon (down chevron) */
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 20 20' fill='none' stroke='%23222222' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 8 10 12 14 8'/></svg>")
+    no-repeat right 12px center;
+  cursor: pointer;
+  min-width: 140px; /* pill width like image */
+  color: #1f1f1f;
+}
+
+.select-wrap select:hover {
+  border-color: #9a9a9a;
+}
+
+.select-wrap select:focus {
+  outline: 3px solid rgba(0, 102, 255, 0.15);
+  border-color: #4a83ff;
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 740px) {
+  .jobs-filter-section {
+    grid-template-columns: 1fr; /* stack */
+    gap: 12px;
+  }
+  .jf-divider {
+    display: none;
+  }
+  .search-input {
     width: 100%;
-}
-.select-wrap > select{
-    width: 100%;
-    padding: 0.5em;
+  }
+  .filters-row {
+    gap: 10px;
+  }
 }

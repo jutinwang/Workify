@@ -2,3 +2,9 @@ body{
     margin: 0;
     padding: 0;
 }
+:root {
+    --border: #e2e2e2;
+    --bg: #f5f5f7;
+    --fg: #111;
+    --shadow-md: 0 10px 20px rgba(0,0,0,0.06);
+}

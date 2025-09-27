@@ -74,41 +74,41 @@ const SignupForm = () => {
         <div className="signup-form-container">
             <form className="signup-form" onSubmit={onSubmit} noValidate>
                 <div className="field">
-                    <label htmlFor="fullName" />
+                    <label htmlFor="fullName">Full Name</label>
                     <input
                         id="fullName"
                         name="fullName"
                         value={form.fullName}
                         onChange={handleChange}
                         required
-                        placeholder="Full Name"
+                        // placeholder="Full Name"
                     />
                     {errors.fullName && <div className="error">{errors.fullName}</div>}
                 </div>
 
                 <div className="field">
-                    <label htmlFor="email" />
+                    <label htmlFor="email">Email</label>
                     <input
                         id="email"
                         name="email"
                         type="email"
                         value={form.email}
                         onChange={handleChange}
-                        placeholder="Email"
+                        // placeholder="Email"
                         required
                     />
                     {errors.email && <div className="error">{errors.email}</div>}
                 </div>
 
                 <div className="field">
-                    <label htmlFor="password" />
+                    <label htmlFor="password">Password</label>
                     <input
                         id="password"
                         name="password"
                         type="password"
                         value={form.password}
                         onChange={handleChange}
-                        placeholder="Password"
+                        // placeholder="Password"
                         required
                     />
                         {/* <p className="pw-strength">Strength: {pwStrength}/5</p>
@@ -116,14 +116,14 @@ const SignupForm = () => {
                 </div>
 
                 <div className="field">
-                    <label htmlFor="confirm" />
+                    <label htmlFor="confirm">Confirm Passowrd</label>
                     <input
                         id="confirm"
                         name="confirm"
                         type="password"
                         value={form.confirm}
                         onChange={handleChange}
-                        placeholder="Confirm Password"
+                        // placeholder="Confirm Password"
                         required
                     />
                     {errors.confirm && <div className="error">{errors.confirm}</div>}
