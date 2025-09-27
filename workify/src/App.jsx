@@ -7,6 +7,7 @@ import Profile from './profile/profile.jsx';
 import Header from './common/Header.jsx';
 import Jobs from './jobs/Jobs.jsx';
 import ProfileWizard from './profile/ProfileSetupWizard/ProfileWizard.jsx';
+import Apps from './apps/Apps.jsx';
 
 export default function App() {
 
@@ -22,6 +23,7 @@ export default function App() {
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/profile" element={<ProfileWizard />} />
                 <Route path="/jobs" element={<Jobs />} />
+                <Route path="/applications" element={<Apps />} />
             </Routes>
         </>
     );
