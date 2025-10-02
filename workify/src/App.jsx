@@ -7,6 +7,8 @@ import Profile from './profile/profile.jsx';
 import Header from './common/Header.jsx';
 import Jobs from './jobs/Jobs.jsx';
 import ProfileWizard from './profile/ProfileSetupWizard/ProfileWizard.jsx';
+import EmployerProfile from './employerprofile/EmployerProfile.jsx';
+import PositionWriting from './positionwriting/PositionWriting.jsx'
 import Apps from './apps/Apps.jsx';
 
 export default function App() {
@@ -19,11 +21,17 @@ export default function App() {
         <>
             {!hideHeader && !hideHeaderTemp && <Header />}
             <Routes>
-                <Route path="/" element={<Landing />} />
+                <Route path="/" element={<Landing/>} />
+                <Route path="/landing" element={<Landing />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/profile" element={<ProfileWizard />} />
                 <Route path="/jobs" element={<Jobs />} />
                 <Route path="/applications" element={<Apps />} />
+
+                {/* Routes for employer stuff */}
+                {/* Add these routes to URL to see them, not encorperated with current login flow */}
+                <Route path="/profile-employer" element={<EmployerProfile />} />
+                <Route path="/writing" element={<PositionWriting />} />
             </Routes>
         </>
     );
