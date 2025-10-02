@@ -24,7 +24,7 @@ export default function App() {
                 <Route path="/" element={<Landing/>} />
                 <Route path="/landing" element={<Landing />} />
                 <Route path="/signup" element={<Signup />} />
-                <Route path="/profile-user" element={<ProfileWizard />} />
+                <Route path="/profile" element={<ProfileWizard />} />
                 <Route path="/jobs" element={<Jobs />} />
                 <Route path="/applications" element={<Apps />} />
 
