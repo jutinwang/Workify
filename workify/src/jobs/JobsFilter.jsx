@@ -1,81 +1,102 @@
 import React from "react";
 import "./jobs-filter.css";
 
-const JOB_TYPES = ["All Types", "Full-time", "Part-time", "Internship", "Contract", "Co-op"];
+const JOB_TYPES = [
+  "All Types",
+  "Full-time",
+  "Part-time",
+  "Internship",
+  "Contract",
+  "Co-op",
+];
 const LEVELS = ["All Levels", "Junior", "Intermediate", "Senior", "Lead"];
 
 export default function JobsFilter({ filters, setFilters }) {
-    return (
-        <aside className="jobs-filter-section">
-            <div className="filter-card">
-                <div className="filter-card-header">
-                    <svg
-                        className="filter-icon"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                    >
-                        <path
-                        d="M3 5a1 1 0 0 1 1-1h16a1 1 0 0 1 .8 1.6l-6.8 9.07V20a1 1 0 0 1-1.45.9l-3-1.5A1 1 0 0 1 9 18.5v-3.83L3.2 5.6A1 1 0 0 1 3 5z"
-                        fill="currentColor"
-                        />
-                    </svg>
-                    <div>Filters</div>
-                </div>
-                <hr />
-                <div className="filter-field">
-                    <label htmlFor="jobType">Job Type</label>
-                    <div className="select-wrap">
-                        <select
-                        id="jobType"
-                        value={filters.jobType}
-                        onChange={(e) =>
-                            setFilters((f) => ({ ...f, jobType: e.target.value }))
-                        }
-                        >
-                        {JOB_TYPES.map((opt) => (
-                            <option key={opt} value={opt}>
-                            {opt}
-                            </option>
-                        ))}
-                        </select>
-                    </div>
-                </div>
+  return (
+    <aside className="jobs-filter-section">
+      {/* LEFT: Search */}
+      <div className="jf-left">
+        <h3>Search All Jobs</h3>
+        <div className="search-input">
+          <span className="search-icon" aria-hidden>
+            🔍
+          </span>
+          <input
+            type="text"
+            placeholder="Search for roles, companies, or locations"
+          />
+        </div>
+        <span className="results-count">
+          Showing: {7} of {18} available results{" "}
+        </span>
+      </div>
 
-                <div className="filter-field">
-                    <label htmlFor="level">Experience Level</label>
-                    <div className="select-wrap">
-                        <select
-                        id="level"
-                        value={filters.level}
-                        onChange={(e) =>
-                            setFilters((f) => ({ ...f, level: e.target.value }))
-                        }
-                        >
-                        {LEVELS.map((opt) => (
-                            <option key={opt} value={opt}>
-                            {opt}
-                            </option>
-                        ))}
-                        </select>
-                    </div>
-                </div>
+      {/* Divider */}
+      <div className="jf-divider" aria-hidden />
 
-                <div className="filter-field">
-                    <p className="filter-subtitle">Work Arrangement</p>
-                    <label className="checkbox">
-                        <input
-                        type="checkbox"
-                        checked={filters.remoteOnly}
-                        onChange={() =>
-                            setFilters((f) => ({ ...f, remoteOnly: !f.remoteOnly }))
-                        }
-                        />
-                        <span>Remote only</span>
-                    </label>
-                </div>
-            </div>
-        </aside>
-    );
+      {/* RIGHT: Filters row */}
+      <div className="jf-right">
+        <h3>Filters</h3>
+        <div className="filters-row">
+          <div className="select-wrap">
+            <select
+              value={filters.location ?? "Location"}
+              onChange={(e) =>
+                setFilters((f) => ({ ...f, location: e.target.value }))
+              }
+            >
+              <option disabled>Location</option>
+              <option>Remote</option>
+              <option>Ottawa</option>
+              <option>Toronto</option>
+              <option>Vancouver</option>
+            </select>
+          </div>
+
+          <div className="select-wrap">
+            <select
+              id="level"
+              value={filters.level}
+              onChange={(e) =>
+                setFilters((f) => ({ ...f, level: e.target.value }))
+              }
+            >
+              {LEVELS.map((opt) => (
+                <option key={opt}>{opt}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="select-wrap">
+            <select
+              value={filters.datePosted ?? "Date Posted"}
+              onChange={(e) =>
+                setFilters((f) => ({ ...f, datePosted: e.target.value }))
+              }
+            >
+              <option disabled>Date Posted</option>
+              <option>Any time</option>
+              <option>Past 24 hours</option>
+              <option>Past week</option>
+              <option>Past month</option>
+            </select>
+          </div>
+
+          <div className="select-wrap">
+            <select
+              value={filters.more ?? "Additional filters"}
+              onChange={(e) =>
+                setFilters((f) => ({ ...f, more: e.target.value }))
+              }
+            >
+              <option disabled>Additional filters</option>
+              <option>Remote only</option>
+              <option>Full-time</option>
+              <option>Internship</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </aside>
+  );
 }
