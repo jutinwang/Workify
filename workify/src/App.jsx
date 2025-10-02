@@ -21,12 +21,15 @@ export default function App() {
             {!hideHeader && !hideHeaderTemp && <Header />}
             <Routes>
                 <Route path="/" element={<Landing/>} />
-                <Route path="/writing" element={<PositionWriting />} />
                 <Route path="/landing" element={<Landing />} />
                 <Route path="/signup" element={<Signup />} />
-                <Route path="/profile-user" element={<Profile />} />
-                <Route path="/profile-employer" element={<EmployerProfile />} />
+                <Route path="/profile-user" element={<ProfileWizard />} />
                 <Route path="/jobs" element={<Jobs />} />
+
+                {/* Routes for employer stuff */}
+                {/* Add these routes to URL to see them, not encorperated with current login flow */}
+                <Route path="/profile-employer" element={<EmployerProfile />} />
+                <Route path="/writing" element={<PositionWriting />} />
             </Routes>
         </>
     );
