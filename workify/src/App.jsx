@@ -9,17 +9,17 @@ import Jobs from './jobs/Jobs.jsx';
 import ProfileWizard from './profile/ProfileSetupWizard/ProfileWizard.jsx';
 import EmployerProfile from './employerprofile/EmployerProfile.jsx';
 import PositionWriting from './positionwriting/PositionWriting.jsx'
+import EmployerSignup from './employer-login/EmployerSignup.jsx';
 import Apps from './apps/Apps.jsx';
 
 export default function App() {
 
     const location = useLocation();
-    const hideHeader = location.pathname === "/";
-    const hideHeaderTemp = location.pathname === "/signup"
+    const hideHeader = location.pathname === "/" || location.pathname === "/signup" || location.pathname === "/signup-employer";
 
     return (
         <>
-            {!hideHeader && !hideHeaderTemp && <Header />}
+            {!hideHeader && <Header />}
             <Routes>
                 <Route path="/" element={<Landing/>} />
                 <Route path="/landing" element={<Landing />} />
@@ -31,6 +31,7 @@ export default function App() {
                 {/* Routes for employer stuff */}
                 {/* Add these routes to URL to see them, not encorperated with current login flow */}
                 <Route path="/profile-employer" element={<EmployerProfile />} />
+                <Route path="/signup-employer" element={<EmployerSignup />} />
                 <Route path="/writing" element={<PositionWriting />} />
             </Routes>
         </>

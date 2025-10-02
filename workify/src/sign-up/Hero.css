@@ -80,6 +80,11 @@
     width: fit-content;
 }
 
+.employer-hero-subtext-span {
+    text-decoration: underline; 
+    font-style: italic;
+}
+
 @keyframes marquee {
     0% {
         transform: translateX(0);
