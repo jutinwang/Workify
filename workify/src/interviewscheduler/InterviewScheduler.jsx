@@ -19,6 +19,7 @@ const InterviewScheduler = () => {
     const config = {
         viewType: "WorkWeek",
         timeRangeSelectedHandling: "Enabled",
+        durationBarVisible: false,
         eventCreateHandling: "Disabled",
         onTimeRangeSelected: async (args) => {
         const modal = await DayPilot.Modal.prompt(
@@ -54,13 +55,13 @@ const InterviewScheduler = () => {
         // Example
         // preload some example events
         const initialEvents = [
-        {
-            id: 1,
-            text: "Team Interview",
-            start: DayPilot.Date.today().addHours(9),
-            end: DayPilot.Date.today().addHours(10),
-            backColor: "#6aa84f",
-        },
+            {
+                id: 1,
+                text: "Team Interview",
+                start: DayPilot.Date.today().addHours(11.50),
+                end: DayPilot.Date.today().addHours(12),
+                backColor: "#FFD5B6",
+            },
         ];
         setEvents(initialEvents);
     }, []);
@@ -85,7 +86,8 @@ const InterviewScheduler = () => {
                             start: args.start,
                             end: args.end,
                             text: "Busy",
-                            id: DayPilot.guid()
+                            id: DayPilot.guid(),
+                            backColor: "#BAD8E0"
                             };
 
                             setEvents(prev => [...prev, newEvent]);

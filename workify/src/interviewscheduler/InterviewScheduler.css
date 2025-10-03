@@ -83,3 +83,11 @@
 p {
     font-family: 'PT Sans';
 }
+
+.calendar_default_main:not(.default) {
+    --dp-calendar-event-background: #ffffffcc;
+    --dp-calendar-event-border-radius: 5px;
+    --dp-calendar-event-border: none;
+    --dp-calendar-event-padding: 5px;
+    --dp-calendar-event-font: 'PT Sans', sans-serif;
+}
