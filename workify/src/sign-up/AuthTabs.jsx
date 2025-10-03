@@ -16,7 +16,7 @@ const AuthTabs = () => {
           className={activeTab === "signup" ? "tab active" : "tab"}
           onClick={() => setActiveTab("signup")}
         >
-          {isEmployerSignup ? "Sign Up as an Employer" : "Sign Up"}
+          {isEmployerSignup ? "Employer Sign Up" : "Sign Up"}
         </button>
         <button
           className={activeTab === "login" ? "tab active" : "tab"}

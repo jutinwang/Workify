@@ -10,6 +10,7 @@ import ProfileWizard from './profile/ProfileSetupWizard/ProfileWizard.jsx';
 import EmployerProfile from './employerprofile/EmployerProfile.jsx';
 import PositionWriting from './positionwriting/PositionWriting.jsx'
 import EmployerSignup from './employer-login/EmployerSignup.jsx';
+import EmployerCandidateContainer from './coop-candidate/candidate-page-container.jsx';
 import Apps from './apps/Apps.jsx';
 
 export default function App() {
@@ -29,10 +30,11 @@ export default function App() {
                 <Route path="/applications" element={<Apps />} />
 
                 {/* Routes for employer stuff */}
-                {/* Add these routes to URL to see them, not encorperated with current login flow */}
+                {/* For all employer routing please include employer in the path name */}
                 <Route path="/profile-employer" element={<EmployerProfile />} />
+                <Route path="/employer-candidates" element={<EmployerCandidateContainer />} />
                 <Route path="/signup-employer" element={<EmployerSignup />} />
-                <Route path="/writing" element={<PositionWriting />} />
+                <Route path="/employer-job-writing" element={<PositionWriting />} />
             </Routes>
         </>
     );
