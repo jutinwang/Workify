@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from "react";
+import React, { useReducer, useState, useMemo } from "react";
 import Stepper from "./Stepper";
 import ContactStep from "./ContactStep";
 import EducationStep from "./EducationStep";
@@ -7,67 +7,67 @@ import FilesStep from "./FilesStep";
 import SkillsStep from "./SkillsStep";
 import PreferencesStep from "./PreferencesStep";
 import ReviewStep from "./ReviewStep";
-import { initialState, reducer, STEPS, validateContact, validateEducation, validateFiles } from "./state";
+import { initialState, reducer, validateContact, validateEducation, validateFiles, validateCompany, validateRecruiter } from "./state";
+import CompanyStep from "./CompanyStep";
+import RecruiterStep from "./RecruiterStep";
+import NotifyPrefsStep from "./NotifyPrefsStep";
 import "./profileWizard.css";
 
+const STEP_DEFS = {
+    contact: { label: "Contact", Component: ContactStep, validate: (s)=>validateContact(s.contact) },
+    education: { label: "Education", Component: EducationStep, validate: (s)=>validateEducation(s.education) },
+    experience: { label: "Experience", Component: ExperienceStep },
+    files: { label: "Files", Component: FilesStep, validate: (s)=>validateFiles(s.files) },
+    skills: { label: "Skills", Component: SkillsStep },
+    preferences: { label: "Preferences", Component: PreferencesStep },
+    review: { label: "Review", Component: ReviewStep },
+  
+    company: { label: "Company", Component: CompanyStep, validate: (s)=>validateCompany(s.company) },
+    recruiter: { label: "Recruiter", Component: RecruiterStep, validate: (s)=>validateRecruiter(s.recruiter) },
+    notifications: { label: "Notifications", Component: NotifyPrefsStep },
+};
+  
+const FLOWS = {
+    student: ["contact","education","experience","files","skills","preferences","review"],
+    employee: ["company","recruiter","notifications","review"],
+};
 
-export default function ProfileWizard() {
+export default function ProfileWizard({ userType = "employee" }) {
     const [state, dispatch] = useReducer(reducer, initialState);
     const [errors, setErrors] = useState({});
-
-
+  
+    const flow = useMemo(() => FLOWS[userType] || FLOWS.student, [userType]);
+    const safeIndex = Math.min(state.step, flow.length - 1);
+    const currentKey = flow[safeIndex];
+    const current = STEP_DEFS[currentKey];
+  
+    const labels = flow.map((k) => STEP_DEFS[k].label);
+    const Step = current.Component;
+  
     function next() {
-        // minimal step-specific validation
-        if (state.step === 0) {
-            const e = validateContact(state.contact);
+        if (current.validate) {
+            const e = current.validate(state);
             setErrors(e);
-            if (Object.keys(e).length) return;
-        }
-        if (state.step === 1) {
-            const e = validateEducation(state.education);
-            setErrors(e);
-            if (Object.keys(e).length) return;
-        }
-        if (state.step === 3) {
-            const e = validateFiles(state.files);
-            setErrors(e);
-            if (Object.keys(e).length) return;
+            if (e && Object.keys(e).length) return;
         }
         setErrors({});
-        dispatch({ type: "NEXT" });
+        if (safeIndex < flow.length - 1) dispatch({ type: "NEXT" });
     }
     function back() {
         setErrors({});
-        dispatch({ type: "BACK" });
+        if (safeIndex > 0) dispatch({ type: "BACK" });
     }
     function goto(i) {
-        dispatch({ type: "GOTO", index: i });
+        if (i >= 0 && i < flow.length) {
+            setErrors({});
+            dispatch({ type: "GOTO", index: i });
+        }
     }
-
+  
     return (
         <div className="wizard">
-            <Stepper current={state.step} onGoto={goto} />
-            {state.step === 0 && (
-                <ContactStep state={state} dispatch={dispatch} errors={errors} onNext={next} />
-            )}
-            {state.step === 1 && (
-                <EducationStep state={state} dispatch={dispatch} errors={errors} onNext={next} onBack={back} />
-            )}
-            {state.step === 2 && (
-                <ExperienceStep state={state} dispatch={dispatch} onNext={next} onBack={back} />
-            )}
-            {state.step === 3 && (
-                <FilesStep state={state} dispatch={dispatch} errors={errors} onNext={next} onBack={back} />
-            )}
-            {state.step === 4 && (
-                <SkillsStep state={state} dispatch={dispatch} onNext={next} onBack={back} />
-            )}
-            {state.step === 5 && (
-                <PreferencesStep state={state} dispatch={dispatch} onNext={next} onBack={back} />
-            )}
-            {state.step === 6 && (
-                <ReviewStep state={state} dispatch={dispatch} onBack={back} onGoto={goto} />
-            )}
+            <Stepper current={safeIndex} onGoto={goto} steps={labels} />
+            <Step state={state} dispatch={dispatch} errors={errors} onNext={next} onBack={back} onGoto={goto} />
         </div>
     );
 }
