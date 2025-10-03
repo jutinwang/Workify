@@ -6,8 +6,8 @@ export default function JobDetails({ job, onClose }) {
     return (
       <div className="job-details-empty">
         <div className="empty-state">
-          <h3>Select a job to view details</h3>
-          <p>Click on any job card to see more information</p>
+          <h3>Select a co-op to view details</h3>
+          <p>Click on any co-op card to see more information</p>
         </div>
       </div>
     );
@@ -51,7 +51,7 @@ export default function JobDetails({ job, onClose }) {
 
       <div className="job-details-content">
         <section className="details-section">
-          <h3>Job Overview</h3>
+          <h3>Co-op Overview</h3>
           <div className="overview-grid">
             <div className="overview-item">
               <span className="overview-label">Employment Type</span>
@@ -71,7 +71,7 @@ export default function JobDetails({ job, onClose }) {
         </section>
 
         <section className="details-section">
-          <h3>Job Description</h3>
+          <h3>Co-op Description</h3>
           <p className="job-description">{job.summary}</p>
           <p>We are seeking a talented and motivated individual to join our growing team. This role offers excellent opportunities for professional development and the chance to work on exciting projects with cutting-edge technologies.</p>
         </section>

@@ -16,7 +16,7 @@ export default function JobsFilter({ filters, setFilters }) {
     <aside className="jobs-filter-section">
       {/* LEFT: Search */}
       <div className="jf-left">
-        <h3>Search All Jobs</h3>
+        <h3>Search All Co-ops</h3>
         <div className="search-input">
           <span className="search-icon" aria-hidden>
             🔍
