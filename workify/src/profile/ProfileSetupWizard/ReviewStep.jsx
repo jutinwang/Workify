@@ -1,10 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import './sections.css';
 
 export default function ReviewStep({ state, dispatch, onBack, onGoto }) {
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-
+    const navigate = useNavigate();
 
     async function onSubmit() {
         setSubmitting(true);
@@ -37,6 +38,7 @@ export default function ReviewStep({ state, dispatch, onBack, onGoto }) {
                 <p className="section-sub">Your profile has been submitted.</p>
                 <div className="actions">
                     <button className="btn" onClick={()=>onGoto(0)}>Create another</button>
+                    <button className="btn" onClick={()=>navigate('/jobs')}>Get Applying</button>
                 </div>
             </div>
         );

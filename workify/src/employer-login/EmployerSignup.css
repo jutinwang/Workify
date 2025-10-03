@@ -1,0 +1,45 @@
+.left-side-container {
+    background-color: #ffd5b680;
+    color: #000000;
+    background-image: radial-gradient( ellipse farthest-corner at 10px 10px , #ffd5b680, #ffd5b680 50%, #ffc29680 50%);
+    background-size: 10px 10px;
+  }
+  
+  .right-side-container {
+    background-color: white;
+    color: #000000;
+  }
+  
+  .split-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .right-side-container {
+    width: 40%;
+    box-sizing: border-box;
+    padding: 2em;
+  }
+  .left-side-container{
+    width: 60%;
+    box-sizing: border-box;
+    padding: 2em;
+  }
+  
+  .logo-workify {
+    font-family: Rosarivo, serif;
+    font-size: 24px;
+    opacity: 100% !important;
+  }
+  
+  .tab-section{
+    height: 20%;
+    width: 100%;
+  }
+  
+  .signup-form-conatainer{
+    height: 80%;
+    width: 100%;
+  }

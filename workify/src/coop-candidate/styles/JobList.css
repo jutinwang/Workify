@@ -1,0 +1,67 @@
+.employer.job-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.employer.job-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+.employer.job-item:hover {
+  background-color: #f9fafb;
+}
+
+.employer.job-checkbox {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.75rem;
+  cursor: pointer;
+}
+
+.employer.job-id {
+  font-weight: 500;
+  margin-right: 0.5rem;
+  color: #111827;
+}
+
+.employer.job-title {
+  flex: 1;
+  color: #111827;
+  margin-right: 2rem;
+}
+
+.employer.job-applicants {
+  color: #6b7280;
+  text-align: center;
+  min-width: 120px;
+  margin-right: 2rem;
+}
+
+.employer.job-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.employer.job-link {
+  background: none;
+  border: 1px solid #2563eb;
+  color: #2563eb;
+  cursor: pointer;
+  font-size: 0.875rem;
+  padding: 0.25rem 0.75rem;
+  white-space: nowrap;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.employer.job-link:hover {
+  background-color: #2563eb;
+  color: white;
+  text-decoration: none;
+}
