@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+/* Container for the whole scheduler */
+.interviewscheduler-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+}
+
+/* Left calendar section */
+.calendar-section {
+  flex: 2; /* takes more space than the details section */
+  border: 1.5px solid black;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Calendar title area (icon + text inline) */
+.inviteTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.inviteTitle p {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* The calendar itself should stretch */
+.schedulerCalendar {
+  flex: 1;
+  height: 100%;
+}
+
+/* Right-side details panel */
+.invitedetails-section {
+  flex: 1;
+  border: 1.5px solid black;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+/* Send button at top */
+.sendButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1.5px solid black;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #FFD5B6;
+  width: auto;   
+  max-width: fit-content; 
+  align-self: flex-start;   /* overrides parent centering */
+  font-family: 'PT Sans';
+}
+
+/* Each details row (icon + input) */
+.inviteOthersSection,
+.duration-section,
+.location-section,
+.interviewtype-section,
+.message-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+p {
+    font-family: 'PT Sans';
+}

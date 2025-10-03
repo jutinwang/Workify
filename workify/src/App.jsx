@@ -9,6 +9,7 @@ import Jobs from './jobs/Jobs.jsx';
 import ProfileWizard from './profile/ProfileSetupWizard/ProfileWizard.jsx';
 import EmployerProfile from './employerprofile/EmployerProfile.jsx';
 import PositionWriting from './positionwriting/PositionWriting.jsx'
+import InterviewScheduler from './interviewscheduler/InterviewScheduler.jsx';
 import Apps from './apps/Apps.jsx';
 
 export default function App() {
@@ -32,6 +33,7 @@ export default function App() {
                 {/* Add these routes to URL to see them, not encorperated with current login flow */}
                 <Route path="/profile-employer" element={<EmployerProfile />} />
                 <Route path="/writing" element={<PositionWriting />} />
+                <Route path="/interview-scheduler" element={<InterviewScheduler />} />
             </Routes>
         </>
     );
