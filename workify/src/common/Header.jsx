@@ -31,10 +31,10 @@ export default function Header() {
             <a href="/">Home</a>
           </li>
           <li>
-            <a href="/jobs">Jobs</a>
+            <a href="/jobs">Co-Op Postings</a>
           </li>
           <li>
-            <a href="/applications">Applications</a>
+            <a href="/applications">Co-Op Applications & Status</a>
           </li>
         </ul>
       )}

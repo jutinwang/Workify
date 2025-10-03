@@ -65,7 +65,7 @@ const SignupForm = ({ isEmployer }) => {
         // ALI: @TOLU, you can route the new profile wizard here.
         navigate("/employer-profile-setup");
       } else {
-        navigate("/profile");
+        navigate("/profile-wizard");
       }
     } catch (err) {
       alert("Signup failed: " + err.message);
