@@ -35,7 +35,7 @@ export default function App() {
                 {/* For all employer routing please include employer in the path name */}
                 <Route path="/profile-employer" element={<EmployerProfile />} />
                 <Route path="/writing" element={<PositionWriting />} />
-                <Route path="/interview-scheduler" element={<InterviewScheduler />} />
+                <Route path="/employer-interviews" element={<InterviewScheduler />} />
                 <Route path="/employer-candidates" element={<EmployerCandidateContainer />} />
                 <Route path="/signup-employer" element={<EmployerSignup />} />
                 <Route path="/employer-job-writing" element={<PositionWriting />} />
