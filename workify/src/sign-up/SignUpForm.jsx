@@ -4,6 +4,7 @@ import "./SignUpForm.css";
 import outlookLogo from "../assets/outlook_logo.png";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const uottawaEmailRegex = /^[a-zA-Z]{5}\d{3}@uottawa\.ca$/i;
 
 const passwordScore = (pwd) => {
   let score = 0;
@@ -42,7 +43,13 @@ const SignupForm = ({ isEmployer }) => {
   const validate = () => {
     const e = {};
     if (!form.fullName.trim()) e.fullName = "Name required.";
-    if (!emailRegex.test(form.email)) e.email = "Enter a valid email.";
+    
+    if (!emailRegex.test(form.email)) {
+      e.email = "Enter a valid email.";
+    } else if (!isEmployer && !uottawaEmailRegex.test(form.email)) {
+      e.email = "Students must use a @uottawa.ca email address.";
+    }
+    
     if (form.password.length < 8) e.password = "Min 8 characters.";
     if (form.password !== form.confirm) e.confirm = "Passwords do not match.";
     if (!form.agree) e.agree = "You must accept the terms.";
@@ -55,7 +62,7 @@ const SignupForm = ({ isEmployer }) => {
     const v = validate();
     setErrors(v);
     // this is a commented atm b/c as it does not set errors rn
-    // if (Object.keys(v).length) return;
+    if (Object.keys(v).length) return;
 
     setSubmitting(true);
     try {
