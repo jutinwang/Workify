@@ -5,6 +5,12 @@
   padding: 0;
 }
 
+.applicant-pill-icon-image {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+}
+
 .results-container {
   max-height: 70vh;
   overflow-y: auto;
