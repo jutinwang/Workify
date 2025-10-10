@@ -33,64 +33,6 @@
   transition: width 0.3s ease;
 }
 
-.jobs-info {
-  flex: 1;
-}
-
-.jobs-info h2 {
-  margin: 0 0 1rem 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1f1f1f;
-}
-
-.search-input {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  max-width: 400px;
-  border: 1px solid #bdbdbd;
-  border-radius: 6px;
-  padding: 8px 12px;
-  background: #fff;
-  margin-bottom: 0.5rem;
-}
-
-.search-input .search-icon {
-  opacity: 0.7;
-  flex-shrink: 0;
-}
-
-.search-input input {
-  border: 0;
-  outline: 0;
-  flex: 1;
-  font-size: 14px;
-  background: transparent;
-}
-
-.search-input input::placeholder {
-  color: #999;
-}
-
-.showing-results {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #666;
-}
-
-.filters-section {
-  flex-shrink: 0;
-}
-
-.filters-section h3 {
-  margin: 0 0 1rem 0;
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #1f1f1f;
-}
-
 .job-details-container {
   width: 50%;
   height: 100%;

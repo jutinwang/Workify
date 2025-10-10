@@ -124,8 +124,11 @@ const JOBS = [
 
 const Jobs = () => {
   const [filters, setFilters] = useState({
-    jobType: JOB_TYPES[0],
-    level: LEVELS[0],
+    searchTerm: "",
+    jobTypes: [],
+    levels: [],
+    locations: [],
+    datePosted: "",
     remoteOnly: false,
   });
 
@@ -133,21 +136,56 @@ const Jobs = () => {
 
   const filtered = useMemo(() => {
     return JOBS.filter((j) => {
-      const typeOk =
-        filters.jobType === "All Types" ||
-        j.type.toLowerCase().includes(filters.jobType.toLowerCase());
-      const levelOk =
-        filters.level === "All Levels" ||
-        j.level.toLowerCase() === filters.level.toLowerCase();
-      const remoteOk = !filters.remoteOnly || j.remote;
-      return typeOk && levelOk && remoteOk;
+      // Search term
+      if (filters.searchTerm) {
+        const search = filters.searchTerm.toLowerCase();
+        const matchesSearch =
+          j.title.toLowerCase().includes(search) ||
+          j.company.toLowerCase().includes(search) ||
+          j.location.toLowerCase().includes(search);
+        if (!matchesSearch) return false;
+      }
+
+      // Job types
+      if (filters.jobTypes?.length > 0) {
+        const matchesType = filters.jobTypes.some((type) =>
+          j.type.toLowerCase().includes(type.toLowerCase())
+        );
+        if (!matchesType) return false;
+      }
+
+      // Levels
+      if (filters.levels?.length > 0) {
+        const matchesLevel = filters.levels.some(
+          (level) => j.level.toLowerCase() === level.toLowerCase()
+        );
+        if (!matchesLevel) return false;
+      }
+
+      // Locations
+      if (filters.locations?.length > 0) {
+        const matchesLocation = filters.locations.some((location) =>
+          j.location.toLowerCase().includes(location.toLowerCase())
+        );
+        if (!matchesLocation) return false;
+      }
+
+      // Remote only
+      if (filters.remoteOnly && !j.remote) return false;
+
+      return true;
     });
   }, [filters]);
 
   return (
     <div className="jobs-page-container">
       <div className="filters-section">
-        <JobsFilter filters={filters} setFilters={setFilters} />
+        <JobsFilter
+          filters={filters}
+          setFilters={setFilters}
+          totalJobs={JOBS.length}
+          filteredCount={filtered.length}
+        />
       </div>
       <div
         className={`jobs-content ${
