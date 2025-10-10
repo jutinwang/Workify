@@ -149,8 +149,16 @@ const Jobs = () => {
       <div className="filters-section">
         <JobsFilter filters={filters} setFilters={setFilters} />
       </div>
-      <div className="jobs-content">
-        <div className="jobs-list-container">
+      <div
+        className={`jobs-content ${
+          selectedJob ? "jobs-content--split" : "jobs-content--full"
+        }`}
+      >
+        <div
+          className={`jobs-list-container ${
+            selectedJob ? "jobs-list-container--split" : ""
+          }`}
+        >
           <div className="jobs-grid">
             {filtered.map((job) => (
               <JobCard
@@ -162,9 +170,14 @@ const Jobs = () => {
             ))}
           </div>
         </div>
-        <div className="job-details-container">
-          <JobDetails job={selectedJob} onClose={() => setSelectedJob(null)} />
-        </div>
+        {selectedJob && (
+          <div className="job-details-container">
+            <JobDetails
+              job={selectedJob}
+              onClose={() => setSelectedJob(null)}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
