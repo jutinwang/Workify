@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 680" width="520" height="680" fill="none">
+  <title>Resume Overlay (Transparent)</title>
+  <desc>Wireframe resume card for overlay; strokes use currentColor.</desc>
+
+  <!-- Outer card -->
+  <rect x="10" y="10" width="500" height="660" rx="24"
+        stroke="currentColor" stroke-width="2.5" stroke-opacity="0.7"/>
+
+  <!-- Header block -->
+  <rect x="26" y="34" width="468" height="104" rx="16"
+        stroke="currentColor" stroke-width="2" stroke-dasharray="8 10" stroke-opacity="0.5"/>
+
+  <!-- Avatar -->
+  <circle cx="82" cy="86" r="28" stroke="currentColor" stroke-width="2" stroke-opacity="0.85"/>
+
+  <!-- Name / title lines -->
+  <rect x="124" y="60" width="190" height="12" rx="6" stroke="currentColor" stroke-width="2" stroke-opacity="0.85"/>
+  <rect x="124" y="82" width="250" height="10" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.6"/>
+  <rect x="124" y="100" width="210" height="10" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.45"/>
+
+  <!-- Column divider -->
+  <line x1="270" y1="150" x2="270" y2="640" stroke="currentColor" stroke-width="2" stroke-opacity="0.35"/>
+
+  <!-- Left column section titles -->
+  <rect x="26" y="150" width="210" height="16" rx="8" stroke="currentColor" stroke-width="2" stroke-opacity="0.75"/>
+  <rect x="26" y="275" width="210" height="16" rx="8" stroke="currentColor" stroke-width="2" stroke-opacity="0.75"/>
+  <rect x="26" y="400" width="210" height="16" rx="8" stroke="currentColor" stroke-width="2" stroke-opacity="0.75"/>
+
+  <!-- Left column bullets (Experience blocks) -->
+  <!-- Block A -->
+  <rect x="36" y="178" width="190" height="10" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.6"/>
+  <rect x="36" y="196" width="175" height="10" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.45"/>
+  <rect x="36" y="214" width="185" height="10" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.35"/>
+  <rect x="36" y="232" width="150" height="10" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.3"/>
+  <!-- Block B -->
+  <rect x="36" y="303" width="190" height="10" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.6"/>
+  <rect x="36" y="321" width="175" height="10" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.45"/>
+  <rect x="36" y="339" width="185" height="10" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.35"/>
+  <rect x="36" y="357" width="150" height="10" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.3"/>
+  <!-- Block C -->
+  <rect x="36" y="428" width="190" height="10" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.6"/>
+  <rect x="36" y="446" width="175" height="10" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.45"/>
+  <rect x="36" y="464" width="185" height="10" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.35"/>
+  <rect x="36" y="482" width="150" height="10" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.3"/>
+
+  <!-- Right column section title -->
+  <rect x="286" y="150" width="210" height="16" rx="8" stroke="currentColor" stroke-width="2" stroke-opacity="0.75"/>
+
+  <!-- Skills/summary chips -->
+  <rect x="296" y="180" width="80" height="24" rx="12" stroke="currentColor" stroke-width="2" stroke-opacity="0.55"/>
+  <rect x="384" y="180" width="60" height="24" rx="12" stroke="currentColor" stroke-width="2" stroke-opacity="0.55"/>
+  <rect x="452" y="180" width="44" height="24" rx="12" stroke="currentColor" stroke-width="2" stroke-opacity="0.55"/>
+  <rect x="296" y="212" width="60" height="24" rx="12" stroke="currentColor" stroke-width="2" stroke-opacity="0.5"/>
+  <rect x="360" y="212" width="68" height="24" rx="12" stroke="currentColor" stroke-width="2" stroke-opacity="0.5"/>
+  <rect x="432" y="212" width="64" height="24" rx="12" stroke="currentColor" stroke-width="2" stroke-opacity="0.5"/>
+
+  <!-- Right column bullets -->
+  <rect x="286" y="260" width="210" height="12" rx="6" stroke="currentColor" stroke-width="2" stroke-opacity="0.6"/>
+  <rect x="286" y="282" width="190" height="10" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.45"/>
+  <rect x="286" y="300" width="200" height="10" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.35"/>
+  <rect x="286" y="330" width="210" height="12" rx="6" stroke="currentColor" stroke-width="2" stroke-opacity="0.6"/>
+  <rect x="286" y="352" width="190" height="10" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.45"/>
+  <rect x="286" y="370" width="200" height="10" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.35"/>
+
+  <!-- Footer contact strip -->
+  <line x1="26" y1="612" x2="494" y2="612" stroke="currentColor" stroke-width="2" stroke-opacity="0.3"/>
+  <rect x="36" y="622" width="120" height="16" rx="8" stroke="currentColor" stroke-width="2" stroke-opacity="0.5"/>
+  <rect x="166" y="622" width="100" height="16" rx="8" stroke="currentColor" stroke-width="2" stroke-opacity="0.5"/>
+  <rect x="274" y="622" width="140" height="16" rx="8" stroke="currentColor" stroke-width="2" stroke-opacity="0.5"/>
+</svg>

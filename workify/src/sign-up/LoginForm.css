@@ -31,10 +31,6 @@
     box-sizing: border-box;
 }
 
-h1 {
-    text-align: center;
-}
-
 .submitButton {
     color: black;
     border-radius: 16px;

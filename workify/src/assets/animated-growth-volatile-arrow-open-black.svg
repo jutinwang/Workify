@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 240" width="520" height="240" fill="none">
+  <title>Animated Line — Volatile Growth Path</title>
+  <style>
+    :root { --dur: 7s; }
+    path {
+      stroke: currentColor;
+      stroke-width: 2.8;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 1300;
+      stroke-dashoffset: 1300;
+      animation: draw var(--dur) ease-in-out infinite;
+    }
+    @keyframes draw {
+      0%   { stroke-dashoffset: 1300; }
+      55%  { stroke-dashoffset: 0; }
+      100% { stroke-dashoffset: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      path { animation: none; stroke-dashoffset: 0; }
+    }
+  </style>
+
+  <!-- Volatile rising curve -->
+  <path marker-end="url(#arrowOpenBlack)" d="M10,220
+           C40,200 80,180 100,190
+           C130,205 160,150 190,160
+           C220,170 240,120 260,140
+           C280,160 310,100 340,115
+           C370,130 380,60 420,90
+           C440,110 460,75 480,95
+           C500,115 510,70 520,40" />
+
+  <defs>
+    <marker id="arrowOpenBlack" viewBox="-2 -2 14 14" refX="10" refY="5"
+      markerWidth="14" markerHeight="14" orient="auto" markerUnits="userSpaceOnUse">
+      <!-- open V arrowhead, black stroke -->
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="black"
+            stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+</svg>
