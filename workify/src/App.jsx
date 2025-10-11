@@ -10,7 +10,6 @@ import ProfileWizard from './profile/ProfileSetupWizard/ProfileWizard.jsx';
 import EmployerProfile from './employerprofile/EmployerProfile.jsx';
 import PositionWriting from './positionwriting/PositionWriting.jsx'
 import InterviewScheduler from './interviewscheduler/InterviewScheduler.jsx';
-import EmployerSignup from './employer-login/EmployerSignup.jsx';
 import EmployerCandidateContainer from './coop-candidate/candidate-page-container.jsx';
 import Apps from './apps/Apps.jsx';
 
@@ -18,6 +17,7 @@ export default function App() {
 
     const location = useLocation();
     const hideHeader = location.pathname === "/" || location.pathname === "/signup" || location.pathname === "/signup-employer";
+    const isEmployer = location.pathname.includes("employer");
 
     return (
         <>
@@ -25,7 +25,7 @@ export default function App() {
             <Routes>
                 <Route path="/" element={<Landing/>} />
                 <Route path="/landing" element={<Landing />} />
-                <Route path="/signup" element={<Signup />} />
+                <Route path="/signup" element={<Signup isEmployer={isEmployer}/>} />
                 <Route path="/profile-wizard" element={<ProfileWizard />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/jobs" element={<Jobs />} />
@@ -37,7 +37,7 @@ export default function App() {
                 <Route path="/writing" element={<PositionWriting />} />
                 <Route path="/employer-interviews" element={<InterviewScheduler />} />
                 <Route path="/employer-candidates" element={<EmployerCandidateContainer />} />
-                <Route path="/signup-employer" element={<EmployerSignup />} />
+                <Route path="/signup-employer" element={<Signup isEmployer={isEmployer}/>} />
                 <Route path="/employer-job-writing" element={<PositionWriting />} />
             </Routes>
         </>

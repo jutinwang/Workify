@@ -14,65 +14,92 @@ import teslaLogo from "../assets/teslaLogo.png";
 import claudeLogo from "../assets/claudeLogo.png";
 import openAiLogo from "../assets/openAiLogo.png";
 
-const Hero = () => {
+const employerHero = () => {
   return (
-    <div className="hero-text-container">
-      <div className="logo-workify">WORKIFY</div>
-
+    <>
       <div className="hero-text-blocks">
-        <div>Create an Account </div>
-        <div>Start Applying</div>
+        <div>
+          Find the talent that{" "}
+          <span className="employer-hero-subtext-span">works for you</span>{" "}
+        </div>
       </div>
 
       <div className="hero-job-container">
         <div className="hero-job-container-blurb">
-          Pick from the best job postings here on{" "}
+          Join leading comanies in posting the best co-ops here on{" "}
           <span style={{ fontWeight: "bold", fontFamily: "Rosarivo" }}>
             Workify
           </span>
         </div>
+      </div>
+    </>
+  );
+};
 
-        <div className="marquee-container">
-          <div className="marquee-content">
-            <div className="brand-chip">
-              <img src={metaLogo} alt="Meta" />
+const Hero = ({ isEmployer }) => {
+  return (
+    <div className="hero-text-container">
+      <div className="logo-workify">WORKIFY</div>
+      {isEmployer ? (
+        employerHero()
+      ) : (
+        <>
+          <div className="hero-text-blocks">
+            <div>Create an Account </div>
+            <div>Start Applying</div>
+          </div>
+
+          <div className="hero-job-container">
+            <div className="hero-job-container-blurb">
+              Pick from the best job postings here on{" "}
+              <span style={{ fontWeight: "bold", fontFamily: "Rosarivo" }}>
+                Workify
+              </span>
             </div>
-            <div className="brand-chip">
-              <img src={openAiLogo} alt="Open Ai" />
-            </div>
-            <div className="brand-chip">
-              <img src={apple} alt="Apple" />
-            </div>
-            <div className="brand-chip">
-              <img src={zonLogo} alt="Amazon" />
-            </div>
-            <div className="brand-chip">
-              <img src={sunLifeLogo} alt="Sun Life" />
-            </div>
-            <div className="brand-chip">
-              <img src={claudeLogo} alt="Claude" />
-            </div>
-            <div className="brand-chip">
-              <img src={teslaLogo} alt="Tesla" />
-            </div>
-            <div className="brand-chip">
-              <img src={citiBank} alt="Citibank" />
-            </div>
-            <div className="brand-chip">
-              <img src={scoLogo} alt="Scotiabank" />
-            </div>
-            <div className="brand-chip">
-              <img src={wbLogo} alt="Warner Bros" />
-            </div>
-            <div className="brand-chip">
-              <img src={wealthsimple} alt="Wealthsimple" />
-            </div>
-            <div className="brand-chip">
-              <img src={dellLogo} alt="Dell" />
-            </div>
-            <div className="brand-chip">
-              <img src={mastercardLogo} alt="Mastercard" />
-            </div>
+          </div>
+        </>
+      )}
+
+      <div className="marquee-container">
+        <div className="marquee-content">
+          <div className="brand-chip">
+            <img src={metaLogo} alt="Meta" />
+          </div>
+          <div className="brand-chip">
+            <img src={openAiLogo} alt="Open Ai" />
+          </div>
+          <div className="brand-chip">
+            <img src={apple} alt="Apple" />
+          </div>
+          <div className="brand-chip">
+            <img src={zonLogo} alt="Amazon" />
+          </div>
+          <div className="brand-chip">
+            <img src={sunLifeLogo} alt="Sun Life" />
+          </div>
+          <div className="brand-chip">
+            <img src={claudeLogo} alt="Claude" />
+          </div>
+          <div className="brand-chip">
+            <img src={teslaLogo} alt="Tesla" />
+          </div>
+          <div className="brand-chip">
+            <img src={citiBank} alt="Citibank" />
+          </div>
+          <div className="brand-chip">
+            <img src={scoLogo} alt="Scotiabank" />
+          </div>
+          <div className="brand-chip">
+            <img src={wbLogo} alt="Warner Bros" />
+          </div>
+          <div className="brand-chip">
+            <img src={wealthsimple} alt="Wealthsimple" />
+          </div>
+          <div className="brand-chip">
+            <img src={dellLogo} alt="Dell" />
+          </div>
+          <div className="brand-chip">
+            <img src={mastercardLogo} alt="Mastercard" />
           </div>
         </div>
       </div>

@@ -4,11 +4,11 @@ import Hero from "./Hero";
 import SignupForm from "./SignUpForm";
 import AuthTabs from "./AuthTabs";
 
-const Signup = () => {
+const Signup = ({isEmployer}) => {
   return (
     <div className="split-container">
       <div className="left-side-container">
-        <Hero />
+        <Hero isEmployer={isEmployer}/>
       </div>
       <div className="right-side-container">
         <AuthTabs />
