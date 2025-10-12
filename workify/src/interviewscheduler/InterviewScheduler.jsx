@@ -93,7 +93,7 @@ const InterviewScheduler = () => {
         <div className="interviewscheduler-container">
             <div className="calendar-section">
                 <div className="inviteTitle">
-                    <img src="../src/assets/invite_title.png" width="30" height="30"></img>
+                    <img src="../src/assets/invite_title.png" className="inviteIcon" width="30" height="30"></img>
                     <p>Interview With Ali</p>
                 </div>
                 <div className="schedulerCalendar">
@@ -124,7 +124,7 @@ const InterviewScheduler = () => {
             
             <div className="invitedetails-section">
                 <button className="sendButton">
-                    <img src="../src/assets/send.webp" width="30" height="30"></img>
+                    <img src="../src/assets/send.webp" className="sendIcon" width="30" height="30"></img>
                     Send
                 </button>
                 <div className="inviteOthersSection">
@@ -152,7 +152,7 @@ const InterviewScheduler = () => {
                 </div>
 
                 <div className="duration-section">
-                    <img src="../src/assets/clock.png" width="30" height="30"></img>
+                    <img src="../src/assets/clock.png" className="clockIcon" width="30" height="30"></img>
                     <textarea className="durationInput"
                         value={durationText}
                         onChange={(e) => setDurationText(e.target.value)}
@@ -176,7 +176,7 @@ const InterviewScheduler = () => {
                 </div>
                 
                 <div className="location-section">
-                    <img src="../src/assets/location.png" width="30" height="30"></img>
+                    <img src="../src/assets/location.png" className="locationIcon" width="30" height="30"></img>
                     <textarea className="locationInput"
                         value={locationText}
                         onChange={(e) => setLocationText(e.target.value)}
@@ -200,7 +200,7 @@ const InterviewScheduler = () => {
                 </div>
 
                 <div className="interviewtype-section">
-                    <img src="../src/assets/type.png" width="30" height="30"></img>
+                    <img src="../src/assets/type.png" className="typeIcon" width="30" height="30"></img>
                     <textarea className="interviewInput"
                         value={interviewTypeText}
                         onChange={(e) => setInterviewTypeText(e.target.value)}
@@ -224,7 +224,7 @@ const InterviewScheduler = () => {
                 </div>
 
                 <div className="message-section">
-                    <img src="../src/assets/page.png" width="30" height="30"></img>
+                    <img src="../src/assets/page.png" className="pageIcon" width="30" height="30"></img>
                     <textarea className="messageInput"
                         value={messageText}
                         onChange={(e) => setMessageText(e.target.value)}

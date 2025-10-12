@@ -1,9 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-
 .positionwriting-container {
-  width: 80%;
+  width: 100%;
+  min-height: calc(100vh - 40px); 
   margin: 20px auto;
-  font-family: Arial, sans-serif;
+  font-family: 'Domine', sans-serif;
+  background-color: #FAF9F6;
+}
+
+.content-wrapper {
+  width: 80%;
+  margin: 0 auto;
 }
 
 .positionwriting-container h3 {
@@ -17,6 +22,7 @@
 .textInput p {
   font-weight: bold;
   margin-bottom: 8px;
+  font-family: 'Domine', sans-serif;
 }
 
 .textbox {
@@ -41,7 +47,7 @@
 }
 
 .tag {
-  background-color: #f9d4b7;
+  background-color: #ffffff00;
   padding: 8px 14px;
   border-radius: 8px;
   display: flex;
@@ -76,6 +82,7 @@
 }
 
 .post-btn {
-  background-color: #BAD8E0;
+  background-color: #3f5e5a;
+  color: white;
   border: none;
 }

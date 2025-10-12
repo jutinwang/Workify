@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-
 /* Container for the whole scheduler */
 .interviewscheduler-container {
   display: flex;
@@ -9,7 +7,8 @@
   padding: 20px;
   box-sizing: border-box;
   width: 100%;
-  height: 100%;
+  min-height: calc(100vh - 40px); 
+  background-color: #FAF9F6;
 }
 
 /* Left calendar section */
@@ -33,6 +32,10 @@
 .inviteTitle p {
   font-size: 18px;
   font-weight: bold;
+}
+
+.sendIcon {
+  filter: brightness(0) invert(1);
 }
 
 /* The calendar itself should stretch */
@@ -62,11 +65,12 @@
   border: 1.5px solid black;
   border-radius: 8px;
   cursor: pointer;
-  background: #FFD5B6;
+  background: #3f5e5a;
+  color: white;
   width: auto;   
   max-width: fit-content; 
   align-self: flex-start;   /* overrides parent centering */
-  font-family: 'PT Sans';
+  font-family: 'Domine', sans-serif;
 }
 
 /* Each details row (icon + input) */
@@ -81,7 +85,7 @@
 }
 
 p {
-    font-family: 'PT Sans';
+    font-family: 'Domine', sans-serif;
 }
 
 .calendar_default_main:not(.default) {
@@ -89,5 +93,5 @@ p {
     --dp-calendar-event-border-radius: 5px;
     --dp-calendar-event-border: none;
     --dp-calendar-event-padding: 5px;
-    --dp-calendar-event-font: 'PT Sans', sans-serif;
+    --dp-calendar-event-font: 'Domine', sans-serif;
 }
