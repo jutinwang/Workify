@@ -1,5 +1,6 @@
 import { Route, Routes, useLocation, Link } from "react-router-dom";
 import "./Landing.css";
+import "./var.css"
 import Header from "./common/Header.jsx";
 import building from "./assets/building.jpg";
 import workplace from "./assets/workplace.jpg";

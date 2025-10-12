@@ -9,7 +9,7 @@
 .landingpage-container {
   padding: 1.6rem;
   height: 100vh;
-  background: #D9D7CE;
+  background: var(--primary-background);
   display: flex;
   flex-direction: column;
 }
@@ -74,7 +74,7 @@
 .explore-btn {
   margin-top: 5.4rem;
   padding: 12px 22px;
-  background: rgb(68, 67, 67);
+  background: var(--secondary-green);
   border: none;
   border-radius: 25px;
   font-size: 15px;
