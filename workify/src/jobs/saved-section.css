@@ -145,6 +145,7 @@
 
 .saved-item-action {
   padding: 0.5rem 1rem;
+  margin: 0.2rem;
   border: 1px solid var(--secondary-green);
   border-radius: 8px;
   background-color: var(--white);

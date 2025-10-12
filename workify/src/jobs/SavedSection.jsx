@@ -42,6 +42,7 @@ const SavedSection = ({ savedJobs = [], savedSearches = [] }) => {
                       <span className="new-jobs-badge">{search.newJobs} new</span>
                     )}
                   </div>
+                  <button className="saved-item-action">X</button>
                   <button className="saved-item-action">View</button>
                 </div>
               ))
@@ -89,6 +90,7 @@ const SavedSection = ({ savedJobs = [], savedSearches = [] }) => {
                     <p className="saved-job-company">{job.company}</p>
                     <p className="saved-job-location">{job.location}</p>
                   </div>
+                  <button className="saved-item-action">X</button>
                   <button className="saved-item-action">View</button>
                 </div>
               ))
