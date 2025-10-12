@@ -20,10 +20,8 @@ function Landing() {
             Workify doesn't just find work for you, it finds what works for you.
           </p>
 
-          <Link className="landing-page-explore-link" to="/signup">
-            <button className="explore-btn">
+          <Link className="explore-btn" to="/signup">
               Explore Opportunities <span>→</span>
-            </button>
           </Link>
 
           <div className="landing-line-art">
