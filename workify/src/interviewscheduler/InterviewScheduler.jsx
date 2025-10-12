@@ -21,6 +21,28 @@ const InterviewScheduler = () => {
         timeRangeSelectedHandling: "Enabled",
         durationBarVisible: false,
         eventCreateHandling: "Disabled",
+        eventDeleteHandling: "Update",
+        cellDuration: 30, // change this to add more time
+
+        // Add delete button to each event
+        onBeforeEventRender: args => {
+            args.data.areas = [
+                {
+                    top: 3,
+                    right: 3,
+                    width: 20,
+                    height: 20,
+                    fontColor: "#333",
+                    action: "None",
+                    toolTip: "Delete event",
+                    onClick: async args => {
+                        calendar.events.remove(args.source);
+                        setEvents((prev) => prev.filter(e => e.id !== args.source.id()));
+                    }
+                }
+            ];
+        },
+
         onTimeRangeSelected: async (args) => {
         const modal = await DayPilot.Modal.prompt(
             "Create a new event:",
@@ -83,16 +105,19 @@ const InterviewScheduler = () => {
                         {...config}
                         onTimeRangeSelected={async args => {
                             const newEvent = {
-                            start: args.start,
-                            end: args.end,
-                            text: "Busy",
-                            id: DayPilot.guid(),
-                            backColor: "#BAD8E0"
+                                start: args.start,
+                                end: args.end,
+                                text: "Busy",
+                                id: DayPilot.guid(),
+                                backColor: "#BAD8E0"
                             };
 
-                            setEvents(prev => [...prev, newEvent]);
+                            if (calendar) {
+                                calendar.events.add(newEvent);
+                            }
                         }}
                         events={events}
+                        controlRef={setCalendar}
                     />
                 </div>
             </div>
