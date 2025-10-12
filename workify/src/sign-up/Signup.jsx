@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./Signup.css";
+import "../var.css"
 import Hero from "./Hero";
 import SignupForm from "./SignUpForm";
 import AuthTabs from "./AuthTabs";

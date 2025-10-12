@@ -1,18 +1,24 @@
 .left-side-container {
-  background-color: #ffd5b680;
-  color: #000000;
-  background-image: radial-gradient( ellipse farthest-corner at 10px 10px , #ffd5b680, #ffd5b680 50%, #ffc29680 50%);
-  background-size: 10px 10px;
+  background-color: var(--primary-background);
+  color: var(--main-text);
+  background-image: radial-gradient(
+      circle at 10px 10px,
+      #3f5e5a60,
+      transparent 50%
+    ),
+    radial-gradient(circle at 10px 10px, #94ba6335, transparent 50%);
+  background-size: 12px 12px;
+  background-position: 0 0, 10px 10px;
 }
 
 .right-side-container {
   background-color: white;
-  color: #000000;
+  color: var(--main-text);
 }
 
 .split-container {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
   box-sizing: border-box;
 }
@@ -22,7 +28,7 @@
   box-sizing: border-box;
   padding: 2em;
 }
-.left-side-container{
+.left-side-container {
   width: 60%;
   box-sizing: border-box;
   padding: 2em;
@@ -34,12 +40,12 @@
   opacity: 100% !important;
 }
 
-.tab-section{
+.tab-section {
   height: 20%;
   width: 100%;
 }
 
-.signup-form-conatainer{
+.signup-form-conatainer {
   height: 80%;
   width: 100%;
 }

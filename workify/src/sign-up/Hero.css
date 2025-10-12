@@ -11,6 +11,7 @@
 .logo-workify{
     font-size: 2em;
     font-weight: 700;
+    backdrop-filter: blur(2px);
     width: fit-content;
 }
 .hero-text-blocks{
@@ -18,13 +19,16 @@
     display: flex;
     flex-direction: column;
     font-weight: 300;
-    font-family: 'PT Sans';
+    font-family: var(--main-font);
 }
 .hero-text-blocks > div{
     width: fit-content;
+    backdrop-filter: blur(2px);
 }
 .hero-job-container{
     width: 100%;
+    backdrop-filter: blur(2px);
+    font-family: var(--main-font);
     box-sizing: border-box;
 }
 .hero-job-container-blurb{

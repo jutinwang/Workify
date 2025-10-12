@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Domine:wght@400..700&display=swap');
 
 .landing-logo {
   font-family: 'Domine', serif;
   padding: 0;
-  color: #444343;
+  font-weight: 600;
+  color: var(--main-text);
 }
 
 .landingpage-container {
@@ -47,6 +47,7 @@
 .maincontent {
   margin-top: 9vh;
   flex: 1;
+  color: var(--main-text);
   display: flex;
   justify-content: space-between;
   gap: 2rem;
@@ -89,6 +90,10 @@
 
 .explore-btn span {
   font-weight: bold;
+}
+
+.explore-btn:hover {
+  background: var(--darker-green);
 }
 
 .hero-image {

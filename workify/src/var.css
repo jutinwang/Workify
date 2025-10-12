@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Domine:wght@400..700&display=swap');
+
 :root {
     --primary-background: #FAF9F6;
     --secondary-green: #3F5E5A;
@@ -5,5 +7,6 @@
     --accent-text: #38423B;
     --darker-green: #353831;
     --white: #ffffff;
+    --text-white: #F8F6F0;
     --main-font: 'Domine', serif;
   }
