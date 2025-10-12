@@ -84,7 +84,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  color: white;
+  color: var(--text-white);
   text-decoration: none;
 
 }
