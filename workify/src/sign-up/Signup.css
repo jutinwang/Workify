@@ -1,12 +1,6 @@
 .left-side-container {
   background-color: var(--primary-background);
   color: var(--main-text);
-  background-image: radial-gradient(
-      circle at 10px 10px,
-      #3f5e5a60,
-      transparent 50%
-    ),
-    radial-gradient(circle at 10px 10px, #94ba6335, transparent 50%);
   background-size: 12px 12px;
   background-position: 0 0, 10px 10px;
 }
