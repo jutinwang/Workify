@@ -1,5 +1,6 @@
 import React from 'react';
 import './job-details.css';
+import "../var.css"
 
 export default function JobDetails({ job, onClose }) {
   if (!job) {

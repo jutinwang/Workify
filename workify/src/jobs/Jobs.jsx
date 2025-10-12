@@ -2,7 +2,12 @@ import { useState, useMemo } from "react";
 import JobsFilter from "./JobsFilter";
 import JobCard from "./JobCard";
 import JobDetails from "./JobDetails";
+import SavedSection from "./SavedSection";
 import "./jobs.css";
+import "../var.css"
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
 
 const JOB_TYPES = [
   "All Types",
@@ -134,6 +139,17 @@ const Jobs = () => {
 
   const [selectedJob, setSelectedJob] = useState(null);
 
+  // Mock data for saved items
+  const savedSearches = [
+    { id: 1, name: "Frontend React Jobs", criteria: "React, Remote, Full-time", newJobs: 3 },
+    { id: 2, name: "Senior Backend", criteria: "Node.js, Senior, Ottawa", newJobs: 0 },
+  ];
+
+  const savedJobs = [
+    { id: 1, title: "Software Engineer", company: "TechStart Inc.", location: "Remote" },
+    { id: 2, title: "Frontend Developer", company: "TechStart Inc.", location: "Remote" },
+  ];
+
   const filtered = useMemo(() => {
     return JOBS.filter((j) => {
       // Search term
@@ -179,6 +195,8 @@ const Jobs = () => {
 
   return (
     <div className="jobs-page-container">
+      <SavedSection savedJobs={savedJobs} savedSearches={savedSearches} />
+
       <div className="filters-section">
         <JobsFilter
           filters={filters}

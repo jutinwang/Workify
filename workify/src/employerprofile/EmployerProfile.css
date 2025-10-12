@@ -118,17 +118,6 @@
   border-color: #9ca3af;
 }
 
-.btn-primary {
-  border-radius: 8px;
-  background: #000000;
-  padding: 12px 24px;
-  font-size: 15px;
-  font-weight: 500;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
 .btn-primary:hover {
   background: #333333;
 }
@@ -221,7 +210,6 @@
 .tag {
   border-radius: 16px;
   border: 1px solid #d1d5db;
-  background: #f9fafb;
   padding: 6px 14px;
   font-size: 14px;
   color: #374151;

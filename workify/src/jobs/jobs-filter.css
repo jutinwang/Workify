@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
 .jobs-filter-wrapper {
   padding: 2rem 2.4rem;
@@ -10,21 +10,22 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
-  font-family: "PT Sans", sans-serif;
+  color: var(--main-text);
+  font-family: var(--main-font);
 }
 
 .jobs-section-title {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
-  color: #1f2937;
-  font-family: "PT Sans", sans-serif;
+  color: var(--main-text);
+  font-family: var(--main-font);
 }
 
 .jobs-count {
   color: #6b7280;
   font-size: 0.9rem;
-  font-family: "PT Sans", sans-serif;
+  font-family: var(--main-font);
 }
 
 /* Airbnb-style filter bar */
@@ -39,7 +40,7 @@
   border: 1px solid #dddddd;
   flex-wrap: nowrap;
   overflow-x: auto;
-  font-family: "PT Sans", sans-serif;
+  font-family: var(--main-font);
 }
 
 /* Filter pill buttons */
@@ -61,7 +62,7 @@
 }
 
 .jobs-filter-pill:hover {
-  border-color: #222222;
+  border-color: var(--secondary-green);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -95,7 +96,7 @@
   background: transparent;
   font-size: 0.875rem;
   color: #222222;
-  font-family: "PT Sans", sans-serif;
+  font-family: var(--main-font);
 }
 
 .jobs-search-pill input::placeholder {
@@ -120,11 +121,11 @@
   cursor: pointer;
   transition: all 0.15s ease;
   white-space: nowrap;
-  font-family: "PT Sans", sans-serif;
+  font-family: var(--main-font);
 }
 
 .jobs-filters-button:hover {
-  border-color: #222222;
+  border-color: var(--secondary-green);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -144,8 +145,12 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Modal content */
@@ -159,7 +164,7 @@
   display: flex;
   flex-direction: column;
   animation: slideUp 0.3s ease;
-  font-family: "PT Sans", sans-serif;
+  font-family: var(--main-font);
 }
 
 @keyframes slideUp {
@@ -185,7 +190,7 @@
   font-size: 1rem;
   font-weight: 600;
   color: #222222;
-  font-family: "PT Sans", sans-serif;
+  font-family: var(--main-font);
 }
 
 .jobs-close-button {
@@ -228,7 +233,7 @@
   font-weight: 600;
   color: #222222;
   margin-bottom: 1rem;
-  font-family: "PT Sans", sans-serif;
+  font-family: var(--main-font);
 }
 
 .jobs-filter-options {
@@ -246,7 +251,7 @@
   color: #222222;
   cursor: pointer;
   transition: all 0.15s ease;
-  font-family: "PT Sans", sans-serif;
+  font-family: var(--main-font);
 }
 
 .jobs-filter-option:hover {
@@ -254,7 +259,7 @@
 }
 
 .jobs-filter-option.selected {
-  background: #222222;
+  background: var(--secondary-green);
   color: white;
   border-color: #222222;
 }
@@ -269,14 +274,14 @@
 
 .jobs-clear-button {
   border-radius: 8px;
-  color: #222222;
-  background: #FFFF;
+  color: var(--text-white);
+  background: var(--main-text);
   font-size: 0.875rem;
   padding: 0.875rem 1.5rem;
   font-weight: 600;
   cursor: pointer;
   border: none;
-  font-family: "PT Sans", sans-serif;
+  font-family: var(--main-font);
 }
 
 .jobs-clear-button:hover {
@@ -284,7 +289,7 @@
 }
 
 .jobs-show-results-button {
-  background: #222222;
+  background: var(--secondary-green);
   color: white;
   border: none;
   border-radius: 8px;
@@ -293,7 +298,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
-  font-family: "PT Sans", sans-serif;
+  font-family: var(--main-font);
 }
 
 .jobs-show-results-button:hover {
@@ -303,8 +308,8 @@
 
 /* Badge for active filters */
 .jobs-filter-badge {
-  background: #222222;
-  color: white;
+  background: var(--secondary-green);
+  color: var(--text-white);
   border-radius: 50%;
   width: 18px;
   height: 18px;
@@ -313,7 +318,7 @@
   justify-content: center;
   font-size: 0.75rem;
   font-weight: 600;
-  font-family: "PT Sans", sans-serif;
+  font-family: var(--main-font);
 }
 
 @media (max-width: 768px) {
@@ -323,14 +328,14 @@
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .jobs-filter-pill,
   .jobs-search-pill,
   .jobs-filters-button {
     width: 100%;
     justify-content: center;
   }
-  
+
   .jobs-filter-modal {
     width: 100%;
     max-width: 100%;

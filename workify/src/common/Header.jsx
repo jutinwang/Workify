@@ -1,6 +1,7 @@
 import "./Header.css";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import "../var.css"
 
 export default function Header() {
   const location = useLocation();

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./jobs-filter.css";
+import "../var.css"
 import FilterIcon from "../assets/filter.png";
 import SearchIcon from "../assets/search.png";
 
@@ -42,9 +43,6 @@ export default function JobsFilter({ filters, setFilters, totalJobs, filteredCou
     <div className="jobs-filter-wrapper">
       <div className="jobs-filter-header">
         <h2 className="jobs-section-title">Search All Co-ops</h2>
-        <span className="jobs-count">
-          {filteredCount} of {totalJobs} jobs
-        </span>
       </div>
 
       <div className="jobs-filter-controls">
@@ -69,6 +67,11 @@ export default function JobsFilter({ filters, setFilters, totalJobs, filteredCou
           )}
         </button>
       </div>
+
+      <br></br>
+      <span className="jobs-count">
+          {filteredCount} of {totalJobs} jobs
+        </span>
 
       {isModalOpen && (
         <div className="jobs-filter-modal-overlay" onClick={() => setIsModalOpen(false)}>
