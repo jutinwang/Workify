@@ -3,8 +3,8 @@ import "./saved-section.css";
 import "../var.css"
 
 const SavedSection = ({ savedJobs = [], savedSearches = [] }) => {
-  const [isSearchesExpanded, setIsSearchesExpanded] = useState(true);
-  const [isJobsExpanded, setIsJobsExpanded] = useState(true);
+  const [isSearchesExpanded, setIsSearchesExpanded] = useState(false);
+  const [isJobsExpanded, setIsJobsExpanded] = useState(false);
 
   return (
     <div className="saved-section-wrapper">
