@@ -75,6 +75,7 @@
 .explore-btn {
   margin-top: 5.4rem;
   padding: 12px 22px;
+  max-width: fit-content;
   background: var(--secondary-green);
   border: none;
   border-radius: 25px;
