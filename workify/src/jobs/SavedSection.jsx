@@ -50,7 +50,7 @@ const SavedSection = ({ savedJobs = [], savedSearches = [] }) => {
                     )}
                   </div>
                   <button className="saved-item-action">X</button>
-                  <button className="saved-item-action" onClick={() => onClickView(search.id)}>View</button>
+                  <button className="saved-item-action">View</button>
                 </div>
               ))
             ) : (

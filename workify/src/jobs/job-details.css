@@ -47,16 +47,16 @@
 }
 
 .job-details-avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
+  width: 3.75rem;
+  height: 3.75rem;
+  border-radius: 0.75rem;
   background: var(--secondary-green);
   color: var(--text-white);
   display: grid;
   place-items: center;
   font-weight: 800;
   font-size: 1.25rem;
-  box-shadow: 0 2px 8px rgba(63, 94, 90, 0.3);
+  box-shadow: 0 0.125rem 0.5rem rgba(63, 94, 90, 0.3);
 }
 
 .job-details-title-block {
@@ -79,7 +79,7 @@
 
 .job-details-meta {
   display: flex;
-  gap: 12px;
+  gap: 0.75rem;
   align-items: center;
   flex-wrap: wrap;
   color: rgba(255, 255, 255, 0.8);
@@ -88,16 +88,16 @@
 
 .details-meta-item {
   display: inline-flex;
-  gap: 6px;
+  gap: 0.375rem;
   align-items: center;
 }
 
 .details-pill {
   background: var(--darker-green);
   color: var(--text-white);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 999px;
-  padding: 3px 10px;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.3);
+  border-radius: 62.4375rem;
+  padding: 0.1875rem 0.625rem;
   font-size: 0.75rem;
   font-weight: 700;
 }
@@ -124,14 +124,14 @@
   font-size: 1.125rem;
   font-weight: 700;
   color: var(--main-text);
-  border-bottom: 2px solid var(--secondary-green);
+  border-bottom: 0.125rem solid var(--secondary-green);
   padding-bottom: 0.5rem;
 }
 
 .overview-grid {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
 }
 
 .overview-item {
@@ -166,9 +166,9 @@
 
 .skill-tag {
   background: var(--white);
-  border: 1px solid var(--secondary-green);
+  border: 0.0625rem solid var(--secondary-green);
   color: var(--main-text);
-  border-radius: 6px;
+  border-radius: 0.375rem;
   padding: 0.375rem 0.75rem;
   font-size: 0.875rem;
   font-weight: 500;
@@ -209,8 +209,8 @@
   border: none;
   padding: 0 !important;
   min-width: auto;
-  width: 32px;
-  height: 32px;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
   color: var(--text-white) !important;
   margin-left: 0.5rem;
@@ -226,7 +226,7 @@
 .btn-secondary {
   background: var(--secondary-green);
   color: var(--text-white);
-  border: 1px solid var(--secondary-green);
+  border: 0.0625rem solid var(--secondary-green);
 }
 
 .btn-primary:hover {
@@ -243,7 +243,7 @@
 .btn-outline {
   background: transparent;
   color: var(--main-text);
-  border: 1px solid var(--main-text);
+  border: 0.0625rem solid var(--main-text);
 }
 
 .btn-outline:hover {

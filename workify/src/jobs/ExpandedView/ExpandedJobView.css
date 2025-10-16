@@ -1,0 +1,158 @@
+.ejv-container {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  box-sizing: border-box;
+  flex-direction: column;
+  background: var(--primary-background);
+  padding: 0;
+}
+
+.ejv-header {
+  padding: 2rem;
+  background: linear-gradient(
+    135deg,
+    var(--secondary-green) 0%,
+    var(--main-text) 100%
+  );
+  color: var(--text-white);
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.ejv-header-main {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  flex: 1;
+  width: 100%;
+}
+
+.ejv-company-logo {
+  width: 3.75rem;
+  height: 3.75rem;
+  border-radius: 0.75rem;
+  background: var(--text-white);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 1.25rem;
+  box-shadow: 0 0.125rem 0.5rem rgba(63, 94, 90, 0.3);
+  flex-shrink: 0;
+  object-fit: contain;
+  padding: 0.5rem;
+}
+
+.ejv-job-header-info {
+  flex: 1;
+}
+
+.ejv-job-header-info h1 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-white);
+}
+
+.ejv-company-name {
+  color: var(--text-white);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.ejv-job-meta {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+}
+
+.job-header-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.job-header-actions button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  white-space: nowrap;
+  min-width: 6.25rem;
+}
+
+.ejv-btn-apply {
+  background: var(--secondary-green);
+  color: var(--text-white);
+  border: 0.0625rem solid var(--text-white);
+}
+
+.btn-apply:hover {
+  background: transparent;
+  color: var(--text-white);
+}
+
+.ejv-btn-save {
+  background: var(--text-white);
+  color: var(--secondary-green);
+  border: 0.0625rem solid var(--text-white);
+}
+
+.btn-save:hover {
+  background: var(--text-white);
+  color: var(--secondary-green);
+}
+
+.ejv-tab-section {
+  flex: 1;
+  padding: 2rem;
+}
+
+.expanded-job-empty {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.ejv-btn-back-to-jobs {
+  display: flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 0.2rem;
+  width: auto;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  color: var(--secondary-green);
+  background-color: var(--text-white);
+  border: none;
+  font-size: 14px;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ejv-btn-back-to-jobs:hover {
+  background: var(--main-text);
+}
