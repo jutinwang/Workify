@@ -16,7 +16,6 @@ const ETHNICITIES = [
     "Southeast Asian",
     "Middle Eastern / North African",
     "Latinx",
-    "Indigenous",
     "White",
     "Mixed",
     "Prefer not to say",
@@ -38,22 +37,22 @@ const ETHNICITIES = [
 export default function DemographicsModal({ isOpen, onClose, values, onChange }) {
     const { genders = [], ethnicities = [], isIndigenous = false, hasDisability = false, isVeteran = false } = values || {};
 
-    const toggleMulti = useCallback(
-        (key, val) => {
-            const current = values[key] || [];
-            const next = current.includes(val)
-                ? current.filter((x) => x !== val)
-                : [...current, val];
-            onChange({ ...values, [key]: next });
-        },
-        [values, onChange]
-    );
-
-    const toggleFlag = useCallback(
-        (key) => onChange({ ...values, [key]: !values[key] }),
-        [values, onChange]
-    );
-
+    const selectGender = (val) => {
+        const current = values.genders?.[0] || null;
+        const next = current === val ? [] : [val];
+        onChange({ ...values, genders: next });
+    };
+      
+    const toggleMulti = (key, val) => {
+        const current = Array.isArray(values[key]) ? values[key] : [];
+        const next = current.includes(val)
+          ? current.filter((x) => x !== val)
+          : [...current, val];
+        onChange({ ...values, [key]: next });
+    };
+      
+    const toggleFlag = (key) => onChange({ ...values, [key]: !values[key] });
+      
     const clearAll = useCallback(() => {
         onChange({
             genders: [],
@@ -64,7 +63,6 @@ export default function DemographicsModal({ isOpen, onClose, values, onChange })
         });
     }, [onChange]);
 
-    // Close on ESC
     useEffect(() => {
         if (!isOpen) return;
         const onKey = (e) => e.key === "Escape" && onClose();
@@ -97,16 +95,19 @@ export default function DemographicsModal({ isOpen, onClose, values, onChange })
                     <div className="jobs-filter-section">
                         <h4 className="jobs-filter-section-title">Gender</h4>
                         <div className="jobs-filter-options">
-                            {GENDERS.map((g) => (
-                                <button
-                                key={g}
-                                type="button"
-                                className={`jobs-filter-option ${genders.includes(g) ? "selected" : ""}`}
-                                onClick={() => toggleMulti("genders", g)}
-                                >
-                                {g}
-                                </button>
-                            ))}
+                            {GENDERS.map((g) => {
+                                const selected = (values.genders?.[0] || null) === g;
+                                return (
+                                    <button
+                                    key={g}
+                                    type="button"
+                                    className={`jobs-filter-option ${selected ? "selected" : ""}`}
+                                    onClick={() => selectGender(g)}
+                                    >
+                                        {g}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 
