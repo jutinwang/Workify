@@ -1,10 +1,17 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./saved-section.css";
 import "../var.css"
 
 const SavedSection = ({ savedJobs = [], savedSearches = [] }) => {
+  const navigate = useNavigate();
   const [isSearchesExpanded, setIsSearchesExpanded] = useState(false);
   const [isJobsExpanded, setIsJobsExpanded] = useState(false);
+
+  const onClickView = (jobId) => {
+    navigate(`/jobs/${jobId}`);
+    // navigate(`/jobs/1`);
+  };
 
   return (
     <div className="saved-section-wrapper">
@@ -43,7 +50,7 @@ const SavedSection = ({ savedJobs = [], savedSearches = [] }) => {
                     )}
                   </div>
                   <button className="saved-item-action">X</button>
-                  <button className="saved-item-action">View</button>
+                  <button className="saved-item-action" onClick={() => onClickView(search.id)}>View</button>
                 </div>
               ))
             ) : (
@@ -91,7 +98,7 @@ const SavedSection = ({ savedJobs = [], savedSearches = [] }) => {
                     <p className="saved-job-location">{job.location}</p>
                   </div>
                   <button className="saved-item-action">X</button>
-                  <button className="saved-item-action">View</button>
+                  <button className="saved-item-action" onClick={() => onClickView(job.id)}>View</button>
                 </div>
               ))
             ) : (
