@@ -1,4 +1,8 @@
 import React, { useState } from "react";
+import Card from "../common/Card";
+import Section from "../common/Section";
+import Modal from "../common/Modal";
+import DemographicsModal from "./DemographicsModal";
 import Header from "../common/Header";
 import "./Profile.css";
 
@@ -10,51 +14,6 @@ function Ring({ value = 75 }) {
     <div className="ring-container">
       <div className="ring" style={style} />
       <div className="ring-percentage">{value}%</div>
-    </div>
-  );
-}
-
-function Card({ title, children }) {
-  return (
-    <div className="card">
-      {title && <h3 className="card-title">{title}</h3>}
-      {children}
-    </div>
-  );
-}
-
-function Section({ title, children, onEdit }) {
-  return (
-    <section className="section-modern">
-      <div className="section-header">
-        <h2 className="section-title">{title}</h2>
-        {onEdit && (
-          <button className="edit-button" onClick={onEdit}>
-            Edit
-          </button>
-        )}
-      </div>
-      <div className="section-content">{children}</div>
-    </section>
-  );
-}
-
-function Modal({ isOpen, onClose, title, children }) {
-  if (!isOpen) return null;
-  
-  return (
-    <div className="modal-overlay">
-      <div className="modal">
-        <div className="modal-header">
-          <h3 className="modal-title">{title}</h3>
-          <button className="modal-close" onClick={onClose}>
-            ✕
-          </button>
-        </div>
-        <div className="modal-body">
-          {children}
-        </div>
-      </div>
     </div>
   );
 }
@@ -251,7 +210,6 @@ const Profile = () => {
           </aside>
         </div>
 
-        {/* Modals */}
         <Modal isOpen={modals.about} onClose={() => closeModal('about')} title="Edit About">
           <textarea 
             className="modal-textarea"
@@ -267,20 +225,12 @@ const Profile = () => {
           </button>
         </Modal>
 
-        <Modal isOpen={modals.demographics} onClose={() => closeModal('demographics')} title="Edit Demographics">
-          <textarea 
-            className="modal-textarea"
-            rows={4}
-            value={formData.demographics}
-            onChange={(e) => setFormData(prev => ({ ...prev, demographics: e.target.value }))}
-          />
-          <button 
-            onClick={() => closeModal('demographics')}
-            className="modal-save-btn"
-          >
-            Save
-          </button>
-        </Modal>
+        <DemographicsModal
+          isOpen={modals.demographics}
+          onClose={() => closeModal('demographics')}
+          values={formData.demographics}
+          onChange={(next) => setFormData(prev => ({ ...prev, demographics: next }))}
+        />
 
         <Modal isOpen={modals.background} onClose={() => closeModal('background')} title="Add Background Item">
           <input 

@@ -12,6 +12,7 @@
   background: var(--primary-background);
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 .landing-line-art h4 {
