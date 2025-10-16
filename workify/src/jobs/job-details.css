@@ -120,12 +120,12 @@
 }
 
 .details-section h3 {
-  margin: 0 0 1rem 0;
   font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--main-text);
-  border-bottom: 0.125rem solid var(--secondary-green);
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
   padding-bottom: 0.5rem;
+  border-bottom: 0.125rem solid var(--secondary-green);
 }
 
 .overview-grid {
@@ -201,7 +201,7 @@
   justify-content: center;
   transition: all 0.2s;
   white-space: nowrap;
-  min-width: 100px;
+  min-width: 85px;
 }
 
 .btn-close {
@@ -249,4 +249,43 @@
 .btn-outline:hover {
   background: var(--main-text);
   color: var(--text-white);
+}
+
+.co-op-overview-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 45%;
+  margin-bottom: 1rem;
+  border-bottom: 0.125rem solid var(--secondary-green);
+  padding-bottom: 0.5rem;
+}
+
+.co-op-overview-header h3 {
+  margin: 0;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.expand-link button {
+  padding: 0.5rem 0.8rem;
+  margin-left: 1.8rem;
+  background: var(--main-text);
+  color: var(--text-white);
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.expand-link button:hover {
+  background: var(--secondary-green);
+}
+
+.expand-icon:hover {
+  opacity: 1;
+  transform: scale(1.25);
 }

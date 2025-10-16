@@ -6,15 +6,17 @@
   flex-direction: column;
   background: var(--primary-background);
   padding: 1rem 2rem 2rem;
+  overflow: hidden;
+  height: 150vh;
 }
 
 .jobs-content {
   display: flex;
-  min-height: calc(100vh - 350px);
-  box-sizing: border-box;
+  flex: 1;
   overflow: hidden;
   transition: all 0.3s ease;
   margin-top: 1rem;
+  height: calc(100vh - 350px);
 }
 
 .jobs-content--full .jobs-list-container {
@@ -36,6 +38,24 @@
   transition: width 0.3s ease;
 }
 
+.jobs-list-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.jobs-list-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.jobs-list-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.jobs-list-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
 .job-details-container {
   width: 50%;
   height: 100%;
@@ -44,6 +64,24 @@
   overflow-x: hidden;
   animation: slideIn 0.3s ease;
   position: relative;
+}
+
+.job-details-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.job-details-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.job-details-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.job-details-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 @keyframes slideIn {

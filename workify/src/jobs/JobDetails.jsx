@@ -1,6 +1,8 @@
-import React from 'react';
-import './job-details.css';
-import "../var.css"
+import React from "react";
+import "./job-details.css";
+import "../var.css";
+import ExpandSymbol from "../assets/expand.png";
+import { Link } from "react-router-dom";
 
 export default function JobDetails({ job, onClose }) {
   if (!job) {
@@ -16,7 +18,7 @@ export default function JobDetails({ job, onClose }) {
 
   const initials = job.company
     ?.split(" ")
-    .map(w => w[0])
+    .map((w) => w[0])
     .slice(0, 2)
     .join("")
     .toUpperCase();
@@ -31,7 +33,10 @@ export default function JobDetails({ job, onClose }) {
           <div className="job-details-meta">
             <span className="details-meta-item">
               <svg width="16" height="16" viewBox="0 0 24 24">
-                <path fill="currentColor" d="M12 2a7 7 0 0 1 7 7c0 5.25-7 13-7 13S5 14.25 5 9a7 7 0 0 1 7-7Zm0 9.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
+                <path
+                  fill="currentColor"
+                  d="M12 2a7 7 0 0 1 7 7c0 5.25-7 13-7 13S5 14.25 5 9a7 7 0 0 1 7-7Zm0 9.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"
+                />
               </svg>
               {job.location}
             </span>
@@ -40,11 +45,14 @@ export default function JobDetails({ job, onClose }) {
           </div>
         </div>
         <div className="job-details-actions">
-          <button className="jd-btn btn-secondary">Save</button>
+          <button className="jd-btn btn-save">Save</button>
           <button className="jd-btn btn-primary">Apply</button>
           <button className="jd-btn btn-close" onClick={onClose}>
             <svg width="20" height="20" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M18.3 5.71a.996.996 0 0 0-1.41 0L12 10.59 7.11 5.7A.996.996 0 1 0 5.7 7.11L10.59 12 5.7 16.89a.996.996 0 1 0 1.41 1.41L12 13.41l4.89 4.89a.996.996 0 0 0 1.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z"/>
+              <path
+                fill="currentColor"
+                d="M18.3 5.71a.996.996 0 0 0-1.41 0L12 10.59 7.11 5.7A.996.996 0 1 0 5.7 7.11L10.59 12 5.7 16.89a.996.996 0 1 0 1.41 1.41L12 13.41l4.89 4.89a.996.996 0 0 0 1.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z"
+              />
             </svg>
           </button>
         </div>
@@ -52,7 +60,17 @@ export default function JobDetails({ job, onClose }) {
 
       <div className="job-details-content">
         <section className="details-section">
-          <h3>Co-op Overview</h3>
+          <div className="co-op-overview-header">
+            <h3>Co-op Overview</h3>
+            <Link
+              to={`/jobs/${job.id}`}
+              className="expand-link"
+              title="Expand Into Single Job View"
+            >
+              <button>Expand</button>
+            </Link>
+          </div>
+
           <div className="overview-grid">
             <div className="overview-item">
               <span className="overview-label">Employment Type</span>
@@ -65,7 +83,9 @@ export default function JobDetails({ job, onClose }) {
             {job.salary && (
               <div className="overview-item">
                 <span className="overview-label">Salary Range</span>
-                <span className="overview-value">${job.salary.min} – ${job.salary.max}</span>
+                <span className="overview-value">
+                  ${job.salary.min} – ${job.salary.max}
+                </span>
               </div>
             )}
           </div>
@@ -74,7 +94,12 @@ export default function JobDetails({ job, onClose }) {
         <section className="details-section">
           <h3>Co-op Description</h3>
           <p className="job-description">{job.summary}</p>
-          <p>We are seeking a talented and motivated individual to join our growing team. This role offers excellent opportunities for professional development and the chance to work on exciting projects with cutting-edge technologies.</p>
+          <p>
+            We are seeking a talented and motivated individual to join our
+            growing team. This role offers excellent opportunities for
+            professional development and the chance to work on exciting projects
+            with cutting-edge technologies.
+          </p>
         </section>
 
         {job.skills && job.skills.length > 0 && (
@@ -82,7 +107,9 @@ export default function JobDetails({ job, onClose }) {
             <h3>Required Skills</h3>
             <div className="skills-grid">
               {job.skills.map((skill, index) => (
-                <span key={index} className="skill-tag">{skill}</span>
+                <span key={index} className="skill-tag">
+                  {skill}
+                </span>
               ))}
             </div>
           </section>
