@@ -35,6 +35,16 @@ function HeaderBar() {
           <button className="btn-primary">Edit Profile</button>
         </div>
       </div>
+      <div className="header-links">
+        <div className="header-link-item">
+          <div className="header-link-top">Resume</div>
+          <div className="header-link">Resume</div>
+        </div>
+        <div className="header-link-item">
+          <div className="header-link-top">Resume</div>
+          <div className="header-link">Resume</div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -127,8 +137,33 @@ const Profile = () => {
             </Section>
 
             <Section title="Demographics" onEdit={() => openModal('demographics')}>
-              <p>{formData.demographics}</p>
+              {(() => {
+                const d = formData.demographics || {};
+                const gender = Array.isArray(d.genders) ? d.genders : [];
+                const tags = [
+                  ...gender,
+                  ...(Array.isArray(d.ethnicities) ? d.ethnicities : []),
+                  d.isIndigenous ? "Indigenous" : null,
+                  d.hasDisability ? "Person with a disability" : null,
+                  d.isVeteran ? "Veteran" : null,
+                ].filter(Boolean);
+
+                if (!tags.length) {
+                  return <p className="empty-state">No demographics added yet.</p>;
+                }
+
+                return (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                    {tags.map((t, i) => (
+                      <span key={i} className="jobs-filter-option selected" style={{ cursor: "default" }}>
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                );
+              })()}
             </Section>
+
 
             <Section title="Background" onEdit={() => openModal('background')}>
               <div className="background-tags">
