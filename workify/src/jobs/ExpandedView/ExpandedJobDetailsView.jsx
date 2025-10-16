@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './expanded-job-view.css';
 import '../../var.css';
+import masterCard from '../../assets/mastercard.png';
 
 // TODO  FOR ALI: Future Ali can you replace this with it being in broken up components. 
 // Mock data - replace with actual data fetching based on jobId
@@ -56,13 +57,6 @@ const ExpandedJobDetailsView = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const job = MOCK_JOB; // Replace with actual data fetching
 
-  const initials = job.company
-    ?.split(" ")
-    .map((w) => w[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-
   return (
     <div className="expanded-job-container">
       <div className="ejv-hero">
@@ -74,7 +68,7 @@ const ExpandedJobDetailsView = () => {
         </button>
         
         <div className="ejv-hero-content">
-          <div className="ejv-company-logo">{initials}</div>
+          <img className="ejv-company-logo"src={masterCard}></img>
           <div className="ejv-title-section">
             <h1 className="ejv-title">{job.title}</h1>
             <div className="ejv-company-name">{job.company}</div>

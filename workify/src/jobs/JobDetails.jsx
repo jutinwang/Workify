@@ -1,7 +1,6 @@
 import React from "react";
 import "./job-details.css";
 import "../var.css";
-import ExpandSymbol from "../assets/expand.png";
 import { Link } from "react-router-dom";
 
 export default function JobDetails({ job, onClose }) {

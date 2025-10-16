@@ -20,7 +20,7 @@ export default function Header() {
             <a href="/profile-employer">View Your Profile</a>
           </li>
           <li>
-            <a href="/employer-candidates">Co-op Applicants</a>
+            <a href="/employer-candidates">Applicants</a>
           </li>
           <li>
             <a href="/employer-interviews">Interviews & Schedule</a>
@@ -32,10 +32,10 @@ export default function Header() {
             <a href="/">Home</a>
           </li>
           <li>
-            <a href="/jobs">Co-Op Postings</a>
+            <a href="/jobs">Postings</a>
           </li>
           <li>
-            <a href="/applications">Co-Op Applications & Status</a>
+            <a href="/applications">Applications & Status</a>
           </li>
         </ul>
       )}
