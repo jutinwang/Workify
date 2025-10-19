@@ -4,7 +4,7 @@ import JobCard from "./JobCard";
 import JobDetails from "./JobDetails";
 import SavedSection from "./SavedSection";
 import "./jobs.css";
-import "../var.css"
+import "../var.css";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -141,14 +141,29 @@ const Jobs = () => {
 
   // Mock data for saved items
   const savedSearches = [
-    { id: 1, name: "Frontend React Jobs", criteria: "React, Remote, Full-time", newJobs: 3 },
-    { id: 2, name: "Senior Backend", criteria: "Node.js, Senior, Ottawa", newJobs: 0 },
+    {
+      id: 1,
+      name: "Frontend React Jobs",
+      criteria: "React, Remote, Full-time",
+      newJobs: 3,
+    },
+    {
+      id: 2,
+      name: "Senior Backend",
+      criteria: "Node.js, Senior, Ottawa",
+      newJobs: 0,
+    },
   ];
 
-  const savedJobs = [
+  const [savedJobs, setSavedJobs] = useState([
     { id: 1, title: "Software Engineer", company: "TechStart Inc.", location: "Remote" },
     { id: 2, title: "Frontend Developer", company: "TechStart Inc.", location: "Remote" },
-  ];
+  ]);
+
+  const handleRemoveJob = (jobId) => {
+    setSavedJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
+  };
+
 
   const filtered = useMemo(() => {
     return JOBS.filter((j) => {
@@ -195,7 +210,7 @@ const Jobs = () => {
 
   return (
     <div className="jobs-page-container">
-      <SavedSection savedJobs={savedJobs} savedSearches={savedSearches} />
+      <SavedSection savedJobs={savedJobs} savedSearches={savedSearches} onRemoveJob={handleRemoveJob}/>
 
       <div className="filters-section">
         <JobsFilter

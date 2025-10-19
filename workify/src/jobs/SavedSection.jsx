@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./saved-section.css";
 import "../var.css"
 
-const SavedSection = ({ savedJobs = [], savedSearches = [] }) => {
+const SavedSection = ({ savedJobs = [], savedSearches = [], onRemoveJob }) => {
   const navigate = useNavigate();
   const [isSearchesExpanded, setIsSearchesExpanded] = useState(false);
   const [isJobsExpanded, setIsJobsExpanded] = useState(false);
@@ -11,6 +11,12 @@ const SavedSection = ({ savedJobs = [], savedSearches = [] }) => {
   const onClickView = (jobId) => {
     navigate(`/jobs/${jobId}`);
     // navigate(`/jobs/1`);
+  };
+
+  const onClickRemove = (jobId) => {
+    if (onRemoveJob) {
+      onRemoveJob(jobId);
+    }
   };
 
   return (
@@ -97,7 +103,7 @@ const SavedSection = ({ savedJobs = [], savedSearches = [] }) => {
                     <p className="saved-job-company">{job.company}</p>
                     <p className="saved-job-location">{job.location}</p>
                   </div>
-                  <button className="saved-item-action">X</button>
+                  <button className="saved-item-action" onClick={() => onClickRemove(job.id)}>X</button>
                   <button className="saved-item-action" onClick={() => onClickView(job.id)}>View</button>
                 </div>
               ))
