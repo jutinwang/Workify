@@ -13,11 +13,13 @@ const ApplicantFilter = ({
   courseFilter,
   skillsFilter,
   sortBy,
+  showShortlistedOnly,
   onSearchChange,
   onYearChange,
   onCourseChange,
   onSkillsChange,
   onSortChange,
+  onShortlistedFilterChange,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -30,6 +32,7 @@ const ApplicantFilter = ({
   const clearAllFilters = () => {
     onYearChange([]);
     onCourseChange([]);
+    onShortlistedFilterChange(false);
     onSkillsChange([]);
     onSortChange("");
   };
@@ -45,7 +48,9 @@ const ApplicantFilter = ({
   return (
     <div className="card">
       <div className="filter-header">
-        <h2 className="filter-header-section-title">Co-op #{selectedJob.id} Applicants</h2>
+        <h2 className="filter-header-section-title">
+          Co-op #{selectedJob.id} Applicants
+        </h2>
         <span className="applicant-count">
           {filteredCount} of {totalApplicants} applicants
         </span>
@@ -172,7 +177,6 @@ const ApplicantFilter = ({
                     { value: "match", label: "Match Score" },
                     { value: "recent", label: "Most Recent" },
                     { value: "visited", label: "Visited" },
-                    { value: "shortlisted", label: "Shortlisted" },
                   ].map((sort) => (
                     <button
                       key={sort.value}
@@ -187,6 +191,20 @@ const ApplicantFilter = ({
                     </button>
                   ))}
                 </div>
+              </div>
+
+              <div className="filter-section">
+                <label className="filter-label">
+                  <input
+                    type="checkbox"
+                    checked={showShortlistedOnly}
+                    onChange={(e) =>
+                      onShortlistedFilterChange(e.target.checked)
+                    }
+                    className="filter-checkbox"
+                  />
+                  Show Shortlisted Only
+                </label>
               </div>
             </div>
 

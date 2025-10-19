@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
 .filter-header {
   display: flex;
@@ -146,8 +146,12 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Modal content */
@@ -284,6 +288,7 @@
 
 .clear-button:hover {
   color: #000000;
+  background-color: white;
 }
 
 .show-results-button {
@@ -326,14 +331,14 @@
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .filter-pill,
   .search-pill,
   .filters-button {
     width: 100%;
     justify-content: center;
   }
-  
+
   .filter-modal {
     width: 100%;
     max-width: 100%;
@@ -341,4 +346,26 @@
     max-height: 100vh;
     border-radius: 0;
   }
+}
+
+.employer.filter-checkbox {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-right: 0.5rem;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+.employer.filter-label {
+  display: flex;
+  align-items: center;
+  font-size: 0.9375rem;
+  color: #374151;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+}
+
+.employer.filter-label:hover {
+  color: #111827;
 }
