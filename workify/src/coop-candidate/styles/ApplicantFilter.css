@@ -7,19 +7,15 @@
   margin-bottom: 1.5rem;
   font-family: "PT Sans", sans-serif;
 }
-/* 
-.section-title {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #1f2937;
-  font-family: "PT Sans", sans-serif;
-} */
 
 .applicant-count {
   color: #6b7280;
   font-size: 0.9rem;
   font-family: "PT Sans", sans-serif;
+}
+
+.filter-header-section-title {
+  font-family: Domine, serif;
 }
 
 /* Airbnb-style filter bar */
@@ -276,8 +272,8 @@
 .clear-button {
   border-radius: 8px;
   box-shadow: #000000;
-  color: #222222;
-  background: #FFFF;
+  color: white;
+  background: black;
   font-size: 0.875rem;
   padding: 0.875rem 1.5rem;
   font-weight: 600;
@@ -291,7 +287,7 @@
 }
 
 .show-results-button {
-  background: #222222;
+  background: var(--secondary-green);
   color: white;
   border: none;
   border-radius: 8px;
@@ -310,7 +306,7 @@
 
 /* Badge for active filters */
 .filter-badge {
-  background: #222222;
+  background: var(--secondary-green);
   color: white;
   border-radius: 50%;
   width: 18px;

@@ -82,6 +82,76 @@
   padding: 1.5rem;
 }
 
+.modal-body .MuiAccordion-root {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem !important;
+  margin-bottom: 0.75rem;
+  box-shadow: none;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.modal-body .MuiAccordion-root:before {
+  display: none;
+}
+
+.modal-body .MuiAccordion-root:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.modal-body .MuiAccordion-root.Mui-expanded {
+  margin-bottom: 0.75rem;
+  border-color: #9ca3af;
+}
+
+.modal-body .MuiAccordionSummary-root {
+  padding: 0.75rem 1.25rem;
+  min-height: 3.5rem;
+  transition: background 0.2s ease;
+}
+
+.modal-body .MuiAccordionSummary-root:hover {
+  background: #f3f4f6;
+}
+
+.modal-body .MuiAccordionSummary-root.Mui-expanded {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  min-height: 3.5rem;
+}
+
+.modal-body .MuiAccordionSummary-content {
+  margin: 0.75rem 0;
+}
+
+.modal-body .MuiAccordionSummary-content .MuiTypography-root {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.modal-body .MuiAccordionSummary-expandIconWrapper {
+  color: #6b7280;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.modal-body .MuiAccordionSummary-expandIconWrapper:hover {
+  color: #111827;
+}
+
+.modal-body .MuiAccordionDetails-root {
+  padding: 1.25rem;
+  background: #ffffff;
+}
+
+.modal-body .MuiAccordionDetails-root .MuiTypography-root {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
 .expandable-section {
   max-width: 100%;
   background: #f9fafb;

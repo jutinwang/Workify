@@ -45,7 +45,7 @@ const ApplicantFilter = ({
   return (
     <div className="card">
       <div className="filter-header">
-        <h2 className="section-title">Co-op #{selectedJob.id} Applicants</h2>
+        <h2 className="filter-header-section-title">Co-op #{selectedJob.id} Applicants</h2>
         <span className="applicant-count">
           {filteredCount} of {totalApplicants} applicants
         </span>

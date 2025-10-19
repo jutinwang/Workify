@@ -6,6 +6,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import Typography from "@mui/material/Typography";
 import WangResume from "../../assets/Justin_Wang_Resume.pdf";
+import ChevronDownIcon from "../../common/ChevronDownIcon";
 
 const CandidateModal = ({ candidate, onClose }) => {
   return (
@@ -38,8 +39,8 @@ const CandidateModal = ({ candidate, onClose }) => {
 
         <div className="modal-body">
           <Accordion className="expandable-section">
-            <AccordionSummary>
-              <Typography> Profile </Typography>
+            <AccordionSummary expandIcon={<ChevronDownIcon />}>
+              <Typography>Profile Overview</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <Typography>
@@ -50,24 +51,24 @@ const CandidateModal = ({ candidate, onClose }) => {
           </Accordion>
 
           <Accordion className="expandable-section">
-            <AccordionSummary>
-              <Typography> Experience </Typography>
+            <AccordionSummary expandIcon={<ChevronDownIcon />}>
+              <Typography>Experience</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <Typography>
-                Within this section ideally we would display{" "}
+                Within this section ideally we would display their work
+                experience
               </Typography>
             </AccordionDetails>
           </Accordion>
 
           <Accordion className="expandable-section">
-            <AccordionSummary>
-              <Typography> View {candidate?.name} Resume </Typography>
+            <AccordionSummary expandIcon={<ChevronDownIcon />}>
+              <Typography>View {candidate?.name}'s Resume</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <iframe
                 src={WangResume}
-                // src = {candidate.resume}
                 width="100%"
                 height="600px"
                 style={{ border: "none" }}

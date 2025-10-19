@@ -5,6 +5,7 @@ import ApplicantResults from "./components/ApplicantResults";
 import CandidateModal from "./components/CandidateModal";
 import { jobs, jobApplicants } from "./data/mockData";
 import "./styles/App.css";
+import "../var.css"
 
 const EmployerCandidateContainer = () => {
   const [selectedJob, setSelectedJob] = useState(null);

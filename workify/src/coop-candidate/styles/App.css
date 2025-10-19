@@ -2,8 +2,10 @@
 
 .container {
   max-width: 1280px;
+  background: var(--primary-background);
   margin: 0 auto;
   padding: 2rem;
+  font-family: Domine, serif;
 }
 
 .card {
@@ -14,10 +16,3 @@
   padding: 1.5rem;
   margin-bottom: 1.5rem;
 }
-
-/* .section-title {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #111827;
-} */
