@@ -8,7 +8,7 @@
 
 .landingpage-container {
   padding: 1.6rem;
-  height: 100vh;
+  height: 110vh;
   background: var(--primary-background);
   display: flex;
   flex-direction: column;
@@ -46,7 +46,7 @@
 }
 
 .maincontent {
-  margin-top: 9vh;
+  margin-top: 5.6vh;
   flex: 1;
   color: var(--main-text);
   display: flex;
@@ -67,6 +67,19 @@
 .maincontent-text {
   flex: 0 0 55%;
   /* max-width: 60%; */
+}
+
+.landing-logo {
+  margin-top: 2vh;
+  height: 10%;
+  width: fit-content;
+  align-items: left;
+}
+
+.landing-logo img {
+  height: 90%;
+  width: auto;
+
 }
 
 .landing-page-explore-link {

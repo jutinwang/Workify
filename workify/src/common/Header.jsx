@@ -2,6 +2,7 @@ import "./Header.css";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import "../var.css"
+import Logo from "../assets/workifyLogo2.png"
 
 export default function Header() {
   const location = useLocation();
@@ -13,7 +14,9 @@ export default function Header() {
     : "Profile";
   return (
     <div className="navbar">
-      <div className="logo">Workify</div>
+      <div className="logo">
+        <img src={Logo} alt="Workify Logo" className="logo" />
+      </div>
       {isEmployer ? (
         <ul className="nav-links">
           <li>

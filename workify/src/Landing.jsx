@@ -7,11 +7,13 @@ import workplace from "./assets/workplace.jpg";
 import penImage from "./assets/pen.jpg";
 import fem from "./assets/female-empowerment.jpg";
 import animatedGrowth from "./assets/animated-growth-volatile-arrow-open-black.svg";
+import workifyLogo from "./assets/workifyLogo2.png";
+
 
 function Landing() {
   return (
     <div className="landingpage-container">
-      <div className="landing-logo">Workify</div>
+      <div className="landing-logo"><img className="workify-logo" src={workifyLogo}></img></div>
 
       <div className="maincontent">
         <div className="maincontent-text">

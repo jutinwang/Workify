@@ -13,6 +13,7 @@ import apple from "../assets/apple.png";
 import teslaLogo from "../assets/teslaLogo.png";
 import claudeLogo from "../assets/claudeLogo.png";
 import openAiLogo from "../assets/openAiLogo.png";
+import workifyLogo from "../assets/workifyLogo2.png";
 
 const employerHero = () => {
   return (
@@ -39,7 +40,9 @@ const employerHero = () => {
 const Hero = ({ isEmployer }) => {
   return (
     <div className="hero-text-container">
-      <div className="logo-workify">WORKIFY</div>
+      <div className="hero-logo">
+        <img src={workifyLogo} alt="Workify Logo" />
+      </div>
       {isEmployer ? (
         employerHero()
       ) : (
