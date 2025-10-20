@@ -49,6 +49,10 @@
   font-weight: 700;
 }
 
+.header-link:hover{
+  
+}
+
 .header-content {
   display: flex;
   flex-wrap: wrap;

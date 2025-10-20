@@ -222,6 +222,7 @@
 
 .jobs-filter-section {
   margin-bottom: 2rem;
+  box-sizing: border-box;
 }
 
 .jobs-filter-section:last-child {
@@ -240,6 +241,15 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.jobs-filter-options > div > input{
+  width: 100%;
+  padding: 0.7em 1em;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5em;
+  font-size: 1em;
+  box-sizing: "border-box";
 }
 
 .jobs-filter-option {
