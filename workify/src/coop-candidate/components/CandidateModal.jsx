@@ -60,7 +60,6 @@ const CandidateModal = ({ candidate, jobId, onClose }) => {
   const handleSchedule = () => {
     // Placeholder for future scheduling functionality
     alert(`Schedule interview with ${candidate.name} for this job`);
-    // TODO: Open scheduling interface when implemented
     // TODO: API call: POST /api/jobs/${jobId}/candidates/${candidate.id}/schedule
   };
 
