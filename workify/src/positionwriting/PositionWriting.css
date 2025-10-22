@@ -36,7 +36,7 @@
 }
 
 /* Tags box */
-.tags-container {
+/* .tags-container {
   border: 1.5px solid #333;
   border-radius: 10px;
   padding: 10px;
@@ -59,7 +59,7 @@
 .tag span {
   font-weight: bold;
   cursor: pointer;
-}
+} */
 
 /* Buttons */
 .button-container {
