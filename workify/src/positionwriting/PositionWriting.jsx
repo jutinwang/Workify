@@ -115,13 +115,14 @@ const PositionWriting = () => {
                 </div>
 
                 <div className="tags-container">
+                    {/* https://www.youtube.com/watch?v=l8Jd7Ub4yJE */}
                     { tags.map((tag, index) => (
                         <div className="tag-item" key={index}>
                             <span className="text">{tag}</span>
                             <span className="close" onClick={() => removeTag(index)}>&times;</span>
                         </div>
                     ))}
-                    <input onKeyDown={handleKeyDown} type="text" className="tags-input" placeholder="Type Something"></input>
+                    <input onKeyDown={handleKeyDown} type="text" className="tags-input" placeholder="Add Tags Here..."></input>
                 </div>
 
                 <div className="button-container">

@@ -37,6 +37,7 @@
   padding: 10px;
   font-size: 14px;
   box-sizing: border-box;
+  font-family: 'Domine' sans-serif;
 }
 
 .textbox {
@@ -62,7 +63,8 @@
   font-size: 14px;
   box-sizing: border-box;
   margin-bottom: 20px;
-  background-color: white
+  background-color: white;
+  font-family: 'Domine', sans-serif;
 }
 
 /* Tags box */
@@ -103,7 +105,7 @@
 .text {
   padding: 10px;
   padding-bottom: 20px;
-  font-family: 'Domine';
+  font-family: 'Domine' sans-serif;
 }
 
 .tags-input {
@@ -138,4 +140,8 @@
   background-color: #3f5e5a;
   color: white;
   border: none;
+}
+
+p {
+  font-family: 'Domine' sans-serif;
 }
