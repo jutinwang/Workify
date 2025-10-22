@@ -1,18 +1,22 @@
 .jobs-page-container {
-  height: 92vh;
+  min-height: 100vh;
   width: 100vw;
-  overflow: hidden;
   display: flex;
   box-sizing: border-box;
   flex-direction: column;
+  background: var(--primary-background);
+  padding: 1rem 2rem 2rem;
+  overflow: hidden;
+  height: 150vh;
 }
 
 .jobs-content {
   display: flex;
-  height: 60vh;
-  box-sizing: border-box;
+  flex: 1;
   overflow: hidden;
   transition: all 0.3s ease;
+  margin-top: 1rem;
+  height: calc(100vh - 350px);
 }
 
 .jobs-content--full .jobs-list-container {
@@ -26,19 +30,58 @@
 }
 
 .jobs-list-container {
-  overflow: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
   height: 100%;
   box-sizing: border-box;
-  padding: 2rem;
+  padding: 0 2rem 2rem 0;
   transition: width 0.3s ease;
+}
+
+.jobs-list-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.jobs-list-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.jobs-list-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.jobs-list-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .job-details-container {
   width: 50%;
   height: 100%;
-  background-color: #fafafa;
-  overflow: hidden;
+  background-color: var(--primary-background);
+  overflow-y: auto;
+  overflow-x: hidden;
   animation: slideIn 0.3s ease;
+  position: relative;
+}
+
+.job-details-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.job-details-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.job-details-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.job-details-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 @keyframes slideIn {
@@ -55,13 +98,9 @@
 .jobs-grid {
   display: grid;
   gap: 18px;
-  height: 100%;
   width: 100%;
   box-sizing: border-box;
-  flex: 1;
-  padding-right: 0.8rem;
-  padding-bottom: 1rem;
-  min-height: 0;
+  padding-bottom: 2rem;
   transition: grid-template-columns 0.3s ease;
 }
 

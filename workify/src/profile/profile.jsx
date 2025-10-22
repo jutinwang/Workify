@@ -1,4 +1,9 @@
 import React, { useState } from "react";
+import Card from "../common/Card";
+import Section from "../common/Section";
+import Modal from "../common/Modal";
+import DemographicsModal from "./DemographicsModal";
+import ExperiencesModal from "./ExperiencesModal";
 import Header from "../common/Header";
 import "./Profile.css";
 
@@ -10,51 +15,6 @@ function Ring({ value = 75 }) {
     <div className="ring-container">
       <div className="ring" style={style} />
       <div className="ring-percentage">{value}%</div>
-    </div>
-  );
-}
-
-function Card({ title, children }) {
-  return (
-    <div className="card">
-      {title && <h3 className="card-title">{title}</h3>}
-      {children}
-    </div>
-  );
-}
-
-function Section({ title, children, onEdit }) {
-  return (
-    <section className="section-modern">
-      <div className="section-header">
-        <h2 className="section-title">{title}</h2>
-        {onEdit && (
-          <button className="edit-button" onClick={onEdit}>
-            Edit
-          </button>
-        )}
-      </div>
-      <div className="section-content">{children}</div>
-    </section>
-  );
-}
-
-function Modal({ isOpen, onClose, title, children }) {
-  if (!isOpen) return null;
-  
-  return (
-    <div className="modal-overlay">
-      <div className="modal">
-        <div className="modal-header">
-          <h3 className="modal-title">{title}</h3>
-          <button className="modal-close" onClick={onClose}>
-            ✕
-          </button>
-        </div>
-        <div className="modal-body">
-          {children}
-        </div>
-      </div>
     </div>
   );
 }
@@ -74,6 +34,16 @@ function HeaderBar() {
         <div className="header-actions">
           <button className="btn-secondary">Share</button>
           <button className="btn-primary">Edit Profile</button>
+        </div>
+      </div>
+      <div className="header-links">
+        <div className="header-link-item">
+          <div className="header-link-top">Resume</div>
+          <div className="header-link">Resume</div>
+        </div>
+        <div className="header-link-item">
+          <div className="header-link-top">Resume</div>
+          <div className="header-link">Resume</div>
         </div>
       </div>
     </div>
@@ -110,10 +80,22 @@ const Profile = () => {
 
   const [formData, setFormData] = useState({
     about: "About section content goes here...",
-    demographics: "Demographics content goes here...",
+    demographics: {
+      genders: [],
+      ethnicities: [],
+      isIndigenous: false,
+      hasDisability: false,
+      isVeteran: false,
+    },
+    experiences: { 
+      years: "",
+      level: "",
+      areas: [],
+      technologies: [],
+      industries: [],
+    },
     background: [],
-    experience: [],
-    preferences: ["Frontend SWE", "Toronto", "Remote", "FinTech", "DevTools"]
+    preferences: ["Frontend SWE", "Toronto", "Remote", "FinTech", "DevTools"],
   });
 
   const [newExperience, setNewExperience] = useState({
@@ -168,8 +150,33 @@ const Profile = () => {
             </Section>
 
             <Section title="Demographics" onEdit={() => openModal('demographics')}>
-              <p>{formData.demographics}</p>
+              {(() => {
+                const d = formData.demographics || {};
+                const gender = Array.isArray(d.genders) ? d.genders : [];
+                const tags = [
+                  ...gender,
+                  ...(Array.isArray(d.ethnicities) ? d.ethnicities : []),
+                  d.isIndigenous ? "Indigenous" : null,
+                  d.hasDisability ? "Person with a disability" : null,
+                  d.isVeteran ? "Veteran" : null,
+                ].filter(Boolean);
+
+                if (!tags.length) {
+                  return <p className="empty-state">No demographics added yet.</p>;
+                }
+
+                return (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                    {tags.map((t, i) => (
+                      <span key={i} className="jobs-filter-option selected" style={{ cursor: "default" }}>
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                );
+              })()}
             </Section>
+
 
             <Section title="Background" onEdit={() => openModal('background')}>
               <div className="background-tags">
@@ -184,31 +191,31 @@ const Profile = () => {
               </div>
             </Section>
 
-            <Section title="Experience" onEdit={() => openModal('experience')}>
-              <div className="experience-list">
-                {formData.experience.map((exp) => (
-                  <div key={exp.id} className="experience-item">
-                    <div className="experience-content">
-                      <div className="experience-header">
-                        {exp.image && (
-                          <div className="experience-image">
-                            <img src={exp.image} alt={exp.company} />
-                          </div>
-                        )}
-                        <div className="experience-details">
-                          <h4 className="experience-title">{exp.title}</h4>
-                          <p className="experience-company">{exp.company} • {exp.duration}</p>
-                        </div>
-                      </div>
-                      <p className="experience-description">{exp.description}</p>
-                    </div>
+            <Section title="Experiences" onEdit={() => openModal('experiences')}>
+              {(() => {
+                const e = formData.experiences || {};
+                const tags = [
+                  e.years || null,
+                  e.level || null,
+                  ...(e.areas || []),
+                  ...(e.technologies || []),
+                  ...(e.industries || []),
+                ].filter(Boolean);
+
+                if (!tags.length) return <p className="empty-state">No experience added yet.</p>;
+
+                return (
+                  <div className="section-content" style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                    {tags.map((t, i) => (
+                      <span key={i} className="jobs-filter-option selected" style={{ cursor: "default" }}>
+                        {t}
+                      </span>
+                    ))}
                   </div>
-                ))}
-                {formData.experience.length === 0 && (
-                  <p className="empty-state">No experience added yet.</p>
-                )}
-              </div>
+                );
+              })()}
             </Section>
+
 
             <Section title="Job Preferences" onEdit={() => openModal('preferences')}>
               <div className="preferences-tags">
@@ -251,7 +258,6 @@ const Profile = () => {
           </aside>
         </div>
 
-        {/* Modals */}
         <Modal isOpen={modals.about} onClose={() => closeModal('about')} title="Edit About">
           <textarea 
             className="modal-textarea"
@@ -267,20 +273,12 @@ const Profile = () => {
           </button>
         </Modal>
 
-        <Modal isOpen={modals.demographics} onClose={() => closeModal('demographics')} title="Edit Demographics">
-          <textarea 
-            className="modal-textarea"
-            rows={4}
-            value={formData.demographics}
-            onChange={(e) => setFormData(prev => ({ ...prev, demographics: e.target.value }))}
-          />
-          <button 
-            onClick={() => closeModal('demographics')}
-            className="modal-save-btn"
-          >
-            Save
-          </button>
-        </Modal>
+        <DemographicsModal
+          isOpen={modals.demographics}
+          onClose={() => closeModal('demographics')}
+          values={formData.demographics}
+          onChange={(next) => setFormData(prev => ({ ...prev, demographics: next }))}
+        />
 
         <Modal isOpen={modals.background} onClose={() => closeModal('background')} title="Add Background Item">
           <input 
@@ -298,51 +296,13 @@ const Profile = () => {
           </button>
         </Modal>
 
-        <Modal isOpen={modals.experience} onClose={() => closeModal('experience')} title="Add Experience">
-          <div className="modal-form">
-            <input 
-              type="text"
-              placeholder="Job Title"
-              className="modal-input"
-              value={newExperience.title}
-              onChange={(e) => setNewExperience(prev => ({ ...prev, title: e.target.value }))}
-            />
-            <input 
-              type="text"
-              placeholder="Company"
-              className="modal-input"
-              value={newExperience.company}
-              onChange={(e) => setNewExperience(prev => ({ ...prev, company: e.target.value }))}
-            />
-            <input 
-              type="text"
-              placeholder="Duration (e.g., Jan 2023 - Present)"
-              className="modal-input"
-              value={newExperience.duration}
-              onChange={(e) => setNewExperience(prev => ({ ...prev, duration: e.target.value }))}
-            />
-            <input 
-              type="url"
-              placeholder="Company Logo URL (optional)"
-              className="modal-input"
-              value={newExperience.image}
-              onChange={(e) => setNewExperience(prev => ({ ...prev, image: e.target.value }))}
-            />
-            <textarea 
-              placeholder="Description"
-              className="modal-textarea"
-              rows={3}
-              value={newExperience.description}
-              onChange={(e) => setNewExperience(prev => ({ ...prev, description: e.target.value }))}
-            />
-          </div>
-          <button 
-            onClick={handleAddExperience}
-            className="modal-save-btn"
-          >
-            Add Experience
-          </button>
-        </Modal>
+        <ExperiencesModal
+          isOpen={modals.experiences}
+          onClose={() => closeModal('experiences')}
+          values={formData.experiences}
+          onChange={(next) => setFormData(prev => ({ ...prev, experiences: next }))}
+        />
+
       </div>
     </div>
   );

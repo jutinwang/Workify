@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "../var.css"
 import "./job-card.css";
 
 export default function JobCard({ job, isSelected, onClick }) {

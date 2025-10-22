@@ -1,119 +1,127 @@
-@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
-.hero-text-container{
-    height: 100%;
-    width: 100%;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
+.hero-text-container {
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
 }
-.logo-workify{
-    font-size: 2em;
-    font-weight: 700;
-    backdrop-filter: blur(2px);
-    width: fit-content;
+.hero-text-blocks {
+  font-size: 2em;
+  display: flex;
+  flex-direction: column;
+  font-weight: 300;
+  font-family: var(--main-font);
 }
-.hero-text-blocks{
-    font-size: 2em;
-    display: flex;
-    flex-direction: column;
-    font-weight: 300;
-    font-family: var(--main-font);
+.hero-text-blocks > div {
+  width: fit-content;
+  backdrop-filter: blur(2px);
 }
-.hero-text-blocks > div{
-    width: fit-content;
-    backdrop-filter: blur(2px);
+.hero-job-container {
+  width: 100%;
+  backdrop-filter: blur(2px);
+  font-family: var(--main-font);
+  box-sizing: border-box;
 }
-.hero-job-container{
-    width: 100%;
-    backdrop-filter: blur(2px);
-    font-family: var(--main-font);
-    box-sizing: border-box;
+.hero-job-container-blurb {
+  width: fit-content;
 }
-.hero-job-container-blurb{
-    width: fit-content;
+.hero-job-row {
+  display: flex;
+  width: 50%;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 2em 0;
 }
-.hero-job-row{
-    display: flex;
-    width: 50%;
-    justify-content: space-between;
-    box-sizing: border-box;
-    padding: 2em 0;
-}
-.brand-chip{
-    background: white;
-    padding: 20px;
-    border-radius: 16px !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100px !important;
-    height: 70px !important;
-    flex-shrink: 0;
-    transition: transform 0.3s ease;
-    box-sizing: border-box;
+.brand-chip {
+  background: white;
+  padding: 20px;
+  border-radius: 16px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px !important;
+  height: 70px !important;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+  box-sizing: border-box;
 }
 .brand-chip:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 .brand-chip img {
-    max-width: 50px;
-    max-height: 50px;
-    object-fit: contain;
-    transition: transform 0.3s ease;
+  max-width: 50px;
+  max-height: 50px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
 }
 .brand-chip:hover img {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 .marquee-container {
-    width: 100%;
-    overflow: hidden;
-    background: transparent;
-    padding: 20px 0;
-    position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: transparent;
+  padding: 20px 0;
+  position: relative;
 }
 
 .marquee-content {
-    display: flex;
-    gap: 24px;
-    animation: marquee 30s linear infinite;
-    width: fit-content;
+  display: flex;
+  gap: 24px;
+  animation: marquee 30s linear infinite;
+  width: fit-content;
 }
 
 .employer-hero-subtext-span {
-    text-decoration: underline; 
-    font-style: italic;
+  text-decoration: underline;
+  font-style: italic;
 }
 
 @keyframes marquee {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-33.33%);
-    }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.33%);
+  }
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .marquee-content {
-        animation-duration: 15s;
-        gap: 16px;
-    }
-    
-    .brand-chip {
-        width: 60px !important;
-        height: 60px !important;
-        padding: 15px;
-        border-radius: 12px !important;
-    }
-    
-    .brand-chip img {
-        max-width: 40px;
-        max-height: 40px;
-    }
+  .marquee-content {
+    animation-duration: 15s;
+    gap: 16px;
+  }
+
+  .brand-chip {
+    width: 60px !important;
+    height: 60px !important;
+    padding: 15px;
+    border-radius: 12px !important;
+  }
+
+  .brand-chip img {
+    max-width: 40px;
+    max-height: 40px;
+  }
+}
+
+.hero-logo {
+  width: fit-content;
+  height: 20%;
+  margin-right: 0;
+  backdrop-filter: blur(2px);
+}
+
+.hero-logo img {
+  height: 80%;
+  width: auto;
+  object-position: left center; /* Align the content to the left */
+  margin-right: auto; /* Pushes the element to the left */
 }
