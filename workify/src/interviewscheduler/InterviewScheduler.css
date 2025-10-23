@@ -73,6 +73,26 @@
   font-family: 'Domine', sans-serif;
 }
 
+.inviteInput, .durationInput, .locationInput, .interviewInput, .messageInput {
+  min-height: 40px;
+  resize: none;
+  overflow-y: auto;
+  overflow: hidden;
+  width: 300px;
+  height: 25px;
+  border: 1.5px;
+  border-style: solid;
+  border-color: black;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.messageInput {
+  height: 355px;
+}
+
 /* Each details row (icon + input) */
 .inviteOthersSection,
 .duration-section,

@@ -73,22 +73,6 @@ const InterviewScheduler = () => {
         },
     };
 
-    useEffect(() => {
-        // Example
-        // preload some example events
-        const initialEvents = [
-            {
-                id: 1,
-                text: "Team Interview",
-                start: DayPilot.Date.today().addHours(11.50),
-                end: DayPilot.Date.today().addHours(12),
-                backColor: "#FFD5B6",
-            },
-        ];
-        setEvents(initialEvents);
-    }, []);
-
-
     return (
         <div className="interviewscheduler-container">
             <div className="calendar-section">
@@ -98,10 +82,6 @@ const InterviewScheduler = () => {
                 </div>
                 <div className="schedulerCalendar">
                     <DayPilotCalendar
-                        // {...config}
-                        // events={events}
-                        // controlRef={setCalendar}
-
                         {...config}
                         onTimeRangeSelected={async args => {
                             const newEvent = {
@@ -109,7 +89,8 @@ const InterviewScheduler = () => {
                                 end: args.end,
                                 text: "Busy",
                                 id: DayPilot.guid(),
-                                backColor: "#BAD8E0"
+                                backColor: "#465362",
+                                fontColor: "#fff"
                             };
 
                             if (calendar) {
@@ -133,21 +114,6 @@ const InterviewScheduler = () => {
                         value={inviteText}
                         onChange={(e) => setInviteText(e.target.value)}
                         placeholder="Invite Someone..."
-                        style={{
-                            minHeight: '40px', // Optional: set a minimum height
-                            resize: 'none',    // Prevent manual resizing by user
-                            overflowY: 'auto',
-                            overflow: 'hidden', // Hide scrollbar
-                            width: '300px',     // Adjust as needed
-                            height: '25px',
-                            border: '1.5px',
-                            borderStyle: 'solid',
-                            borderColor: 'black',
-                            borderRadius: '8px',
-                            padding: '10px',
-                            fontSize: '14px',
-                            boxSizing: 'border-box'
-                        }}
                     />
                 </div>
 
@@ -157,21 +123,6 @@ const InterviewScheduler = () => {
                         value={durationText}
                         onChange={(e) => setDurationText(e.target.value)}
                         placeholder="Set Time..."
-                        style={{
-                            minHeight: '40px', // Optional: set a minimum height
-                            resize: 'none',    // Prevent manual resizing by user
-                            overflowY: 'auto',
-                            overflow: 'hidden', // Hide scrollbar
-                            width: '300px',     // Adjust as needed
-                            height: '25px',
-                            border: '1.5px',
-                            borderStyle: 'solid',
-                            borderColor: 'black',
-                            borderRadius: '8px',
-                            padding: '10px',
-                            fontSize: '14px',
-                            boxSizing: 'border-box'
-                        }}
                     />
                 </div>
                 
@@ -181,21 +132,6 @@ const InterviewScheduler = () => {
                         value={locationText}
                         onChange={(e) => setLocationText(e.target.value)}
                         placeholder="Add Location..."
-                        style={{
-                            minHeight: '40px', // Optional: set a minimum height
-                            resize: 'none',    // Prevent manual resizing by user
-                            overflowY: 'auto',
-                            overflow: 'hidden', // Hide scrollbar
-                            width: '300px',     // Adjust as needed
-                            height: '25px',
-                            border: '1.5px',
-                            borderStyle: 'solid',
-                            borderColor: 'black',
-                            borderRadius: '8px',
-                            padding: '10px',
-                            fontSize: '14px',
-                            boxSizing: 'border-box'
-                        }}
                     />
                 </div>
 
@@ -205,21 +141,6 @@ const InterviewScheduler = () => {
                         value={interviewTypeText}
                         onChange={(e) => setInterviewTypeText(e.target.value)}
                         placeholder="Interview Type..."
-                        style={{
-                            minHeight: '40px', // Optional: set a minimum height
-                            resize: 'none',    // Prevent manual resizing by user
-                            overflowY: 'auto',
-                            overflow: 'hidden', // Hide scrollbar
-                            width: '300px',     // Adjust as needed
-                            height: '25px',
-                            border: '1.5px',
-                            borderStyle: 'solid',
-                            borderColor: 'black',
-                            borderRadius: '8px',
-                            padding: '10px',
-                            fontSize: '14px',
-                            boxSizing: 'border-box'
-                        }}
                     />
                 </div>
 
@@ -229,21 +150,6 @@ const InterviewScheduler = () => {
                         value={messageText}
                         onChange={(e) => setMessageText(e.target.value)}
                         placeholder="Type message here..."
-                        style={{
-                            minHeight: '40px', // Optional: set a minimum height
-                            resize: 'none',    // Prevent manual resizing by user
-                            overflowY: 'auto',
-                            overflow: 'hidden', // Hide scrollbar
-                            width: '300px',     // Adjust as needed
-                            height: '355px',
-                            border: '1.5px',
-                            borderStyle: 'solid',
-                            borderColor: 'black',
-                            borderRadius: '8px',
-                            padding: '10px',
-                            fontSize: '14px',
-                            boxSizing: 'border-box'
-                        }}
                     />
                 </div>
 
