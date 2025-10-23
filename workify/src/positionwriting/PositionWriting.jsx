@@ -9,25 +9,18 @@ const PositionWriting = () => {
     const [jobLength, setJobLength] = useState("");
     const [salaryRange, setSalaryRange] = useState("");
     const [workModel, setWorkModel] = useState("");
+    const [officeLocation, setOfficeLocation] = useState(""); 
     const[tags, setTags] = useState([])
 
     const textareaRef = useRef(null);
 
-    const handleCoopDescriptionChange = (description) => {
-        setCoopDescription(description.target.value);
-    };
-    const handleResponsibilitiesChange = (responsibility) => {
-        setResponsibilities(responsibility.target.value);
-    };
-    const handleQualificationsChange = (qualification) => {
-        setQualifications(qualification.target.value);
-    };
-    const handleBenefetsChange = (benefet) => {
-        setBenefits(benefet.target.value);
-    };
-    const handleSalaryChange = (salary) => {
-        setSalaryRange(salary.target.value);
-    };
+    const handleCoopDescriptionChange = (description) => setCoopDescription(description.target.value);
+    const handleResponsibilitiesChange = (responsibility) => setResponsibilities(responsibility.target.value);
+    const handleQualificationsChange = (qualification) => setQualifications(qualification.target.value);
+    const handleBenefetsChange = (benefet) => setBenefits(benefet.target.value);
+    const handleSalaryChange = (salary) => setSalaryRange(salary.target.value);
+    const handleOfficeLocationChange = (location) => setOfficeLocation(location.target.value);
+
 
     function handleKeyDown(e) {
         if (e.key !== 'Enter') return
@@ -114,6 +107,20 @@ const PositionWriting = () => {
                     </div>
                 </div>
 
+                {(workModel === "hybrid" || workModel === "inperson") && (
+                        <>
+                            <p>Office Location</p>
+                            <textarea
+                                className="locationInput"
+                                ref={textareaRef}
+                                value={officeLocation}
+                                onChange={handleOfficeLocationChange}
+                                placeholder="Enter office address or city..."
+                            />
+                        </>
+                    )}
+
+                <p>Tags</p>
                 <div className="tags-container">
                     {/* https://www.youtube.com/watch?v=l8Jd7Ub4yJE */}
                     { tags.map((tag, index) => (
