@@ -1,181 +1,267 @@
-import express, { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
-import { z } from 'zod';
+import { Router } from "express";
+import { Prisma, PrismaClient, Role, ApplicationStatus } from "@prisma/client";
+import { z } from "zod";
+import { requireAuth, requireRole } from "../middleware/requireAuth.js";
 
-const router = express.Router();
 const prisma = new PrismaClient();
+const router = Router();
 
-// Validation schema
-const studentRegistrationSchema = z.object({
-    email: z.string().email('Invalid email address'),
-    password: z.string().min(8, 'Password must be at least 8 characters'),
-    name: z.string().min(1, 'Name is required'),
-    major: z.string().optional(),
-    year: z.number().int().min(1).max(6).optional(),
-    resumeUrl: z.string().url().optional(),
-    linkedInUrl: z.string().url().optional(),
-    githubUrl: z.string().url().optional(),
-    gender: z.enum(['WOMAN', 'MAN', 'NON_BINARY', 'TWO_SPIRIT', 'PREFER_NOT_TO_SAY']),
-    ethnicity: z.array(z.enum([
-        'BLACK', 'EAST_ASIAN', 'SOUTH_ASIAN', 'SOUTHEAST_ASIAN', 
-        'MENA', 'LATINX', 'WHITE', 'MIXED', 'PREFER_NOT_TO_SAY'
-    ])).min(1, 'At least one ethnicity must be selected'),
-    optional: z.array(z.enum(['INDIGENOUS', 'DISABILITY', 'VETERAN'])).optional().default([])
+router.use(requireAuth, requireRole(Role.STUDENT)); // ensuring these endpoints can only be accessed by a user with the student role
+
+const ResumeUrlBody = z.object({
+    resumeUrl: z.string().url(),
 });
 
-type StudentRegistrationInput = z.infer<typeof studentRegistrationSchema>;
+const ExperienceCreate = z.object({
+    title: z.string().min(1),
+    company: z.string().min(1),
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date().optional(),
+    description: z.string().max(4000).optional(),
+});
 
-router.post('/register', async (req: Request, res: Response) => {
+const ExperiencePatch = ExperienceCreate.partial();
+
+const ApplicationCreate = z.object({
+    jobId: z.number().int().positive(),
+    coverLetter: z.string().max(20000).optional(),
+});
+
+const InterviewRespond = z.object({
+    decision: z.enum(["accept", "decline", "propose"]),
+    availability: z
+        .array(z.object({ start: z.coerce.date(), end: z.coerce.date() }))
+        .optional(),
+});
+
+const appSelect = {
+    id: true,
+    status: true,
+    job: { select: { id: true, title: true, company: true, location: true } },
+} satisfies Prisma.ApplicationSelect;
+
+function getUserId(req: Express.Request): number {
+    return req.user!.id;
+}
+
+async function getStudentProfileId(userId: number): Promise<number> {
+    const profile = await prisma.studentProfile.findUnique({
+        where: { userId },
+        select: { id: true },
+    });
+    if (!profile) {
+        throw Object.assign(new Error("Student profile not found"), { status: 404 });
+    }
+    return profile.id;
+}
+
+router.put("/me/resume-url", async (req, res, next) => {
     try {
-        const validatedData: StudentRegistrationInput = studentRegistrationSchema.parse(req.body);
+        const userId = getUserId(req);
+        const { resumeUrl } = ResumeUrlBody.parse(req.body);
 
-        // Check if user already exists
-        const existingUser = await prisma.user.findUnique({
-            where: { email: validatedData.email }
-        });
-
-        if (existingUser) {
-            return res.status(409).json({ 
-                error: 'User with this email already exists' 
-            });
-        }
-
-        const hashedPassword = await bcrypt.hash(validatedData.password, 10);
-        const user = await prisma.user.create({
-            data: {
-                email: validatedData.email,
-                password: hashedPassword,
-                name: validatedData.name,
-                role: 'STUDENT',
-                student: {
-                create: {
-                    major: validatedData.major,
-                    year: validatedData.year,
-                    resumeUrl: validatedData.resumeUrl,
-                    linkedInUrl: validatedData.linkedInUrl,
-                    githubUrl: validatedData.githubUrl,
-                    gender: validatedData.gender,
-                    ethnicity: validatedData.ethnicity,
-                    optional: validatedData.optional
-                }
-                }
+        const updated = await prisma.studentProfile.upsert({
+            where: { userId },
+            create: {
+                user: { connect: { id: userId } },
+                resumeUrl,
+                gender: "PREFER_NOT_TO_SAY",
+                ethnicity: ["PREFER_NOT_TO_SAY"],
+                optional: [],
             },
-            include: {
-                student: true
-            }
+            update: { resumeUrl },
+            select: { id: true, resumeUrl: true },
         });
 
-        const { password, ...userWithoutPassword } = user;
-
-        res.status(201).json({
-            message: 'Student account created successfully',
-            user: userWithoutPassword
-        });
-
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            return res.status(400).json({ 
-                error: 'Validation failed', 
-                details: error.issues 
-            });
-        }
-
-        console.error('Registration error:', error);
-        res.status(500).json({ 
-            error: 'Failed to create student account' 
-        });
+        res.json(updated);
+    } catch (e) {
+        next(e);
     }
 });
 
-router.get('/:id', async (req: Request, res: Response) => {
+router.get("/me/experiences", async (req, res, next) => {
     try {
-        const studentId = parseInt(req.params.id);
+        const userId = getUserId(req);
+        const studentId = await getStudentProfileId(userId);
 
-        const student = await prisma.user.findUnique({
-            where: { 
-                id: studentId,
-                role: 'STUDENT'
-            },
-            include: {
-                student: {
-                include: {
-                    Experience: true
-                }
-                }
-            }
+        const experiences = await prisma.experience.findMany({
+            where: { student: { id: studentId } },
+            orderBy: { startDate: "desc" },
         });
-
-        if (!student) {
-            return res.status(404).json({ 
-                error: 'Student not found' 
-            });
-        }
-
-        const { password, ...studentWithoutPassword } = student;
-
-        res.json(studentWithoutPassword);
-
-    } catch (error) {
-            console.error('Error fetching student:', error);
-            res.status(500).json({ 
-            error: 'Failed to fetch student profile' 
-        });
+        res.json(experiences);
+    } catch (e) {
+        next(e);
     }
 });
 
-router.put('/:id', async (req: Request, res: Response) => {
+router.post("/me/experiences", async (req, res, next) => {
     try {
-        const studentId = parseInt(req.params.id);
+        const userId = getUserId(req);
+        const studentId = await getStudentProfileId(userId);
+        const input = ExperienceCreate.parse(req.body);
 
-        const updateSchema = studentRegistrationSchema.partial().omit({ 
-            email: true, 
-            password: true 
-        });
-
-        const validatedData = updateSchema.parse(req.body);
-
-        const updatedUser = await prisma.user.update({
-            where: { id: studentId },
+        const created = await prisma.experience.create({
             data: {
-                name: validatedData.name,
-                student: {
-                update: {
-                    major: validatedData.major,
-                    year: validatedData.year,
-                    resumeUrl: validatedData.resumeUrl,
-                    linkedInUrl: validatedData.linkedInUrl,
-                    githubUrl: validatedData.githubUrl,
-                    gender: validatedData.gender,
-                    ethnicity: validatedData.ethnicity,
-                    optional: validatedData.optional
-                }
-                }
+                ...input,
+                student: { connect: { id: studentId } },
             },
-            include: {
-                student: true
-            }
-        });
-
-        const { password, ...userWithoutPassword } = updatedUser;
-
-        res.json({
-            message: 'Student profile updated successfully',
-            user: userWithoutPassword
-        });
-
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            return res.status(400).json({ 
-                error: 'Validation failed', 
-                details: error.issues 
             });
+        res.status(201).json(created);
+    } catch (e) {
+        next(e);
+    }
+});
+
+router.patch("/me/experiences/:experienceId", async (req, res, next) => {
+    try {
+        const userId = getUserId(req);
+        const studentId = await getStudentProfileId(userId);
+        const experienceId = Number(req.params.experienceId);
+        const input = ExperiencePatch.parse(req.body);
+
+        await prisma.experience.findFirstOrThrow({
+            where: { id: experienceId, student: { id: studentId } },
+            select: { id: true },
+        });
+
+        const updated = await prisma.experience.update({
+            where: { id: experienceId },
+            data: input,
+        });
+        res.json(updated);
+    } catch (e) {
+        next(e);
+    }
+});
+
+router.delete("/me/experiences/:experienceId", async (req, res, next) => {
+    try {
+        const userId = getUserId(req);
+        const studentId = await getStudentProfileId(userId);
+        const experienceId = Number(req.params.experienceId);
+
+        await prisma.experience.findFirstOrThrow({
+            where: { id: experienceId, student: { id: studentId } },
+            select: { id: true },
+        });
+
+        await prisma.experience.delete({ where: { id: experienceId } });
+        res.status(204).send();
+    } catch (e) {
+        next(e);
+    }
+});
+
+router.get("/me/applications", async (req, res, next) => {
+    try {
+        const userId = getUserId(req);
+        const studentId = await getStudentProfileId(userId);
+
+        const apps = await prisma.application.findMany({
+            where: { student: { id: studentId } }, 
+            orderBy: [{ id: "desc" }],
+            select: {
+                id: true,
+                status: true,
+                job: { select: { id: true, title: true, company: true, location: true } },
+            },
+        });
+        res.json(apps);
+    } catch (e) {
+        next(e);
+    }
+});
+
+router.post("/me/applications", async (req, res, next) => {
+    try {
+        const userId = getUserId(req);
+        const studentId = await getStudentProfileId(userId);
+        const input = ApplicationCreate.parse(req.body);
+
+        const created = await prisma.application.create({
+            data: {
+                studentId,
+                jobId: input.jobId,
+                coverLetter: input.coverLetter ?? null,
+            },
+            select: appSelect,
+        });
+        res.status(201).json(created);
+    } catch (e) {
+        next(e);
+    }
+});
+
+router.post("/me/applications/:applicationId/withdraw", async (req, res, next) => {
+    try {
+        const userId = getUserId(req);
+        const studentId = await getStudentProfileId(userId);
+        const applicationId = Number(req.params.applicationId);
+
+        await prisma.application.findFirstOrThrow({
+            where: { id: applicationId, studentId },
+            select: { id: true },
+        });
+
+        const updated = await prisma.application.update({
+            where: { id: applicationId },
+            data: { status: ApplicationStatus.PENDING}, //Add a WITHDRAWN state in the prisma files to fix this
+            select: { id: true, status: true },
+        });
+        res.json(updated);
+    } catch (e) {
+        next(e);
+    }
+});
+
+router.get("/me/interviews", async (req, res, next) => {
+    try {
+        const userId = getUserId(req);
+        const studentId = await getStudentProfileId(userId);
+
+        const interviews = await prisma.interviewRequest.findMany({
+            where: { studentId },
+            orderBy: { createdAt: "desc" },
+            select: appSelect,
+        });
+        res.json(interviews);
+    } catch (e) {
+        next(e);
+    }
+});
+
+router.patch("/me/interviews/:interviewId/respond", async (req, res, next) => {
+    try {
+        const userId = getUserId(req);
+        const studentId = await getStudentProfileId(userId);
+        const interviewId = Number(req.params.interviewId);
+        const input = InterviewRespond.parse(req.body);
+
+        await prisma.interviewRequest.findFirstOrThrow({
+            where: { id: interviewId, studentId },
+            select: { id: true },
+        });
+
+        let data: any = {};
+        if (input.decision === "accept") data.status = "ACCEPTED";
+        if (input.decision === "decline") data.status = "DECLINED";
+
+        if (input.decision === "propose") {
+            if (!input.availability?.length) {
+                return res.status(400).json({ error: "availability required" });
+            }
+            data.calendarData = { proposedByStudent: input.availability };
+            data.status = "PENDING";
         }
 
-        console.error('Update error:', error);
-        res.status(500).json({ 
-            error: 'Failed to update student profile' 
+        const updated = await prisma.interviewRequest.update({
+            where: { id: interviewId },
+            data,
+            select: { id: true, status: true, calendarData: true },
         });
+        res.json(updated);
+    } catch (e) {
+        next(e);
     }
 });
 

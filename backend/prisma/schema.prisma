@@ -66,13 +66,20 @@ model StudentProfile {
   resumeUrl   String?
   linkedInUrl String?
   githubUrl   String?
+  phoneNumber String?
+  transcript  String?
+  aboutMe     String?  @db.Text
+  bookmarks   Int[]
 
   // demographics
   gender    Gender
   ethnicity Ethnicity[] // Postgres enum array
   optional  IdentityFlag[] // Postgres enum array
 
-  Experience Experience[]
+  experience Experience[]
+  educations   Education[]
+  applications Application[]
+  interviews   InterviewRequest[]
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -94,13 +101,125 @@ model Experience {
 model EmployerProfile {
   id      Int     @id @default(autoincrement())
   userId  Int     @unique
-  company String?
-  role    String?
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  companyId       Int?
+  workPhone       String?
+  workEmail       String?
+  profilePhotoUrl String?
+  notificationMethod String?
+  availability    String?
+  
+  company    Company? @relation(fields: [companyId], references: [id])
+  jobs       Job[]
+  interviews InterviewRequest[]
+  
+  @@index([companyId])
 }
 
 model AdminProfile {
   id     Int  @id @default(autoincrement())
   userId Int  @unique
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Education {
+  id         Int      @id @default(autoincrement())
+  studentId  Int
+  program    String
+  yearOfStudy Int?
+  gradDate   DateTime?
+  schoolName String
+  
+  student    StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  @@index([studentId])
+}
+
+model Company {
+  id            Int      @id @default(autoincrement())
+  name          String
+  companyId     String?  @unique
+  url           String?
+  size          String?
+  about         String?  @db.Text
+  careersPage   String?
+  linkedInUrl   String?
+  
+  jobs          Job[]
+  employees     EmployerProfile[]
+}
+
+enum ApplicationStatus {
+  PENDING
+  REVIEWED
+  SHORTLISTED
+  REJECTED
+  INTERVIEW
+  OFFER
+  ACCEPTED
+}
+
+model Job {
+  id          Int      @id @default(autoincrement())
+  companyId   Int
+  employerId  Int
+  description String   @db.Text
+  title       String
+  location    String?
+  type        String?  // Full-time, Part-time, Internship
+  salary      String?
+  requirements String? @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  employer    EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  applications Application[]
+  
+  @@index([companyId])
+  @@index([employerId])
+}
+
+model Application {
+  id            Int      @id @default(autoincrement())
+  jobId         Int
+  studentId     Int
+  status        ApplicationStatus @default(PENDING)
+  shortlisted   Boolean  @default(false)
+  appliedAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  coverLetter   String?  @db.Text
+  
+  job           Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  student       StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  @@unique([jobId, studentId]) // Student can only apply once per job
+  @@index([studentId])
+  @@index([jobId])
+}
+
+enum InterviewStatus {
+  PENDING
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+model InterviewRequest {
+  id          Int      @id @default(autoincrement())
+  studentId   Int
+  employerId  Int
+  jobId       Int?
+  status      InterviewStatus @default(PENDING)
+  inviteList  Json?    // Store list of student and employer IDs
+  calendarData Json?   // Store calendar/scheduling info
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  employer    EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  
+  @@index([studentId])
+  @@index([employerId])
 }

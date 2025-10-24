@@ -32,12 +32,12 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
 
 export function requireRole(...allowedRoles: Role[]) {
     return (req: Request, res: Response, next: NextFunction) => {
-        if (!req.user) {
+        if (!req.user?.role) {
             return res.status(401).json({ error: "Missing token" });
         }
 
         if (!allowedRoles.includes(req.user.role)) {
-            return res.status(403).json({ error: "Forbidden" });
+            return res.status(403).json({ error: `Forbidden: requires role ${allowedRoles.join(", ")}` });
         }
 
         next();
