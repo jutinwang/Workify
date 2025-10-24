@@ -13,44 +13,94 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role{
+enum Role {
   ADMIN
   STUDENT
   EMPLOYER
 }
 
+enum Gender {
+  WOMAN
+  MAN
+  NON_BINARY
+  TWO_SPIRIT
+  PREFER_NOT_TO_SAY
+}
+
+enum Ethnicity {
+  BLACK
+  EAST_ASIAN
+  SOUTH_ASIAN
+  SOUTHEAST_ASIAN
+  MENA
+  LATINX
+  WHITE
+  MIXED
+  PREFER_NOT_TO_SAY
+}
+
+enum IdentityFlag {
+  INDIGENOUS
+  DISABILITY
+  VETERAN
+}
+
 model User {
-  id  Int   @id @default(autoincrement())
-  email String @unique
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
   password  String
-  name  String
-  role  Role  @default(STUDENT)
-  createdAt DateTime  @default(now())
+  name      String
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
 
-  student StudentProfile?
-  employer  EmployerProfile? 
-  admin AdminProfile?
+  student    StudentProfile?
+  employer   EmployerProfile?
+  admin      AdminProfile?
 }
 
-model StudentProfile{
-  id  Int @id @default(autoincrement())
-  userId Int @unique
-  major String?
-  year Int?
-  resumeUrl String?
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+model StudentProfile {
+  id          Int     @id @default(autoincrement())
+  userId      Int     @unique
+  major       String?
+  year        Int?
+  resumeUrl   String?
+  linkedInUrl String?
+  githubUrl   String?
+
+  // demographics
+  gender    Gender
+  ethnicity Ethnicity[] // Postgres enum array
+  optional  IdentityFlag[] // Postgres enum array
+
+  Experience Experience[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model EmployerProfile{
-  id  Int @id @default(autoincrement())
-  userId Int @unique
+model Experience {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  title       String
+  company     String
+  startDate   DateTime
+  endDate     DateTime?
+  description String?
+
+  student StudentProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model EmployerProfile {
+  id      Int     @id @default(autoincrement())
+  userId  Int     @unique
   company String?
-  role String?
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role    String?
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model AdminProfile{
-  id  Int @id @default(autoincrement())
-  userId Int @unique
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+model AdminProfile {
+  id     Int  @id @default(autoincrement())
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
