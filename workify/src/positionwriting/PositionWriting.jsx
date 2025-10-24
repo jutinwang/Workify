@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import './PositionWriting.css';
 
 const PositionWriting = () => {
@@ -32,6 +33,18 @@ const PositionWriting = () => {
 
     function removeTag(index) {
         setTags(tags.filter((el, i) => i !== index))
+    }
+
+    // TODO: CHANGE CONTENTS SO IT POSTS JOB TO BACKEND
+    function postJob() {
+        setCoopDescription("");
+        setResponsibilities("");
+        setQualifications("");
+        setBenefits("");
+        setJobLength("");
+        setSalaryRange("");
+        setWorkModel("");
+        setTags([]);
     }
 
     return (
@@ -133,8 +146,14 @@ const PositionWriting = () => {
                 </div>
 
                 <div className="button-container">
-                    <button className="cancel-btn">Cancel</button>
-                    <button className="post-btn">Post</button>
+                    <Link
+                        to={`/profile-employer`}
+                        className="navigateHome"
+                        title="Go Back"
+                        >
+                        <button className="cancel-btn">Cancel</button>                    
+                    </Link>
+                    <button className="post-btn" onClick={postJob}>Post</button>
                 </div>
             </div>
         </div>
