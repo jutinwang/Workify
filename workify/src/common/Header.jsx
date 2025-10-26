@@ -1,6 +1,6 @@
 import "./Header.css";
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import "../var.css"
 import Logo from "../assets/workifyLogo2.png"
 
@@ -20,30 +20,30 @@ export default function Header() {
       {isEmployer ? (
         <ul className="nav-links">
           <li>
-            <a href="/profile-employer">View Your Profile</a>
+            <Link to="/profile-employer">View Your Profile</Link>
           </li>
           <li>
-            <a href="/employer-candidates">Applicants</a>
+            <Link to="/employer-candidates">Applicants</Link>
           </li>
           <li>
-            <a href="/employer-interviews">Interviews & Schedule</a>
+            <Link to="/employer-interviews">Interviews & Schedule</Link>
           </li>
         </ul>
       ) : (
         <ul className="nav-links">
           <li>
-            <a href="/">Home</a>
+            <Link to="/">Home</Link>
           </li>
           <li>
-            <a href="/jobs">Postings</a>
+           <Link to="/jobs">Postings</Link>
           </li>
           <li>
-            <a href="/applications">Applications & Status</a>
+            <Link to="/applications">Applications & Status</Link>
           </li>
         </ul>
       )}
       <div className="nav-profile">
-        <a href={isEmployer ? "/employer-job-writing" : "/profile"}>{topRightTextContent}</a>
+        <Link to={isEmployer ? "/employer-job-writing" : "/profile"}> {topRightTextContent} </Link>
       </div>
     </div>
   );
