@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SignUpForm.css";
+import "../var.css";
 import outlookLogo from "../assets/outlook_logo.png";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

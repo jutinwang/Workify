@@ -2,7 +2,12 @@ import { useState, useMemo } from "react";
 import JobsFilter from "./JobsFilter";
 import JobCard from "./JobCard";
 import JobDetails from "./JobDetails";
+import SavedSection from "./SavedSection";
 import "./jobs.css";
+import "../var.css";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
 
 const JOB_TYPES = [
   "All Types",
@@ -124,30 +129,96 @@ const JOBS = [
 
 const Jobs = () => {
   const [filters, setFilters] = useState({
-    jobType: JOB_TYPES[0],
-    level: LEVELS[0],
+    searchTerm: "",
+    jobTypes: [],
+    levels: [],
+    locations: [],
+    datePosted: "",
     remoteOnly: false,
   });
 
   const [selectedJob, setSelectedJob] = useState(null);
 
+  // Mock data for saved items
+  const savedSearches = [
+    {
+      id: 1,
+      name: "Frontend React Jobs",
+      criteria: "React, Remote, Full-time",
+      newJobs: 3,
+    },
+    {
+      id: 2,
+      name: "Senior Backend",
+      criteria: "Node.js, Senior, Ottawa",
+      newJobs: 0,
+    },
+  ];
+
+  const [savedJobs, setSavedJobs] = useState([
+    { id: 1, title: "Software Engineer", company: "TechStart Inc.", location: "Remote" },
+    { id: 2, title: "Frontend Developer", company: "TechStart Inc.", location: "Remote" },
+  ]);
+
+  const handleRemoveJob = (jobId) => {
+    setSavedJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
+  };
+
+
   const filtered = useMemo(() => {
     return JOBS.filter((j) => {
-      const typeOk =
-        filters.jobType === "All Types" ||
-        j.type.toLowerCase().includes(filters.jobType.toLowerCase());
-      const levelOk =
-        filters.level === "All Levels" ||
-        j.level.toLowerCase() === filters.level.toLowerCase();
-      const remoteOk = !filters.remoteOnly || j.remote;
-      return typeOk && levelOk && remoteOk;
+      // Search term
+      if (filters.searchTerm) {
+        const search = filters.searchTerm.toLowerCase();
+        const matchesSearch =
+          j.title.toLowerCase().includes(search) ||
+          j.company.toLowerCase().includes(search) ||
+          j.location.toLowerCase().includes(search);
+        if (!matchesSearch) return false;
+      }
+
+      // Job types
+      if (filters.jobTypes?.length > 0) {
+        const matchesType = filters.jobTypes.some((type) =>
+          j.type.toLowerCase().includes(type.toLowerCase())
+        );
+        if (!matchesType) return false;
+      }
+
+      // Levels
+      if (filters.levels?.length > 0) {
+        const matchesLevel = filters.levels.some(
+          (level) => j.level.toLowerCase() === level.toLowerCase()
+        );
+        if (!matchesLevel) return false;
+      }
+
+      // Locations
+      if (filters.locations?.length > 0) {
+        const matchesLocation = filters.locations.some((location) =>
+          j.location.toLowerCase().includes(location.toLowerCase())
+        );
+        if (!matchesLocation) return false;
+      }
+
+      // Remote only
+      if (filters.remoteOnly && !j.remote) return false;
+
+      return true;
     });
   }, [filters]);
 
   return (
     <div className="jobs-page-container">
+      <SavedSection savedJobs={savedJobs} savedSearches={savedSearches} onRemoveJob={handleRemoveJob}/>
+
       <div className="filters-section">
-        <JobsFilter filters={filters} setFilters={setFilters} />
+        <JobsFilter
+          filters={filters}
+          setFilters={setFilters}
+          totalJobs={JOBS.length}
+          filteredCount={filtered.length}
+        />
       </div>
       <div
         className={`jobs-content ${

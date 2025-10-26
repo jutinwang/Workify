@@ -5,6 +5,7 @@ import ApplicantResults from "./components/ApplicantResults";
 import CandidateModal from "./components/CandidateModal";
 import { jobs, jobApplicants } from "./data/mockData";
 import "./styles/App.css";
+import "../var.css";
 
 const EmployerCandidateContainer = () => {
   const [selectedJob, setSelectedJob] = useState(null);
@@ -13,14 +14,29 @@ const EmployerCandidateContainer = () => {
   const [courseFilter, setCourseFilter] = useState([]);
   const [skillsFilter, setSkillsFilter] = useState([]);
   const [sortBy, setSortBy] = useState("");
+  const [showShortlistedOnly, setShowShortlistedOnly] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [viewedCandidatesByJob, setViewedCandidatesByJob] = useState({});
+
+  // Helper function to get shortlisted candidates for a specific job
+  const getShortlistedCandidatesForJob = (jobId) => {
+    const shortlistedData = JSON.parse(
+      localStorage.getItem("shortlistedCandidatesByJob") || "{}"
+    );
+    return new Set(shortlistedData[jobId] || []);
+  };
 
   const getFilteredApplicants = () => {
     if (!selectedJob) return [];
 
     const jobSpecificApplicants = jobApplicants[selectedJob.id] || [];
     let filtered = [...jobSpecificApplicants];
+
+    // Apply shortlist filter first if enabled
+    if (showShortlistedOnly) {
+      const shortlistedIds = getShortlistedCandidatesForJob(selectedJob.id);
+      filtered = filtered.filter((app) => shortlistedIds.has(app.id));
+    }
 
     if (searchTerm) {
       filtered = filtered.filter(
@@ -87,6 +103,12 @@ const EmployerCandidateContainer = () => {
     setSelectedCandidate(null);
   };
 
+  // Reset shortlist filter when changing jobs
+  const handleJobSelect = (job) => {
+    setSelectedJob(job);
+    setShowShortlistedOnly(false);
+  };
+
   const filteredApplicants = getFilteredApplicants();
   const totalApplicants = selectedJob
     ? (jobApplicants[selectedJob.id] || []).length
@@ -101,7 +123,7 @@ const EmployerCandidateContainer = () => {
         <JobList
           jobs={jobs}
           selectedJob={selectedJob}
-          onSelectJob={setSelectedJob}
+          onSelectJob={handleJobSelect}
         />
 
         {selectedJob && (
@@ -115,11 +137,13 @@ const EmployerCandidateContainer = () => {
               courseFilter={courseFilter}
               skillsFilter={skillsFilter}
               sortBy={sortBy}
+              showShortlistedOnly={showShortlistedOnly}
               onSearchChange={setSearchTerm}
               onYearChange={setYearFilter}
               onCourseChange={setCourseFilter}
               onSkillsChange={setSkillsFilter}
               onSortChange={setSortBy}
+              onShortlistedFilterChange={setShowShortlistedOnly}
             />
 
             <ApplicantResults
@@ -133,6 +157,7 @@ const EmployerCandidateContainer = () => {
         {selectedCandidate && (
           <CandidateModal
             candidate={selectedCandidate}
+            jobId={selectedJob?.id}
             onClose={handleCloseModal}
           />
         )}

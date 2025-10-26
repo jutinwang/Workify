@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginForm.css";
+import "../var.css";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -39,37 +40,33 @@ const LoginForm = ({isEmployer}) => {
     <div className="form">
       <form className="login-form" onSubmit={onSubmit} noValidate>
         <div className="field">
-          <label htmlFor="email" />
+          <label htmlFor="email">Email</label>
           <input
             id="email"
             name="email"
             type="email"
             value={form.email}
             onChange={handleChange}
-            placeholder="Email"
             required
           />
           {errors.email && <p className="error">{errors.email}</p>}
         </div>
 
         <div className="field">
-          <label htmlFor="password" />
+          <label htmlFor="password">Password</label>
           <input
             id="password"
             name="password"
             type="password"
             value={form.password}
             onChange={handleChange}
-            placeholder="Password"
             required
           />
-          {/* <p className="pw-strength">Strength: {pwStrength}/5</p>
-                    {errors.password && <p className="error">{errors.password}</p>} */}
         </div>
 
         <div className="login-button-container">
           <button className="submitButton" type="submit" disabled={submitting}>
-            {submitting ? "Loging up..." : "Login"}
+            {submitting ? "Logging in..." : "Login"}
           </button>
         </div>
       </form>

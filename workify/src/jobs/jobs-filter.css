@@ -1,111 +1,358 @@
-/* Layout */
-.jobs-filter-section {
-  display: grid;
-  grid-template-columns: 1fr 1px 1fr;
-  align-items: start;
-  gap: 1.5rem;
-  padding: 12px 0;
+@import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
+.jobs-filter-wrapper {
+  padding: 2rem 2.4rem;
   border-bottom: 1px solid #e6e6e6;
 }
 
-.jf-left {
+.jobs-filter-header {
   display: flex;
-  padding: 2.4rem;
-  flex-direction: column;
-  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  color: var(--main-text);
+  font-family: var(--main-font);
 }
 
-.jf-right {
-  display: flex;
-  padding-right: 2.4rem;
-  padding: 2.4rem 0 2.4rem 0;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.jf-left h3,
-.jf-right h3 {
+.jobs-section-title {
   margin: 0;
-  font-size: 18px;
-  font-weight: 650;
-  color: #1f1f1f;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--main-text);
+  font-family: var(--main-font);
 }
 
-/* Search input (with icon) */
-.search-input {
+.jobs-count {
+  color: #6b7280;
+  font-size: 0.9rem;
+  font-family: var(--main-font);
+}
+
+/* Airbnb-style filter bar */
+.jobs-filter-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 40px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #dddddd;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  font-family: var(--main-font);
+}
+
+/* Filter pill buttons */
+.jobs-filter-pill {
+  padding: 0.625rem 1rem;
+  border: 1px solid #dddddd;
+  border-radius: 24px;
+  background: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #222222;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
   display: flex;
   align-items: center;
-  gap: 8px;
-  width: 320px; /* close to screenshot width */
-  border: 1px solid #bdbdbd;
-  border-radius: 6px;
-  padding: 8px 10px;
-  background: #fff;
+  gap: 0.5rem;
+  min-width: fit-content;
 }
 
-.search-input .search-icon {
-  opacity: 0.7;
+.jobs-filter-pill:hover {
+  border-color: var(--secondary-green);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.search-input input {
-  border: 0;
-  outline: 0;
+
+.jobs-filter-pill.active {
+  background: #f7f7f7;
+  border-color: #222222;
+}
+
+.jobs-filter-pill.has-value {
+  background: #222222;
+  color: white;
+  border-color: #222222;
+}
+
+/* Search pill */
+.jobs-search-pill {
   flex: 1;
-  font-size: 14px;
-  background: transparent;
-}
-
-/* Filters row (inline pills) */
-.filters-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.select-wrap {
+  min-width: 200px;
   position: relative;
 }
 
-/* Make native <select> look like the pill buttons in the image */
-.select-wrap select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+.jobs-pill-icon {
+  width: 16px;
+  height: 16px;
+}
 
-  font-size: 14px;
-  line-height: 1;
-  padding: 10px 36px 10px 14px; /* room for arrow on right */
-  border: 1px solid #bdbdbd;
-  border-radius: 8px;
-  background: #fff /* caret icon (down chevron) */
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 20 20' fill='none' stroke='%23222222' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 8 10 12 14 8'/></svg>")
-    no-repeat right 12px center;
+.jobs-search-pill input {
+  width: 100%;
+  padding: 0.8rem 1rem 0.8rem 0rem;
+  border: none;
+  background: transparent;
+  font-size: 0.875rem;
+  color: #222222;
+  font-family: var(--main-font);
+}
+
+.jobs-search-pill input::placeholder {
+  color: #717171;
+}
+
+.jobs-search-pill input:focus {
+  outline: none;
+}
+
+/* Filter button (modal trigger) */
+.jobs-filters-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border: 1px solid #dddddd;
+  border-radius: 24px;
+  background: white;
+  font-size: 0.875rem;
+  font-weight: 500;
   cursor: pointer;
-  min-width: 140px; /* pill width like image */
-  color: #1f1f1f;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  font-family: var(--main-font);
 }
 
-.select-wrap select:hover {
-  border-color: #9a9a9a;
+.jobs-filters-button:hover {
+  border-color: var(--secondary-green);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.select-wrap select:focus {
-  outline: 3px solid rgba(0, 102, 255, 0.15);
-  border-color: #4a83ff;
+/* Modal overlay */
+.jobs-filter-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
 }
 
-/* Responsive: stack on small screens */
-@media (max-width: 740px) {
-  .jobs-filter-section {
-    grid-template-columns: 1fr; /* stack */
-    gap: 12px;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  .jf-divider {
-    display: none;
+  to {
+    opacity: 1;
   }
-  .search-input {
+}
+
+/* Modal content */
+.jobs-filter-modal {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 780px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease;
+  font-family: var(--main-font);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.jobs-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #ebebeb;
+}
+
+.jobs-modal-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #222222;
+  font-family: var(--main-font);
+}
+
+.jobs-close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.jobs-close-button:hover {
+  background: #f7f7f7;
+}
+
+.jobs-close-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.jobs-modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.jobs-filter-section {
+  margin-bottom: 2rem;
+  box-sizing: border-box;
+}
+
+.jobs-filter-section:last-child {
+  margin-bottom: 0;
+}
+
+.jobs-filter-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #222222;
+  margin-bottom: 1rem;
+  font-family: var(--main-font);
+}
+
+.jobs-filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.jobs-filter-options > div > input{
+  width: 100%;
+  padding: 0.7em 1em;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5em;
+  font-size: 1em;
+  box-sizing: "border-box";
+}
+
+.jobs-filter-option {
+  padding: 0.5rem 1rem;
+  border: 1px solid #b0b0b0;
+  border-radius: 24px;
+  background: white;
+  font-size: 0.875rem;
+  color: #222222;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--main-font);
+  box-sizing: border-box;
+  height: fit-content;
+}
+
+.jobs-filter-option:hover {
+  border-color: #222222;
+}
+
+.jobs-filter-option.selected {
+  background: var(--secondary-green);
+  color: white;
+  border-color: #222222;
+}
+
+.jobs-modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #ebebeb;
+}
+
+.jobs-clear-button {
+  border-radius: 8px;
+  color: var(--text-white);
+  background: var(--main-text);
+  font-size: 0.875rem;
+  padding: 0.875rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: var(--main-font);
+}
+
+.jobs-clear-button:hover {
+  color: #000000;
+}
+
+.jobs-show-results-button {
+  background: var(--secondary-green);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.875rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--main-font);
+}
+
+.jobs-show-results-button:hover {
+  background: #000000;
+  transform: scale(1.02);
+}
+
+/* Badge for active filters */
+.jobs-filter-badge {
+  background: var(--secondary-green);
+  color: var(--text-white);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--main-font);
+}
+
+@media (max-width: 768px) {
+  .jobs-filter-controls {
+    border-radius: 12px;
+    padding: 0.75rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .jobs-filter-pill,
+  .jobs-search-pill,
+  .jobs-filters-button {
     width: 100%;
+    justify-content: center;
   }
-  .filters-row {
-    gap: 10px;
+
+  .jobs-filter-modal {
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
   }
 }

@@ -5,6 +5,7 @@
   width: 100vw;
   box-sizing: border-box;
   overflow: hidden;
+
 }
 
 .logo {
@@ -35,9 +36,9 @@
   }
 }
 
-.card {
+/* .card {
   padding: 2em;
-}
+} */
 
 .read-the-docs {
   color: #888;

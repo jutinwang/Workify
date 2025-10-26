@@ -1,30 +1,50 @@
 import { Route, Routes, useLocation, Link } from "react-router-dom";
 import "./Landing.css";
+import "./var.css"
 import Header from "./common/Header.jsx";
-import Carousel from "./components/Carousel.jsx";
+import building from "./assets/building.jpg";
+import workplace from "./assets/workplace.jpg";
+import penImage from "./assets/pen.jpg";
+import fem from "./assets/female-empowerment.jpg";
+import animatedGrowth from "./assets/animated-growth-volatile-arrow-open-black.svg";
+import workifyLogo from "./assets/workifyLogo2.png";
+
 
 function Landing() {
   return (
     <div className="landingpage-container">
+      <div className="landing-logo"><img className="workify-logo" src={workifyLogo}></img></div>
+
       <div className="maincontent">
         <div className="maincontent-text">
-          <h1>
-            Let’s find what <br></br>
-            <span className="highlight">works</span> for you.
-          </h1>
-          <p>
-            You can apply on other platforms, but you can find a job on Workify.
-            Workify doesn’t just find work for you, it finds what works for you.
+          <h1>Let’s find what works for you.</h1>
+          <p className="landing-description">
+            Workify doesn't just find work for you, it finds what works for you.
           </p>
-          <Link to="/signup">
-            <button className="explore-btn">
+
+          <Link className="explore-btn" to="/signup">
               Explore Opportunities <span>→</span>
-            </button>
           </Link>
+
+          <div className="landing-line-art">
+            <img src={animatedGrowth}></img>
+            <h4>Grow your skills and yourself, only at Workify</h4>
+          </div>
         </div>
 
-        <div className="hero-image">
-          <Carousel />
+        <div className="right-side">
+          <div className="image-card">
+            <img src={fem}></img>
+          </div>
+          <div className="image-card">
+            <img src={workplace}></img>
+          </div>
+          <div className="image-card">
+            <img src={penImage}></img>
+          </div>
+          <div className="image-card">
+            <img src={building}></img>
+          </div>
         </div>
       </div>
     </div>

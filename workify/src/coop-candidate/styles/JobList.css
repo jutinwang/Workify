@@ -50,9 +50,10 @@
 
 .employer.job-link {
   background: none;
-  border: 1px solid #2563eb;
-  color: #2563eb;
+  border: 1px solid var(--secondary-green);
+  color: var(--secondary-green);
   cursor: pointer;
+  min-height: 3em;
   font-size: 0.875rem;
   padding: 0.25rem 0.75rem;
   white-space: nowrap;
@@ -61,7 +62,7 @@
 }
 
 .employer.job-link:hover {
-  background-color: #2563eb;
+  background-color: var(--secondary-green);
   color: white;
   text-decoration: none;
 }

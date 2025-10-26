@@ -66,13 +66,20 @@
   font-weight: 800;
 }
 .job-titleblock {
+  flex: 1;
   min-width: 0;
+  margin-right: 0.5rem;
 }
 .job-title {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 800;
-  color: #0f172a;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--main-text);
+  margin: 0 0 0.25rem 0;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  max-width: 100%;
 }
 .job-company {
   color: #0f172a;
@@ -131,8 +138,8 @@
 }
 .tag {
   border: 1px solid #e5e7eb;
-  background: #fff;
-  color: #0f172a;
+  background: var(--secondary-green) !important;
+  color: var(--text-white) !important;
   border-radius: 999px;
   padding: 4px 10px;
   font-size: 0.8rem;
@@ -173,19 +180,16 @@
 }
 
 .bookmark-btn {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background: transparent;
+  background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-  color: #94a3b8;
+  padding: 0.5rem;
+  color: var(--accent-text);
   transition: all 0.2s ease;
+  flex-shrink: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  margin-top: -0.25rem;
 }
 
 .bookmark-btn:hover {
