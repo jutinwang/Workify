@@ -32,7 +32,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
+      
+      # vite builds workify/dist, and workify is the folder that contains index.html
       - name: Install dependencies and build
         run: |
           cd workify
@@ -42,7 +43,7 @@ jobs:
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: workify/dist
+          path: workify/dist # path for where the index.html file is (/dist is for when it's built)
 
   deploy:
     runs-on: ubuntu-latest
