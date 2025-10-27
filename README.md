@@ -1,91 +1,12 @@
-# Workify - CSI4900 Honours Project  
+# React + Vite
 
-**A Modern Take on the Co-op Experience**
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-**Created by**: 
-- Ali Bhangu 
-- Tolu Emoruwa 
-- Justin Wang
+Currently, two official plugins are available:
 
-## Project Overview
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-Workify is an innovative take on revolutionizing the co-op experience for both employers and employees. Unlike traditional co-op boards that simply list available positions, Workify focuses on finding what "works" for each individual user through personalized matching, intuitive design, and comprehensive profile management.
+## Expanding the ESLint configuration
 
-## System Design
-
-![System Architecture](./workify/docs/Version1_SysDesign.png)
-
-### Architecture Overview
-- Frontend: React.js
-- Backend: Express.js | Node.js
-- Database: SQL, more specifically Amazon RDS
-
-
-## Prerequisites
-Before running this project locally, ensure you have the following installed:
-
-- **Node.js** (version 20 or higher)
-- **npm** (comes with Node.js) or **yarn**
-
-## Local Setup
-
-1. **Clone the repository**
-```bash
-git clone <repository-url>
-cd Workify
-```
-
-2. **Navigate to the project directory**
-```bash
-cd workify
-```
-
-3. **Install dependencies**
-```bash
-npm install
-```
-
-4. **Start the development server**
-```bash
-npm run dev
-```
-
-5. **Open your browser**
-Navigate to `http://localhost:5173` (or the port shown in your terminal)
-
-## Dependencies
-
-This project uses the following main dependencies:
-
-- **React** (18+) - Frontend framework
-- **React Router DOM** - Client-side routing
-- **Vite** - Build tool and development server
-
-### Development Dependencies
-- **@vitejs/plugin-react** - Vite plugin for React
-- **ESLint** - Code linting
-- **CSS3** - Styling
-
-## Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-
-## Project Structure
-
-```
-workify/
-├── src/
-│   ├── assets/          # Images and static assets
-│   ├── common/          # Shared components (Header, etc.)
-│   ├── jobs/            # Job listing components
-│   ├── profile/         # User profile components
-│   ├── sign-up/         # Registration components
-│   ├── App.jsx          # Main app component
-│   ├── Landing.jsx      # Landing page
-│   └── main.jsx         # App entry point
-├── public/              # Public assets
-|── docs/                # Project documentation
-└── package.json         # Project dependencies
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
