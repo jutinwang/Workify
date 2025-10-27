@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import SignupForm from "./SignupForm";
+import SignupForm from "./SignUpForm";
 import LoginForm from "./LoginForm";
 import "./AuthTabs.css";
 
