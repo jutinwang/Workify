@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { Prisma, PrismaClient, Role, ApplicationStatus } from "@prisma/client";
+import { Prisma, PrismaClient, Role, ApplicationStatus, Gender, Ethnicity, IdentityFlag } from "@prisma/client";
 import { z } from "zod";
-import { requireAuth, requireRole } from "../middleware/requireAuth.js";
+import { requireAuth, requireRole } from "../middleware/requireAuth";
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -41,7 +41,10 @@ const appSelect = {
 } satisfies Prisma.ApplicationSelect;
 
 function getUserId(req: Express.Request): number {
-    return req.user!.id;
+    const u: any = req.user ?? {};
+    const id = Number(u.id ?? u.userId ?? u.sub);
+    if (!Number.isFinite(id)) throw new Error("Unauthenticated");;
+    return id;
 }
 
 async function getStudentProfileId(userId: number): Promise<number> {

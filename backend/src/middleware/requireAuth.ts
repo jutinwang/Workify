@@ -1,7 +1,6 @@
-// src/middleware/auth.ts
 import { Request, Response, NextFunction } from "express";
 import * as Prisma from "@prisma/client";
-import { verifyToken, JwtClaims } from "../lib/jwt.js";
+import { verifyToken, JwtClaims } from "../lib/jwt";
 
 declare global {
     namespace Express {

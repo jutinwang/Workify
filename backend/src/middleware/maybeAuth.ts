@@ -1,4 +1,4 @@
-import { verifyToken } from "../lib/jwt.js";
+import { verifyToken } from "../lib/jwt";
 
 export function maybeAuth(req: any, _res: any, next: any) {
     const h = req.header("authorization");
