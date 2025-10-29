@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Prisma, PrismaClient, Role, ApplicationStatus, Gender, Ethnicity, IdentityFlag } from "@prisma/client";
 import { z } from "zod";
-import { requireAuth, requireRole } from "../middleware/requireAuth";
+import { requireAuth, requireRole } from "../../middleware/requireAuth";
 
 const prisma = new PrismaClient();
 const router = Router();

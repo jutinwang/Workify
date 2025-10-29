@@ -146,5 +146,114 @@ router.post("/login", async (req, res, next) => {
     }
 });
 
+const RegisterEmployerBody = z.object({
+    // user core
+    email: z.string().email().transform(s => s.trim().toLowerCase()),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    name: z.string().min(1, "Name is required"),
+
+    // employer profile optional fields
+    workPhone: z.string().optional(),
+    workEmail: z.string().email().optional(),
+    profilePhotoUrl: z.string().url().optional(),
+    notificationMethod: z.string().optional(), 
+    availability: z.string().optional(),
+
+    // company linkage (choose one):
+    companyId: z.number().int().positive().optional(), 
+    companyName: z.string().min(1).optional(), 
+    companyUrl: z.string().url().optional(),
+    companySize: z.string().optional(),
+    companyAbout: z.string().optional(),
+    companyCareersPage: z.string().url().optional(),
+    companyLinkedInUrl: z.string().url().optional(),
+});
+
+router.post("/employers/register", async (req, res, next) => {
+    try {
+        const input = RegisterEmployerBody.parse(req.body);
+
+        const exists = await prisma.user.findUnique({
+            where: { email: input.email },
+            select: { id: true },
+        });
+
+        if (exists) return res.status(409).json({ error: "Email already registered" });
+
+        const hashed = await bcrypt.hash(input.password, 12);
+
+        let companyConnect:
+            | { connect: { id: number } }
+            | { connect: { id: number } }
+            | undefined;
+
+        if (input.companyId) {
+            companyConnect = { connect: { id: input.companyId } };
+        } else if (input.companyName) {
+            
+            // Create a new company row, then connect
+            const company = await prisma.company.create({
+                data: {
+                    name: input.companyName,
+                    url: input.companyUrl ?? null,
+                    size: input.companySize ?? null,
+                    about: input.companyAbout ?? null,
+                    careersPage: input.companyCareersPage ?? null,
+                    linkedInUrl: input.companyLinkedInUrl ?? null,
+                },
+                select: { id: true },
+            });
+            companyConnect = { connect: { id: company.id } };
+        }
+
+        const user = await prisma.user.create({
+            data: {
+                email: input.email,
+                password: hashed,
+                name: input.name,
+                role: Role.EMPLOYER,
+                employer: {
+                create: {
+                    // attach company if available
+                    ...(companyConnect ? { company: companyConnect } : {}),
+
+                    workPhone: input.workPhone ?? null,
+                    workEmail: input.workEmail ?? null,
+                    profilePhotoUrl: input.profilePhotoUrl ?? null,
+                    notificationMethod: input.notificationMethod ?? null,
+                    availability: input.availability ?? null,
+                },
+                },
+            },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                role: true,
+                employer: {
+                select: {
+                    id: true,
+                    company: { select: { id: true, name: true, url: true, size: true, linkedInUrl: true } },
+                    workPhone: true,
+                    workEmail: true,
+                    profilePhotoUrl: true,
+                    notificationMethod: true,
+                    availability: true,
+                },
+                },
+            },
+        });
+
+
+        let token = signToken({ id: user.id, email: user.email, role: user.role });
+
+        return res.status(201).json({ user, token });
+    } catch (e: any) {
+        if (e?.code === "P2002") return res.status(409).json({ error: "Email already registered" });
+        if (e?.name === "ZodError") return res.status(400).json({ error: "Invalid input", issues: e.issues });
+        next(e);
+    }
+});
+
 
 export default router;
