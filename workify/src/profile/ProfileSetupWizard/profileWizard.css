@@ -1,11 +1,12 @@
 .wizard { 
-    background:#fff; 
+    background:#FAF9F6; 
     padding:16px; 
     height: fit-content;
     min-height: 92vh;
     box-sizing: border-box;
     background-size: 10px 10px;
-    background-image: radial-gradient( ellipse farthest-corner at 10px 10px , #ffd5b680, #ffd5b680 50%, #ffc29680 50%);
+    /* background-image: radial-gradient(ellipse farthest-corner at 10px 10px, #FAF9F6 0%, #FAF9F6 50%, #eae8e3 100%); */
     display: flex;
     flex-direction: column;
+    font-family: 'Domine', serif;
 }
