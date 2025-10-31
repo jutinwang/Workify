@@ -1,4 +1,5 @@
 import React, { useReducer, useState, useMemo } from "react";
+import { useParams } from "react-router-dom";
 import Stepper from "./Stepper";
 import ContactStep from "./ContactStep";
 import EducationStep from "./EducationStep";
@@ -32,11 +33,13 @@ const FLOWS = {
     employee: ["company","recruiter","notifications","review"],
 };
 
-export default function ProfileWizard({ userType = "employee" }) {
+export default function ProfileWizard() {
     const [state, dispatch] = useReducer(reducer, initialState);
     const [errors, setErrors] = useState({});
+
+    const { userType } = useParams();
   
-    const flow = useMemo(() => FLOWS[userType] || FLOWS.student, [userType]);
+    const flow = useMemo(() => FLOWS[userType] || FLOWS.student, FLOWS.employee);
     const safeIndex = Math.min(state.step, flow.length - 1);
     const currentKey = flow[safeIndex];
     const current = STEP_DEFS[currentKey];

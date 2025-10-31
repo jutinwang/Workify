@@ -127,8 +127,13 @@
 }
 .step-label {
   font-size: 11px;
-  color: #94a3b8;
+  color: #000;
 }
+
+.step-index {
+  color: #000;
+}
+
 .step-label-active {
   color: #0f172a;
   font-weight: 600;

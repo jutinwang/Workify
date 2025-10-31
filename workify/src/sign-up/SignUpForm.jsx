@@ -71,9 +71,9 @@ const SignupForm = ({ isEmployer }) => {
       if (isEmployer) {
 
         // ALI: @TOLU, you can route the new profile wizard here.
-        navigate("/employer-profile-setup");
+        navigate(`/profile-wizard/${"employee"}`);      
       } else {
-        navigate("/profile-wizard");
+        navigate(`/profile-wizard/${"student"}`);
       }
     } catch (err) {
       alert("Signup failed: " + err.message);
