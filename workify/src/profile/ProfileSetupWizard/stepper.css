@@ -31,7 +31,7 @@
     margin:0 4px; 
 }
 .stepper li.active .step-btn { 
-    background: #3f5e5a;; 
+    background: #3f5e5a; 
     color:#fff; 
     border-color:#111; 
 }
