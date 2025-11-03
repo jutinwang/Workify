@@ -213,16 +213,16 @@ router.post("/employers/register", async (req, res, next) => {
                 name: input.name,
                 role: Role.EMPLOYER,
                 employer: {
-                create: {
-                    // attach company if available
-                    ...(companyConnect ? { company: companyConnect } : {}),
+                    create: {
+                        // attach company if available
+                        ...(companyConnect ? { company: companyConnect } : {}),
 
-                    workPhone: input.workPhone ?? null,
-                    workEmail: input.workEmail ?? null,
-                    profilePhotoUrl: input.profilePhotoUrl ?? null,
-                    notificationMethod: input.notificationMethod ?? null,
-                    availability: input.availability ?? null,
-                },
+                        workPhone: input.workPhone ?? null,
+                        workEmail: input.workEmail ?? null,
+                        profilePhotoUrl: input.profilePhotoUrl ?? null,
+                        notificationMethod: input.notificationMethod ?? null,
+                        availability: input.availability ?? null,
+                    },
                 },
             },
             select: {
@@ -231,15 +231,15 @@ router.post("/employers/register", async (req, res, next) => {
                 name: true,
                 role: true,
                 employer: {
-                select: {
-                    id: true,
-                    company: { select: { id: true, name: true, url: true, size: true, linkedInUrl: true } },
-                    workPhone: true,
-                    workEmail: true,
-                    profilePhotoUrl: true,
-                    notificationMethod: true,
-                    availability: true,
-                },
+                    select: {
+                        id: true,
+                        company: { select: { id: true, name: true, url: true, size: true, linkedInUrl: true } },
+                        workPhone: true,
+                        workEmail: true,
+                        profilePhotoUrl: true,
+                        notificationMethod: true,
+                        availability: true,
+                    },
                 },
             },
         });

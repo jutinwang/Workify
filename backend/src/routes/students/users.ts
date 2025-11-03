@@ -40,7 +40,7 @@ const appSelect = {
     job: { select: { id: true, title: true, company: true, location: true } },
 } satisfies Prisma.ApplicationSelect;
 
-function getUserId(req: Express.Request): number {
+export function getUserId(req: Express.Request): number {
     const u: any = req.user ?? {};
     const id = Number(u.id ?? u.userId ?? u.sub);
     if (!Number.isFinite(id)) throw new Error("Unauthenticated");;
