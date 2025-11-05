@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import "dotenv/config";
 import usersRouter from "./routes/students/users";
 import authRouter from "./routes/auth";
@@ -7,6 +8,12 @@ import applicationsRouterStudent from './routes/students/applications';
 import applicationsRouterEmployer from './routes/employer/applications';
 
 const app = express();
+
+app.use(cors({
+  origin: 'http://localhost:5173', // Your Vite frontend URL
+  credentials: true,
+}));
+
 app.use(express.json());
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
