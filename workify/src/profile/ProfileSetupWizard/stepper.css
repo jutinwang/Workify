@@ -21,6 +21,7 @@
     border-radius:999px; 
     cursor:pointer; 
     font-size:14px; 
+    font-family: 'Domine', serif;
 }
 .stepper .step-index { 
     font-weight:700; 
@@ -30,7 +31,7 @@
     margin:0 4px; 
 }
 .stepper li.active .step-btn { 
-    background:#111; 
+    background: #3f5e5a; 
     color:#fff; 
     border-color:#111; 
 }
