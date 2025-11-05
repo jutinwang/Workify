@@ -1,307 +1,311 @@
 import React, { useState } from "react";
 import Slider from "react-slick";
-import Header from "../common/Header";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./EmployerProfile.css";
-
-function Ring({ value = 75 }) {
-  const style = {
-    background: `conic-gradient(#000000 ${value}%, #f0f0f0 0), radial-gradient(closest-side, #ffffff 70%, transparent 70%)`,
-  };
-  return (
-    <div className="ring-container">
-      <div className="ring" style={style} />
-      <div className="ring-percentage">{value}%</div>
-    </div>
-  );
-}
-
-function Card({ title, children }) {
-  return (
-    <div className="card">
-      {title && <h3 className="card-title">{title}</h3>}
-      {children}
-    </div>
-  );
-}
-
-function Section({ title, children, onEdit }) {
-  return (
-    <section className="section-modern">
-      <div className="section-header">
-        <h2 className="section-title">{title}</h2>
-        {onEdit && (
-          <button className="edit-button" onClick={onEdit}>
-            Edit
-          </button>
-        )}
-      </div>
-      <div className="section-content">{children}</div>
-    </section>
-  );
-}
-
-function Modal({ isOpen, onClose, title, children }) {
-  if (!isOpen) return null;
-  
-  return (
-    <div className="modal-overlay">
-      <div className="modal">
-        <div className="modal-header">
-          <h3 className="modal-title">{title}</h3>
-          <button className="modal-close" onClick={onClose}>
-            ✕
-          </button>
-        </div>
-        <div className="modal-body">
-          {children}
-        </div>
-      </div>
-    </div>
-  );
-}
+import { Box, Tab, Tabs } from "@mui/material";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import Modal from "@mui/material/Modal";
+import Button from "@mui/material/Button";
+import ProfileModal from "./ProfileModal";
 
 function HeaderBar() {
-  return (
-    <div className="header-bar">
-      <div className="header-content">
-        <div className="header-info">
-          <h1 className="header-name">Employer Man</h1>
-          <p className="header-location">Ottawa, ON · He/Him</p>
-          <p className="header-company">Nokia</p>
-          <p className="header-role">Recruiter</p>          
-        </div>
-        <div className="header-actions">
-          {/* <button className="btn-secondary">Share</button> */}
-          <button className="btn-primary">Edit Profile</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Stats() {
-  const stats = [
-    ['4', 'Upcoming\ninterviews'],
-    ['3', 'Pending\ndecision'],
-    ['2', 'Unread\nresumes'],
-    ['1', 'Partridge in\na pear tree']
-  ];
-
-  return (
-    <div className="stats-grid">
-      {stats.map(([number, label]) => (
-        <div key={label} className="stat-item">
-          <strong className="stat-number">{number}</strong>
-          <span className="stat-label">{label}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function JobPostings() {
-const jobs = ["Coop 1", "Coop 2", "Coop 3", "Coop 4", "Coop 5", "Coop 6"];
-
-  const settings = {
-    infinite: true,
-    speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 1,
-    arrows: true,
-    centerMode: false,
-    responsive: [
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 1,
-        },
-      },
-    ],
-  };
-
-  return (
-    <div>
-      <h3 className="slide-title">Coops Posted</h3>
-      <div className="job-board">
-        <Slider {...settings}>
-          {jobs.map((job, index) => (
-            <div key={index}>
-              <div
-                style={{
-                  height: "190px",
-                  width: "190px",
-                  margin: "10px",
-                  borderRadius: "12px",
-                  backgroundColor: "#f9d4b7",
-                  display: "flex",
-                  alignItems: "flex-start",
-                  justifyContent: "flex-start",
-                  padding: "10px",
-                  fontWeight: "bold",
-                  fontFamily: "PT Sans"
-                }}
-              >
-                {job}
-              </div>
-            </div>
-          ))}
-        </Slider>
-      </div>
-    </div>
-  );
-}
-
-function OtherEmployees() {
-const employees = ["Employer Woman", "Employer Boss", "Employer Recruiter", "Employer Interviewer", "Employer HR", "Employer (Other) Man"];
-
-  const settings = {
-    infinite: true,
-    speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 1,
-    arrows: true,
-    centerMode: false,
-    responsive: [
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 1,
-        },
-      },
-    ],
-  };
-
-  return (
-    <div>
-      <h3 className="slide-title">Other Employees</h3>
-      <div className="employee-board">
-        <Slider {...settings}>
-          {employees.map((employee, index) => (
-            <div key={index}>
-              <div
-                style={{
-                  height: "190px",
-                  width: "190px",
-                  margin: "10px",
-                  borderRadius: "12px",
-                  backgroundColor: "#BAD8E0",
-                  display: "flex",
-                  alignItems: "flex-start",
-                  justifyContent: "flex-start",
-                  padding: "10px",
-                  fontWeight: "bold",
-                  fontFamily: "PT Sans"
-                }}
-              >
-                {employee}
-              </div>
-            </div>
-          ))}
-        </Slider>
-      </div>
-    </div>
-  );
-}
-
-const EmployerProfile = () => {
-  const [modals, setModals] = useState({
-    about: false,
-    background: false,
-  });
-
   const [formData, setFormData] = useState({
     about: "About section content goes here...",
     background: [],
   });
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedAbout, setEditedAbout] = useState(formData.about);
 
-  const [newBackground, setNewBackground] = useState('');
-
-  const openModal = (type) => {
-    setModals(prev => ({ ...prev, [type]: true }));
+  const handleEdit = () => {
+    setIsEditing(true);
+    setEditedAbout(formData.about);
   };
 
-  const closeModal = (type) => {
-    setModals(prev => ({ ...prev, [type]: false }));
+  const handleSave = () => {
+    setFormData({ ...formData, about: editedAbout });
+    setIsEditing(false);
   };
 
-  const handleAddBackground = () => {
-    if (newBackground.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        background: [...prev.background, newBackground.trim()]
-      }));
-      setNewBackground('');
-      closeModal('background');
-    }
+  const handleCancel = () => {
+    setEditedAbout(formData.about);
+    setIsEditing(false);
+  };
+
+  return (
+    <div className="ep-header-bar">
+      <div className="ep-header-content">
+        <div className="ep-header-info">
+          <h1 className="ep-header-name">Employer Man</h1>
+          <p className="ep-header-location">Ottawa, ON · He/Him</p>
+          <p className="ep-header-company">Nokia</p>
+          <p className="ep-header-role">Recruiter</p>
+        </div>
+        <div className="ep-header-actions">
+          <button className="ep-btn-primary" onClick={handleEdit}>
+            Edit Profile
+          </button>
+        </div>
+      </div>
+      <div className="ep-about-section">
+        <h2 className="ep-about-title">About</h2>
+        {isEditing ? (
+          <div className="ep-edit-container">
+            <textarea
+              className="ep-about-textarea"
+              value={editedAbout}
+              onChange={(e) => setEditedAbout(e.target.value)}
+              rows={4}
+            />
+            <div className="ep-edit-actions">
+              <button className="ep-btn-secondary" onClick={handleCancel}>
+                Cancel
+              </button>
+              <button className="ep-btn-primary" onClick={handleSave}>
+                Save
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="ep-about-text">
+            <p>{formData.about}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function BasicTable({ handleActionClick }) {
+  function createData(
+    candidate,
+    interviewInfo,
+    interviewer,
+    feedback,
+    outcome,
+    action
+  ) {
+    return { candidate, interviewInfo, interviewer, feedback, outcome, action };
+  }
+
+  const rows = [
+    createData(
+      "Ali Bhangu",
+      "SWE Interview",
+      "John Doe",
+      "GOOD",
+      "Hired",
+      "View"
+    ),
+    createData(
+      "Justin Wang",
+      "Frontend Interview",
+      "Jane Smith",
+      "EXCELLENT",
+      "Hired",
+      "View"
+    ),
+    createData(
+      "Bilal Khan",
+      "Backend Interview",
+      "Alex Brown",
+      "FAIR",
+      "Rejected",
+      "View"
+    ),
+    createData(
+      "Sara Li",
+      "Design Interview",
+      "Chris Lee",
+      "STRONG",
+      "Pending",
+      "View"
+    ),
+    createData(
+      "Toluwanimi Emoruwa",
+      "Data Interview",
+      "Emily White",
+      "GOOD",
+      "Hired",
+      "View"
+    ),
+  ];
+
+  return (
+    <TableContainer component={Paper}>
+      <Table
+        className="ep-main-table"
+        sx={{ minWidth: 650 }}
+        aria-label="simple table"
+      >
+        <TableHead className="ep-table-header">
+          <TableRow className="ep-table-head-row">
+            <TableCell className="ep-table-header-label">Candidate</TableCell>
+            <TableCell className="ep-table-header-label">
+              Interview Info.
+            </TableCell>
+            <TableCell className="ep-table-header-label">Interviewer</TableCell>
+            <TableCell className="ep-table-header-label">Feedback</TableCell>
+            <TableCell className="ep-table-header-label">Outcome</TableCell>
+            <TableCell className="ep-table-header-label">Action</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row) => (
+            <TableRow
+              key={row.candidate}
+              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+            >
+              <TableCell component="th" scope="row">
+                {row.candidate}
+              </TableCell>
+              <TableCell>{row.interviewInfo}</TableCell>
+              <TableCell>{row.interviewer}</TableCell>
+              <TableCell>{row.feedback}</TableCell>
+              <TableCell>{row.outcome}</TableCell>
+              <TableCell>
+                <Button
+                  variant="contained"
+                  onClick={() => handleActionClick(row)}
+                >
+                  Action
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}
+
+function UpcomingTable({ handleActionClick }) {
+  function createData(candidate, posting, date, interviewer, action, link) {
+    return { candidate, posting, date, interviewer, action, link };
+  }
+
+  const rows = [
+    createData(
+      "Ali Bhangu",
+      "SWE Interview",
+      "10:00AM on Sept 20, 2024",
+      "John Doe",
+      "Action",
+      "Link"
+    ),
+  ];
+
+  return (
+    <TableContainer component={Paper}>
+      <Table
+        className="ep-main-table"
+        sx={{ minWidth: 650 }}
+        aria-label="simple table"
+      >
+        <TableHead className="ep-table-header">
+          <TableRow className="ep-table-head-row">
+            <TableCell className="ep-table-header-label">Candidate</TableCell>
+            <TableCell className="ep-table-header-label">
+              Co-Op Posting
+            </TableCell>
+            <TableCell className="ep-table-header-label">
+              Interview Date & Time
+            </TableCell>{" "}
+            <TableCell className="ep-table-header-label">Interviewer</TableCell>
+            <TableCell className="ep-table-header-label">Action</TableCell>
+            <TableCell className="ep-table-header-label">Link</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row) => (
+            <TableRow
+              key={row.candidate}
+              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+            >
+              <TableCell component="th" scope="row">
+                {row.candidate}
+              </TableCell>
+              <TableCell component="th" scope="row">
+                {row.posting}
+              </TableCell>
+              <TableCell component="th" scope="row">
+                {row.date}
+              </TableCell>
+              <TableCell>{row.interviewer}</TableCell>
+              <TableCell>
+                <Button
+                  variant="contained"
+                  onClick={() => handleActionClick(row)}
+                >
+                  Action
+                </Button>
+              </TableCell>
+              <TableCell>{row.link}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}
+
+const EmployerProfile = () => {
+  const [activeTab, setActiveTab] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
+
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
+
+  const handleActionClick = (candidate) => {
+    setSelectedCandidate(candidate);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedCandidate(null);
   };
 
   return (
     <div className="profile-container">
       <div className="profile-content">
         <HeaderBar />
-        <JobPostings />
         <div className="profile-grid">
           <div className="main-content">
-            <Section title="About" className="section-title" onEdit={() => openModal('about')}>
-              <p>{formData.about}</p>
-            </Section>
-
-            <Section title="Background" className="section-title" onEdit={() => openModal('background')}>
-              <div className="background-tags">
-                {formData.background.map((item, i) => (
-                  <span key={i} className="tag">
-                    {item}
-                  </span>
-                ))}
-                {formData.background.length === 0 && (
-                  <p className="empty-state">No background items added yet.</p>
-                )}
-              </div>
-            </Section>
+            <div className="ep-interviews-section">
+              <h2 className="ep-section-title">Interview Overview</h2>
+              <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
+                <Tabs value={activeTab} onChange={handleTabChange}>
+                  <Tab label="Upcoming" />
+                  <Tab label="Completed" />
+                </Tabs>
+              </Box>
+              {activeTab === 1 ? (
+                <BasicTable handleActionClick={handleActionClick} />
+              ) : (
+                <UpcomingTable handleActionClick={handleActionClick} />
+              )}
+            </div>
+            <div className="ep-colleagues-section">
+              <h2 className="ep-section-title">Colleagues at Nokia </h2>
+            </div>
           </div>
-
-          <aside className="sidebar">
-            <Card title="Key stats">
-              <Stats />
-            </Card>
-          </aside>
         </div>
-        <OtherEmployees />
-
-        {/* Modals */}
-        <Modal isOpen={modals.about} onClose={() => closeModal('about')} title="Edit About">
-          <textarea 
-            className="modal-textarea"
-            rows={4}
-            value={formData.about}
-            onChange={(e) => setFormData(prev => ({ ...prev, about: e.target.value }))}
-          />
-          <button 
-            onClick={() => closeModal('about')}
-            className="modal-save-btn"
-          >
-            Save
-          </button>
-        </Modal>
-
-        <Modal isOpen={modals.background} onClose={() => closeModal('background')} title="Add Background Item">
-          <input 
-            type="text"
-            placeholder="e.g., JavaScript, React, Node.js"
-            className="modal-input"
-            value={newBackground}
-            onChange={(e) => setNewBackground(e.target.value)}
-          />
-          <button 
-            onClick={handleAddBackground}
-            className="modal-save-btn"
-          >
-            Add Item
-          </button>
-        </Modal>
       </div>
+      <ProfileModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        selectedCandidate={selectedCandidate}
+        activeTab={activeTab}
+      />
     </div>
   );
 };
