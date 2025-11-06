@@ -1,30 +1,7 @@
 import { useState, useRef, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { createEditor, Editor, Transforms, Element as SlateElement } from "slate";
-import { Slate, Editable, withReact, useSlate } from "slate-react";
-import isHotkey from "is-hotkey";
 import "./PositionWriting.css";
-import FormatBoldIcon from '@mui/icons-material/FormatBold';
-import FormatItalicIcon from '@mui/icons-material/FormatItalic';
-import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
-import CodeIcon from '@mui/icons-material/Code';
-import StrikethroughSIcon from '@mui/icons-material/StrikethroughS';
-import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
-
-// Key shortcuts for stylings
-const HOTKEYS = {
-  "mod+b": "bold",
-  "mod+i": "italic",
-  "mod+u": "underline",
-  "mod+`": "code",
-  "mod+-": "strikethrough",
-  "mod+.": "bulleted-list",
-  "mod+/": "numbered-list"
-};
-
-// different kinds of lists
-const LIST_TYPES = ["numbered-list", "bulleted-list"];
+import RichTextEditor from "./component/RichTextEditor";
 
 const PositionWriting = () => {
   const [coopDescription, setCoopDescription] = useState("");
@@ -71,235 +48,44 @@ const PositionWriting = () => {
     setTags([]);
   }
 
-  // declared so text can be edited with stylings 
-  const editor = useMemo(() => withReact(createEditor()), []);
-
-  const renderElement = useCallback((props) => <Element {...props} />, []); // create text format
-  const renderLeaf = useCallback((props) => <Leaf {...props} />, []); // create text contents with stylings
-
-  const initialValue = [
-    {
-      type: "paragraph", // block level (element)
-      children: [{ text: "Write your job description here..." }], // leaf aka text content
-    },
-  ];
-
-  // used for applying non element attribute changes
-  const toggleMark = (editor, format) => {
-    const isActive = isMarkActive(editor, format);
-    if (isActive) {
-      Editor.removeMark(editor, format);
-    } else {
-      Editor.addMark(editor, format, true);
-    }
-  };
-
-  const isMarkActive = (editor, format) => {
-    const { selection } = editor;
-    if (!selection) return false;
-
-    const marks = Editor.marks(editor);
-    return marks ? marks[format] === true : false;
-  }; 
-
-  // used for applying different element changes 
-  const toggleBlock = (editor, format) => {
-    const isActive = isBlockActive(editor, format);
-    const isList = LIST_TYPES.includes(format);
-
-    Transforms.unwrapNodes(editor, {
-      match: n =>
-        !Editor.isEditor(n) &&
-        SlateElement.isElement(n) &&
-        LIST_TYPES.includes(n.type),
-      split: true,
-    });
-
-    const newType = isActive ? "paragraph" : isList ? "list-item" : format;
-
-    Transforms.setNodes(editor, { type: newType });
-
-    if (!isActive && isList) {
-      const block = { type: format, children: [] };
-      Transforms.wrapNodes(editor, block);
-    }
-  };
-
-  const isBlockActive = (editor, format) => {
-    const { selection } = editor;
-    if (!selection) return false;
-
-    const [match] = Array.from(
-      Editor.nodes(editor, {
-        at: Editor.unhangRange(editor, selection),
-        match: n =>
-          !Editor.isEditor(n) &&
-          SlateElement.isElement(n) &&
-          n.type === format,
-      })
-    );
-    return !!match;
-  };
-
-  // ELEMENTS AND LEAVES
-  const Element = ({ attributes, children, element }) => {
-    switch (element.type) {
-      case "code":
-        return (
-          <pre {...attributes}>
-            <code>{children}</code>
-          </pre>
-        );
-      case 'bulleted-list':
-        return (
-          <ul {...attributes}>
-            {children}
-          </ul>
-        );
-      case 'numbered-list':
-        return (
-          <ol {...attributes}>
-            {children}
-          </ol>
-        );
-      case 'list-item':
-        return (
-          <li {...attributes}>
-            {children}
-          </li>
-        );
-      default:
-        return <p {...attributes}>{children}</p>;
-    }
-  };
-
-  const Leaf = ({ attributes, children, leaf }) => {
-    if (leaf.bold) children = <strong>{children}</strong>;
-    if (leaf.code) children = <code>{children}</code>;
-    if (leaf.italic) children = <em>{children}</em>;
-    if (leaf.underline) children = <u>{children}</u>;
-    if (leaf.strikethrough) children = <s>{children}</s>;
-
-    return <span {...attributes}>{children}</span>;
-  };
-
   return (
     <div className="positionwriting-container">
       <div className="content-wrapper">
         <h3>Create Coop Posting</h3>
         <div className="textInput">
           <p>Coop Description</p>
-          <Slate editor={editor} initialValue={initialValue}>
-            {/* Toolbar with buttons */}
-            <div className="toolbar">
-             <FormatBoldIcon 
-                fontSize="small"
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  toggleMark(editor, "bold");
-                }}
-             />
-              <FormatItalicIcon
-                fontSize="small"
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  toggleMark(editor, "italic");
-                }}
-              />
-              <FormatUnderlinedIcon
-                fontSize="small"
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  toggleMark(editor, "underline");
-                }}
-              />
-              <CodeIcon
-                fontSize="small"
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  toggleMark(editor, "code");
-                }}
-              />
-              <StrikethroughSIcon
-                fontSize="small"
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  toggleMark(editor, "strikethrough");
-                }}
-              />
-              <FormatListBulletedIcon
-                fontSize="small"
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  toggleBlock(editor, "bulleted-list");
-                }}
-              />
-              <FormatListNumberedIcon
-                fontSize="small"
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  toggleBlock(editor, "numbered-list");
-                }}
-              />
-            </div>
-
-            <Editable
-              className="infoInput"
-              renderElement={renderElement}
-              renderLeaf={renderLeaf}
-              placeholder="Type your rich text here..."
-              spellCheck
-              autoFocus
-              onKeyDown={(event) => {
-                for (const hotkey in HOTKEYS) {
-                  if (isHotkey(hotkey, event)) {
-                    event.preventDefault();
-                    const mark = HOTKEYS[hotkey];
-                    if (LIST_TYPES.includes(mark)) {
-                      toggleBlock(editor, mark);
-                    } else {
-                      toggleMark(editor, mark);
-                    }
-                  }
-                }
-              }}
-            />
-          </Slate>
+          <RichTextEditor
+            placeholder=" "
+            initialText="Write your co-op description here..."
+            className="infoInput"
+          />
 
           <p>Key Responsibilities</p>
-          <textarea
+          <RichTextEditor
+            placeholder=" "
+            initialText="Write the co-op responsibilities here..."
             className="infoInput"
-            ref={textareaRef}
-            value={responsibilities}
-            onChange={handleResponsibilitiesChange}
-            placeholder="Type something..."
           />
 
           <p>Qualifications</p>
-          <textarea
+          <RichTextEditor
+            placeholder=" "
+            initialText="Describe the needed qualification..."
             className="infoInput"
-            ref={textareaRef}
-            value={qualifications}
-            onChange={handleQualificationsChange}
-            placeholder="Type something..."
           />
 
           <p>Benefits and Perks</p>
-          <textarea
+          <RichTextEditor
+            placeholder=" "
+            initialText="Write the benefits and perks here..."
             className="infoInput"
-            ref={textareaRef}
-            value={benefits}
-            onChange={handleBenefitsChange}
-            placeholder="Type something..."
           />
 
           <p>Salary Range</p>
-          <textarea
+          <RichTextEditor
+            placeholder=" "
+            initialText="Put the salary here..."
             className="infoInput"
-            ref={textareaRef}
-            value={salaryRange}
-            onChange={handleSalaryChange}
-            placeholder="Type something..."
           />
 
           <div className="dropdowns">

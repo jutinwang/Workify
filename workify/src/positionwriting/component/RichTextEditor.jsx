@@ -24,7 +24,7 @@ const HOTKEYS = {
 // different kinds of lists
 const LIST_TYPES = ["numbered-list", "bulleted-list"];
 
-// used for applying non element attribute changes
+// Helper functions
 const toggleMark = (editor, format) => {
   const isActive = isMarkActive(editor, format);
   if (isActive) {
@@ -41,7 +41,6 @@ const isMarkActive = (editor, format) => {
   return marks ? marks[format] === true : false;
 };
 
-// used for applying different element changes 
 const toggleBlock = (editor, format) => {
   const isActive = isBlockActive(editor, format);
   const isList = LIST_TYPES.includes(format);
@@ -125,18 +124,18 @@ const Leaf = ({ attributes, children, leaf }) => {
 
 // Main RichTextEditor Component
 const RichTextEditor = ({ 
-  placeholder = "",
-  className = "infoInput"
+  placeholder = " ",
+  className = "infoInput",
+  initialText = ""
 }) => {
-  // declared so text can be edited with stylings 
   const editor = useMemo(() => withReact(createEditor()), []);
-  const renderElement = useCallback((props) => <Element {...props} />, []); // create text format
-  const renderLeaf = useCallback((props) => <Leaf {...props} />, []); // create text contents with stylings
+  const renderElement = useCallback((props) => <Element {...props} />, []);
+  const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
 
   const initialValue = [
     {
-      type: "paragraph", // block level (element)
-      children: [{ text: "Write your co-op description here..." }], // leaf aka text content
+      type: "paragraph",
+      children: [{ text: initialText }],
     },
   ];
 
