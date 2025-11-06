@@ -16,7 +16,9 @@
     "@daypilot/daypilot-lite-react": "^4.7.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.5",
     "@mui/material": "^7.3.4",
+    "@slate-serializers/dom": "^2.2.3",
     "express": "^5.1.0",
     "gh-pages": "^6.3.0",
     "lucide-react": "^0.544.0",
@@ -25,6 +27,9 @@
     "react-pdf": "^10.1.0",
     "react-router-dom": "^7.9.0",
     "react-slick": "^0.31.0",
+    "slate": "^0.118.1",
+    "slate-dom": "^0.118.1",
+    "slate-react": "^0.118.2",
     "slick-carousel": "^1.8.1"
   },
   "devDependencies": {
