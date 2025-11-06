@@ -24,6 +24,10 @@
   font-family: 'Domine', sans-serif;
 }
 
+.toolbar {
+  margin: 10px;
+}
+
 .infoInput {
   min-height: 40px;
   resize: none;

@@ -11,7 +11,12 @@ const HOTKEYS = {
   "mod+i": "italic",
   "mod+u": "underline",
   "mod+`": "code",
+  "mod+-": "strikethrough",
+  "mod+8": "bulleted_list"
 };
+
+// different kinds of lists
+const LIST_TYPES = ["numbered_list", "bulleted_list"];
 
 const PositionWriting = () => {
   const [coopDescription, setCoopDescription] = useState("");
@@ -71,20 +76,78 @@ const PositionWriting = () => {
     },
   ];
 
-  // MARK & BLOCK TOGGLING
-  const toggleMark = (editor, format) => {
-    const isActive = isMarkActive(editor, format);
-    if (isActive) {
-      Editor.removeMark(editor, format);
-    } else {
-      Editor.addMark(editor, format, true);
-    }
-  };
 
-  const isMarkActive = (editor, format) => {
-    const marks = Editor.marks(editor);
-    return marks ? marks[format] === true : false;
-  };
+    // used for applying non element attribute changes
+    const toggleMark = (editor, format) => {
+        const isActive = isMarkActive(editor, format);
+        if (isActive) {
+            Editor.removeMark(editor, format);
+        } else {
+            Editor.addMark(editor, format, true);
+        }
+    };
+
+    const isMarkActive = (editor, format) => {
+        const marks = Editor.marks(editor);
+        return marks ? marks[format] === true : false;
+    };
+
+    // used for applying different element changes 
+    const toggleBlock = (editor, format) => {
+        const isActive = isBlockActive(editor, format);
+        const isList = LIST_TYPES.includes(format);
+
+        Transforms.unwrapNodes(editor, {
+            match: n =>
+            !Editor.isEditor(n) &&
+            SlateElement.isElement(n) &&
+            LIST_TYPES.includes(n.type),
+            split: true,
+        });
+
+        const newType = isActive ? "paragraph" : isList ? "list-item" : format;
+
+        Transforms.setNodes(editor, { type: newType });
+
+        if (!isActive && isList) {
+            const block = { type: format, children: [] };
+            Transforms.wrapNodes(editor, block);
+        }
+    };
+
+    const isBlockActive = (editor, format) => {
+        const [match] = Editor.nodes(editor, {
+            match: n => n.type === format,
+        });
+        return !!match;
+    };
+
+    // ELEMENTS AND LEAVES
+    const Element = ({ attributes, children, element }) => {
+        console.log(editor.children);
+        switch (element.type) {
+            case "code":
+                return (
+                    <pre {...attributes}>
+                    <code>{children}</code>
+                    </pre>
+                );
+            case 'bulleted_list':
+                return <ul {...attributes}>{children}</ul>;
+            default:
+                return <p {...attributes}>{children}</p>;
+        }
+    };
+
+    const Leaf = ({ attributes, children, leaf }) => {
+        if (leaf.bold) children = <strong>{children}</strong>;
+        if (leaf.code) children = <code>{children}</code>;
+        if (leaf.italic) children = <em>{children}</em>;
+        if (leaf.underline) children = <u>{children}</u>;
+        if (leaf.strikethrough) children= <s>{children}</s>;
+
+        return <span {...attributes}>{children}</span>;
+    };
 
   return (
     <div className="positionwriting-container">
@@ -95,56 +158,72 @@ const PositionWriting = () => {
             <Slate editor={editor} initialValue={initialValue}>
                 {/* Toolbar with buttons */}
                 <div className="toolbar">
-                <button
-                    onMouseDown={(e) => {
-                    e.preventDefault();
-                    toggleMark(editor, "bold");
-                    }}
-                >
-                    Bold
-                </button>
-                <button
-                    onMouseDown={(e) => {
-                    e.preventDefault();
-                    toggleMark(editor, "italic");
-                    }}
-                >
-                    Italic
-                </button>
-                <button
-                    onMouseDown={(e) => {
-                    e.preventDefault();
-                    toggleMark(editor, "underline");
-                    }}
-                >
-                    Underline
-                </button>
-                <button
-                    onMouseDown={(e) => {
-                    e.preventDefault();
-                    toggleMark(editor, "code");
-                    }}
-                >
-                    Code
-                </button>
+                    <button
+                        onMouseDown={(e) => {
+                            e.preventDefault();
+                            toggleMark(editor, "bold");
+                        }}
+                    >
+                        Bold
+                    </button>
+                    <button
+                        onMouseDown={(e) => {
+                            e.preventDefault();
+                            toggleMark(editor, "italic");
+                        }}
+                    >
+                        Italic
+                    </button>
+                    <button
+                        onMouseDown={(e) => {
+                            e.preventDefault();
+                            toggleMark(editor, "underline");
+                        }}
+                    >
+                        Underline
+                    </button>
+                    <button
+                        onMouseDown={(e) => {
+                            e.preventDefault();
+                            toggleMark(editor, "code");
+                        }}
+                    >
+                        Code
+                    </button>
+                    <button
+                        onMouseDown={(e) => {
+                            e.preventDefault();
+                            toggleMark(editor, "strikethrough");
+                        }}
+                    >
+                        Strikethrough
+                    </button>
+                    <button
+                        onMouseDown={(e) => {
+                            e.preventDefault();
+                            toggleBlock(editor, "bulleted_list");
+                        }}
+                    >
+                        Bulleted List
+                    </button>
                 </div>
 
                 <Editable
-                className="infoInput"
-                renderElement={renderElement}
-                renderLeaf={renderLeaf}
-                placeholder="Type your rich text here..."
-                spellCheck
-                autoFocus
-                onKeyDown={(event) => {
-                    for (const hotkey in HOTKEYS) {
-                    if (isHotkey(hotkey, event)) {
-                        event.preventDefault();
-                        const mark = HOTKEYS[hotkey];
-                        toggleMark(editor, mark);
-                    }
-                    }
-                }}
+                    className="infoInput"
+                    renderElement={renderElement}
+                    renderLeaf={renderLeaf}
+                    placeholder="Type your rich text here..."
+                    spellCheck
+                    autoFocus
+                    onKeyDown={(event) => {
+                        for (const hotkey in HOTKEYS) {
+                            if (isHotkey(hotkey, event)) {
+                                event.preventDefault();
+                                const mark = HOTKEYS[hotkey];
+                                toggleMark(editor, mark);
+                            }
+                        }
+                    }}
                 />
             </Slate>
 
@@ -258,29 +337,6 @@ const PositionWriting = () => {
       </div>
     </div>
   );
-};
-
-// ELEMENTS AND LEAVES
-const Element = ({ attributes, children, element }) => {
-  switch (element.type) {
-    case "code":
-      return (
-        <pre {...attributes}>
-          <code>{children}</code>
-        </pre>
-      );
-    default:
-      return <p {...attributes}>{children}</p>;
-  }
-};
-
-const Leaf = ({ attributes, children, leaf }) => {
-  if (leaf.bold) children = <strong>{children}</strong>;
-  if (leaf.code) children = <code>{children}</code>;
-  if (leaf.italic) children = <em>{children}</em>;
-  if (leaf.underline) children = <u>{children}</u>;
-
-  return <span {...attributes}>{children}</span>;
 };
 
 export default PositionWriting;
