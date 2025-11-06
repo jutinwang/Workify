@@ -12,7 +12,8 @@ const HOTKEYS = {
   "mod+u": "underline",
   "mod+`": "code",
   "mod+-": "strikethrough",
-  "mod+.": "bulleted-list"
+  "mod+.": "bulleted-list",
+  "mod+/": "numbered-list"
 };
 
 // different kinds of lists
@@ -231,6 +232,14 @@ const PositionWriting = () => {
                 }}
               >
                 Bulleted List
+              </button>
+              <button
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  toggleBlock(editor, "numbered-list");
+                }}
+              >
+                Numbered List
               </button>
             </div>
 
