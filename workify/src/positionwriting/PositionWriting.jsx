@@ -4,6 +4,13 @@ import { createEditor, Editor, Transforms, Element as SlateElement } from "slate
 import { Slate, Editable, withReact, useSlate } from "slate-react";
 import isHotkey from "is-hotkey";
 import "./PositionWriting.css";
+import FormatBoldIcon from '@mui/icons-material/FormatBold';
+import FormatItalicIcon from '@mui/icons-material/FormatItalic';
+import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
+import CodeIcon from '@mui/icons-material/Code';
+import StrikethroughSIcon from '@mui/icons-material/StrikethroughS';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 
 // Key shortcuts for stylings
 const HOTKEYS = {
@@ -185,62 +192,55 @@ const PositionWriting = () => {
           <Slate editor={editor} initialValue={initialValue}>
             {/* Toolbar with buttons */}
             <div className="toolbar">
-              <button
+             <FormatBoldIcon 
+                fontSize="small"
                 onMouseDown={(e) => {
                   e.preventDefault();
                   toggleMark(editor, "bold");
                 }}
-              >
-                Bold
-              </button>
-              <button
+             />
+              <FormatItalicIcon
+                fontSize="small"
                 onMouseDown={(e) => {
                   e.preventDefault();
                   toggleMark(editor, "italic");
                 }}
-              >
-                Italic
-              </button>
-              <button
+              />
+              <FormatUnderlinedIcon
+                fontSize="small"
                 onMouseDown={(e) => {
                   e.preventDefault();
                   toggleMark(editor, "underline");
                 }}
-              >
-                Underline
-              </button>
-              <button
+              />
+              <CodeIcon
+                fontSize="small"
                 onMouseDown={(e) => {
                   e.preventDefault();
                   toggleMark(editor, "code");
                 }}
-              >
-                Code
-              </button>
-              <button
+              />
+              <StrikethroughSIcon
+                fontSize="small"
                 onMouseDown={(e) => {
                   e.preventDefault();
                   toggleMark(editor, "strikethrough");
                 }}
-              >
-                Strikethrough
-              </button>
-              <button
+              />
+              <FormatListBulletedIcon
+                fontSize="small"
                 onMouseDown={(e) => {
                   e.preventDefault();
                   toggleBlock(editor, "bulleted-list");
                 }}
-              >
-                Bulleted List
-              </button>
-              <button
+              />
+              <FormatListNumberedIcon
+                fontSize="small"
                 onMouseDown={(e) => {
                   e.preventDefault();
                   toggleBlock(editor, "numbered-list");
                 }}
-              >
-                Numbered List
-              </button>
+              />
             </div>
 
             <Editable
