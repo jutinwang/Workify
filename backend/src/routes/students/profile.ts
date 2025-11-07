@@ -48,7 +48,6 @@ router.post('/', requireAuth, requireRole('STUDENT'), async (req: Request, res: 
                     phoneNumber: validatedData.contact.phoneNumber,
                     linkedInUrl: validatedData.contact.linkedInUrl,
                     githubUrl: validatedData.contact.githubUrl,
-
                     resumeUrl: validatedData.files.resumeUrl || undefined,
                     transcript: validatedData.files.transcript || undefined,
                     coverLetter: validatedData.files.coverLetter || undefined,

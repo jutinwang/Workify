@@ -1,6 +1,6 @@
 import { Route, Routes, useLocation, Link } from "react-router-dom";
 import "./Landing.css";
-import "./var.css"
+import "./var.css";
 import Header from "./common/Header.jsx";
 import building from "./assets/building.jpg";
 import workplace from "./assets/workplace.jpg";
@@ -9,11 +9,12 @@ import fem from "./assets/female-empowerment.jpg";
 import animatedGrowth from "./assets/animated-growth-volatile-arrow-open-black.svg";
 import workifyLogo from "./assets/workifyLogo2.png";
 
-
 function Landing() {
   return (
     <div className="landingpage-container">
-      <div className="landing-logo"><img className="workify-logo" src={workifyLogo}></img></div>
+      <div className="landing-logo">
+        <img className="workify-logo" src={workifyLogo}></img>
+      </div>
 
       <div className="maincontent">
         <div className="maincontent-text">
@@ -23,7 +24,10 @@ function Landing() {
           </p>
 
           <Link className="explore-btn" to="/signup">
-              Explore Opportunities <span>→</span>
+            Explore Opportunities <span>→</span>
+          </Link>
+          <Link className="explore-candidates-btn" to="/signup-employer">
+            Explore Candidates <span>→</span>
           </Link>
 
           <div className="landing-line-art">

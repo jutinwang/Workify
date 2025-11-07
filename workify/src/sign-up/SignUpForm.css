@@ -129,3 +129,28 @@
 label {
   font-family: var(--main-font);
 }
+
+.login-link {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.login-link p {
+  margin: 0;
+  color: var(--text-secondary, #666);
+}
+
+.login-link .link-button {
+  background: none;
+  border: none;
+  color: var(--primary-color, #007bff);
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
+}
+
+.login-link .link-button:hover {
+  text-decoration: underline;
+}

@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import "./SignUpForm.css";
 import "../var.css";
 import outlookLogo from "../assets/outlook_logo.png";
+import { authApi } from "../api/auth";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const uottawaEmailRegex = /^[a-zA-Z]{5}\d{3}@uottawa\.ca$/i;
+const uottawaEmailRegex = /@uottawa\.ca$/i;
 
 const passwordScore = (pwd) => {
   let score = 0;
@@ -18,7 +19,7 @@ const passwordScore = (pwd) => {
   return Math.min(score, 5);
 };
 
-const SignupForm = ({ isEmployer }) => {
+const SignupForm = ({ isEmployer, onSwitchToLogin }) => {
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -44,13 +45,13 @@ const SignupForm = ({ isEmployer }) => {
   const validate = () => {
     const e = {};
     if (!form.fullName.trim()) e.fullName = "Name required.";
-    
+
     if (!emailRegex.test(form.email)) {
       e.email = "Enter a valid email.";
     } else if (!isEmployer && !uottawaEmailRegex.test(form.email)) {
       e.email = "Students must use a @uottawa.ca email address.";
     }
-    
+
     if (form.password.length < 8) e.password = "Min 8 characters.";
     if (form.password !== form.confirm) e.confirm = "Passwords do not match.";
     if (!form.agree) e.agree = "You must accept the terms.";
@@ -62,36 +63,41 @@ const SignupForm = ({ isEmployer }) => {
 
     const v = validate();
     setErrors(v);
-    // this is a commented atm b/c as it does not set errors rn
     if (Object.keys(v).length) return;
 
     setSubmitting(true);
     try {
-      console.log("Submitting:", form);
       if (isEmployer) {
-
-        // ALI: @TOLU, you can route the new profile wizard here.
-        navigate(`/profile-wizard/${"employee"}`);      
+        const response = await authApi.registerEmployer(form);
+        if (response.token) {
+          localStorage.setItem("authToken", response.token);
+          localStorage.setItem("user", JSON.stringify(response.user));
+        }
+        navigate(`/profile-wizard/employee`);
       } else {
-        navigate(`/profile-wizard/${"student"}`);
+        const response = await authApi.registerStudent(form);
+        if (response.token) {
+          localStorage.setItem("authToken", response.token);
+        }
+        if (response.user) {
+          localStorage.setItem("user", JSON.stringify(response.user));
+        }
+        navigate(`/profile-wizard/student`);
       }
     } catch (err) {
-      alert("Signup failed: " + err.message);
+      setErrors({ submit: err.message || "Signup failed. Please try again." });
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleGoogleSignup = () => {
-    console.log("Redirect to Google signup");
-  };
-  const handleOutlookSignup = () => {
-    console.log("Redirect to Outlook signup");
-  };
-
   return (
     <div className="signup-form-container">
       <form className="signup-form" onSubmit={onSubmit} noValidate>
+        {errors.submit && (
+          <div className="error submit-error">{errors.submit}</div>
+        )}
+
         <div className="field">
           <label htmlFor="fullName">Full Name</label>
           <input
@@ -113,7 +119,6 @@ const SignupForm = ({ isEmployer }) => {
             type="email"
             value={form.email}
             onChange={handleChange}
-            // placeholder="Email"
             required
           />
           {errors.email && <div className="error">{errors.email}</div>}
@@ -127,7 +132,6 @@ const SignupForm = ({ isEmployer }) => {
             type="password"
             value={form.password}
             onChange={handleChange}
-            // placeholder="Password"
             required
           />
           {/* <p className="pw-strength">Strength: {pwStrength}/5</p>
@@ -142,7 +146,6 @@ const SignupForm = ({ isEmployer }) => {
             type="password"
             value={form.confirm}
             onChange={handleChange}
-            // placeholder="Confirm Password"
             required
           />
           {errors.confirm && <div className="error">{errors.confirm}</div>}
@@ -166,22 +169,20 @@ const SignupForm = ({ isEmployer }) => {
             {submitting ? "Signing up..." : "Sign Up"}
           </button>
         </div>
+
+        <div className="login-link">
+          <p>
+            Already have an account?{" "}
+            <button
+              type="button"
+              className="link-button"
+              onClick={onSwitchToLogin}
+            >
+              Log in
+            </button>
+          </p>
+        </div>
       </form>
-      <hr />
-      <div className="social-signup">
-        <button className="social-btn google" onClick={handleGoogleSignup}>
-          <img
-            src="https://www.svgrepo.com/show/475656/google-color.svg"
-            alt="Google"
-            className="icon"
-          />
-          Sign up with Google
-        </button>
-        <button className="social-btn outlook" onClick={handleOutlookSignup}>
-          <img src={outlookLogo} alt="Outlook" className="icon" />
-          Sign up with Outlook
-        </button>
-      </div>
     </div>
   );
 };

@@ -76,7 +76,13 @@ router.post("/students/register", async (req, res, next) => {
             },
         });
 
-        return res.status(201).json({ user });
+        const token = signToken({
+            sub: String(user.id),
+            email: user.email,
+            role: user.role,
+        });
+
+        return res.status(201).json({ user, token });
     } catch (e: any) {
         if (e?.code === "P2002") return res.status(409).json({ error: "Email already registered" });
         if (e?.name === "ZodError") return res.status(400).json({ error: "Invalid input", issues: e.issues });
