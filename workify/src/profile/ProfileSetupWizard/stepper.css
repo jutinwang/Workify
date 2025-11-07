@@ -9,12 +9,12 @@
 .stepper li { 
     display:flex; 
     align-items:center; 
-    gap:8px; 
+    gap:8px; /*between button and arrow*/
 }
 .stepper .step-btn { 
     display:flex; 
     align-items:center; 
-    gap:8px; 
+    gap:8px; /*between button and text*/
     border:1px solid var(--border); 
     background:#fff; 
     padding:6px 10px; 
