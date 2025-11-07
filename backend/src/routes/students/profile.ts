@@ -9,17 +9,18 @@ const prisma = new PrismaClient();
 // Complete student profile wizard
 router.post('/', requireAuth, requireRole('STUDENT'), async (req: Request, res: Response) => {
     try {
-        const userId = req.user!.id;
+        const userId = Number(req.user?.sub);
+        if (!Number.isFinite(userId)) {
+            return res.status(401).json({ error: 'No user in auth context' });
+        }
+
         const validatedData = CompleteStudentProfileSchema.parse(req.body);
 
         const user = await prisma.user.findUnique({
             where: { id: userId },
             include: { student: true },
         });
-
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
+        if (!user) return res.status(404).json({ error: 'User not found' });
 
         // Use transaction to ensure all data is saved together
         const result = await prisma.$transaction(async (tx) => {

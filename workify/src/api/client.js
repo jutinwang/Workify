@@ -3,7 +3,7 @@ const API_BASE_URL = 'http://localhost:4000';
 export const apiClient = {
   async post(endpoint, body) {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('authToken');
       const headers = {
         'Content-Type': 'application/json',
       };

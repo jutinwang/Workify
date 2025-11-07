@@ -79,6 +79,7 @@ const SignupForm = ({ isEmployer, onSwitchToLogin }) => {
       } else {
         const response = await authApi.registerStudent(form);
         if (response.token) {
+          console.log(response)
           localStorage.setItem("authToken", response.token);
         }
         if (response.user) {

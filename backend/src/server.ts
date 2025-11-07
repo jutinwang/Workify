@@ -11,7 +11,7 @@ import studentProfileRouter from './routes/students/profile';
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:5173', // Your Vite frontend URL
+  origin: 'http://localhost:5173',
   credentials: true,
 }));
 
