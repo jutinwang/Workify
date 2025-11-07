@@ -73,7 +73,9 @@ const SignupForm = ({ isEmployer, onSwitchToLogin }) => {
           localStorage.setItem("authToken", response.token);
           localStorage.setItem("user", JSON.stringify(response.user));
         }
-        navigate(`/profile-wizard/employee`);
+        navigate(`/profile-wizard/employee`, {
+          state: { fullName: form.fullName, email: form.email },
+        });
       } else {
         const response = await authApi.registerStudent(form);
         if (response.token) {
@@ -82,7 +84,9 @@ const SignupForm = ({ isEmployer, onSwitchToLogin }) => {
         if (response.user) {
           localStorage.setItem("user", JSON.stringify(response.user));
         }
-        navigate(`/profile-wizard/student`);
+        navigate(`/profile-wizard/student`, {
+          state: { fullName: form.fullName, email: form.email },
+        });
       }
     } catch (err) {
       setErrors({ submit: err.message || "Signup failed. Please try again." });

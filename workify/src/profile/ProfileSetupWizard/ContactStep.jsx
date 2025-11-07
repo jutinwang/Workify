@@ -14,7 +14,7 @@ export default function ContactStep({ state, dispatch, errors, onNext }) {
                         className="input"
                         value={state.contact.fullName}
                         onChange={(e) => dispatch({ type: "SET_CONTACT", payload: { fullName: e.target.value } })}
-                        placeholder="Ada Lovelace"
+                        placeholder="Tolu Emoruwa"
                     />
                 </Field>
                 <Field label="Email" error={errors.email}>
