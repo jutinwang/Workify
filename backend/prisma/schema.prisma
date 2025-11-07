@@ -66,18 +66,20 @@ model StudentProfile {
   resumeUrl   String?
   linkedInUrl String?
   githubUrl   String?
+  portfolio   String?
   phoneNumber String?
   transcript  String?
+  coverLetter String?
   aboutMe     String?  @db.Text
   bookmarks   Int[]
 
   // demographics
-  gender    Gender
-  ethnicity Ethnicity[] // Postgres enum array
-  optional  IdentityFlag[] // Postgres enum array
+  gender    Gender? 
+  ethnicity Ethnicity[]  
+  optional  IdentityFlag[]
 
   experience Experience[]
-  educations   Education[]
+  educations Education[] 
   applications Application[]
   interviews   InterviewRequest[]
 
