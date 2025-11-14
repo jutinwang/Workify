@@ -7,6 +7,7 @@ import employerRouter from "./routes/employer/jobs";
 import applicationsRouterStudent from './routes/students/applications';
 import applicationsRouterEmployer from './routes/employer/applications';
 import studentProfileRouter from './routes/students/profile';
+import jobRouter from './routes/jobs';
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use("/employers", employerRouter);
 app.use("/employers", applicationsRouterEmployer); 
 app.use("/applications", applicationsRouterStudent); 
 app.use("/students/profile", studentProfileRouter); 
+app.use("/students", jobRouter); 
 
 const PORT = Number(process.env.PORT) || 4000;
 

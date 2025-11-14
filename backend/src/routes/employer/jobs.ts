@@ -9,6 +9,15 @@ import { z } from "zod";
 const prisma = new PrismaClient();
 const router = Router();
 
+function prepareTagsForCreate(rawTags: string[] | undefined) {
+    const original = (rawTags ?? [])
+        .map(t => t.trim())
+        .filter(Boolean); 
+
+    const normalized = original.map(t => t.toLowerCase());
+
+    return { original, normalized };
+}
 const CreateJobBody = z.object({
     title: z.string().min(3),
     description: z.any(),

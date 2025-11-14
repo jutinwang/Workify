@@ -111,3 +111,15 @@
 .jobs-content--split .jobs-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+
+.jobs-loading,
+.jobs-error {
+  padding: 2rem;
+  text-align: center;
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.jobs-error {
+  color: var(--error, #dc2626);
+}
