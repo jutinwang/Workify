@@ -83,10 +83,6 @@ export default function JobCard({ job, isSelected, onClick }) {
           )}
         </button>
       </div>
-
-      {/* Summary */}
-      <p className="job-summary">{job.summary}</p>
-
       {/* Facts row */}
       <div className="job-facts">
         <span className="fact">

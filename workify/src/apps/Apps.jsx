@@ -210,45 +210,45 @@ const Apps = () => {
           }`}
         >
           {pendingRequests.length > 0 ? (
-            <div className="interview-requests-container">
+            <div className="apps-interview-requests-container">
               {pendingRequests.map((request) => (
-                <div key={request.id} className="interview-request-card">
-                  <div className="interview-request-header">
-                    <div className="job-info">
-                      <h3 className="job-title">{request.job.title}</h3>
-                      <p className="company-name">
+                <div key={request.id} className="apps-interview-request-card">
+                  <div className="apps-interview-request-header">
+                    <div className="apps-job-info">
+                      <h3 className="apps-job-title">{request.job.title}</h3>
+                      <p className="apps-company-name">
                         {request.employer.company.name}
                       </p>
-                      <div className="job-details">
-                        <span className="job-type">{request.job.type}</span>
+                      <div className="apps-job-details">
+                        <span className="apps-job-type">{request.job.type}</span>
                         {request.job.location && (
                           <>
-                            <span className="separator">•</span>
-                            <span className="job-location">
+                            <span className="apps-separator">•</span>
+                            <span className="apps-job-location">
                               {request.job.location}
                             </span>
                           </>
                         )}
                       </div>
                     </div>
-                    <div className="request-meta">
-                      <p className="interviewer">
+                    <div className="apps-request-meta">
+                      <p className="apps-interviewer">
                         From: {request.employer.user.name}
                       </p>
-                      <p className="request-date">
+                      <p className="apps-request-date">
                         Requested: {formatDate(request.createdAt)}
                       </p>
                     </div>
                   </div>
-                  <div className="interview-request-actions">
+                  <div className="apps-interview-request-actions">
                     <button
-                      className="btn btn-success"
+                      className="btn apps-btn-success"
                       onClick={() => handleAccept(request.id)}
                     >
                       Accept
                     </button>
                     <button
-                      className="btn btn-outline"
+                      className="btn apps-btn-outline"
                       onClick={() => handleDecline(request.id)}
                     >
                       Decline
@@ -258,7 +258,7 @@ const Apps = () => {
               ))}
             </div>
           ) : (
-            <div className="empty-state">
+            <div className="apps-empty-state">
               <p>No pending interview requests.</p>
             </div>
           )}
@@ -266,8 +266,8 @@ const Apps = () => {
 
         <Card title="Upcoming Interviews">
           {scheduledInterviews.length > 0 ? (
-            <div className="interviews-table-wrapper">
-              <table className="interviews-table">
+            <div className="apps-interviews-table-wrapper">
+              <table className="apps-interviews-table">
                 <thead>
                   <tr>
                     <th>Position</th>
@@ -281,17 +281,17 @@ const Apps = () => {
                   {scheduledInterviews.map((interview) => (
                     <tr key={interview.id}>
                       <td>
-                        <div className="position-cell">
+                        <div className="apps-position-cell">
                           <span className="cell-strong">
                             {interview.job.title}
                           </span>
-                          <div className="position-details">
-                            <span className="job-type">
+                          <div className="apps-position-details">
+                            <span className="apps-job-type">
                               {interview.job.type}
                             </span>
                             {interview.job.location && (
                               <>
-                                <span className="separator">•</span>
+                                <span className="apps-separator">•</span>
                                 <span>{interview.job.location}</span>
                               </>
                             )}
@@ -301,16 +301,16 @@ const Apps = () => {
                       <td>{interview.employer.company.name}</td>
                       <td>{interview.employer.user.name}</td>
                       <td>
-                        <div className="datetime-cell">
+                        <div className="apps-datetime-cell">
                           <div>{interview.calendarData?.date}</div>
-                          <div className="time">
+                          <div className="apps-time">
                             {interview.calendarData?.time}
                           </div>
                         </div>
                       </td>
                       <td>
-                        <div className="interview-actions">
-                          <button className="btn btn-small">
+                        <div className="apps-interview-actions">
+                          <button className="btn apps-btn-small">
                             View Details
                           </button>
                         </div>
@@ -321,7 +321,7 @@ const Apps = () => {
               </table>
             </div>
           ) : (
-            <div className="empty-state">
+            <div className="apps-empty-state">
               <p>No upcoming interviews scheduled.</p>
             </div>
           )}
