@@ -6,10 +6,10 @@ import SearchIcon from "../assets/search.png";
 
 const LOCATIONS = ["Remote", "Ottawa", "Toronto", "Vancouver", "Montreal"];
 const DATE_POSTED = ["Past 24 hours", "Past week", "Past month", "Any time"];
-const POSTING_TAGS = ["Tolu", "Justin", "Erik", "Ali"];
 
 const FilterModal = ({
   isOpen,
+  tags,
   onClose,
   filters,
   setFilters,
@@ -75,19 +75,23 @@ const FilterModal = ({
             </div>
           </div>
           <div className="jobs-filter-section">
-            <h4 className="jobs-filter-section-title">Posting Tags</h4>
+            <h4 className="jobs-filter-section-title">Tags</h4>
             <div className="jobs-filter-options">
-              {POSTING_TAGS.map((tag) => (
-                <button
-                  key={tag}
-                  className={`jobs-filter-option ${
-                    filters.postingTags?.includes(tag) ? "selected" : ""
-                  }`}
-                  onClick={() => toggleFilter("postingTags", tag)}
-                >
-                  {tag}
-                </button>
-              ))}
+              {tags && tags.length > 0 ? (
+                tags.map((tag) => (
+                  <button
+                    key={tag.id}
+                    className={`jobs-filter-option ${
+                      filters.postingTags?.includes(tag.name) ? "selected" : ""
+                    }`}
+                    onClick={() => toggleFilter("postingTags", tag.name)}
+                  >
+                    {tag.displayName}
+                  </button>
+                ))
+              ) : (
+                <div className="jobs-filter-loading">Loading tags...</div>
+              )}
             </div>
           </div>
         </div>
@@ -106,6 +110,7 @@ const FilterModal = ({
 };
 
 export default function JobsFilter({
+  tags,
   filters,
   setFilters,
   totalJobs,
@@ -180,6 +185,7 @@ export default function JobsFilter({
       {isModalOpen && (
         <FilterModal
           isOpen={isModalOpen}
+          tags={tags}
           onClose={() => setIsModalOpen(false)}
           filters={filters}
           setFilters={setFilters}

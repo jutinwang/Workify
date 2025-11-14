@@ -1,4 +1,4 @@
-# Workify - Co-op Job Platform
+
 # Workify - Co-op Job Platform - CSI4900 Honours Project  
 
 **A Modern Take on the Co-op Experience**

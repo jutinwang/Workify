@@ -119,6 +119,22 @@ const Jobs = () => {
     return true;
   });
 
+  // Extract unique tags from all jobs
+  const allTags = useMemo(() => {
+    const tagsSet = new Map();
+    jobs.forEach(job => {
+      if (job.tags && Array.isArray(job.tags)) {
+        job.tags.forEach(tag => {
+          if (!tagsSet.has(tag.id)) {
+            tagsSet.set(tag.id, tag);
+          }
+        });
+      }
+    });
+    return Array.from(tagsSet.values());
+  }, [jobs]);
+
+  console.log("🏷️ All available tags:", allTags);
   return (
     <div className="jobs-page-container">
       <SavedSection
@@ -129,6 +145,7 @@ const Jobs = () => {
 
       <div className="filters-section">
         <JobsFilter
+          tags={allTags}
           filters={filters}
           setFilters={setFilters}
           totalJobs={jobs.length}
