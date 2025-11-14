@@ -35,8 +35,8 @@ const PositionWriting = () => {
         setTags([...tags, newTag]);
       }
 
-      console.log("added: " + newTag)
-      console.log(tags)
+      // console.log("added: " + newTag)
+      // console.log(tags)
 
       e.target.value = "";
     }
@@ -51,15 +51,15 @@ const PositionWriting = () => {
   const postJob = async(e) => {
     const payload = {
       title: coopTitle,
-      description: coopDescription,
-      // responsibilities: "",
+      description: JSON.stringify(coopDescription),
+      officeLocation: officeLocation,
+      jobLength: jobLength,
+      salary: "money",
+      responsibilities: "",
       // qualifications: "",
       // benefits: "",
-      // jobLength: jobLength,
-      // salary: "",
       // workModel: workModel,
-      // officeLocation: officeLocation,
-      // // tags: tags
+      // tags: tags
     };
 
     console.log("Payload being sent:", payload);
@@ -71,7 +71,7 @@ const PositionWriting = () => {
     }
   };
 
-  console.log("coop: " + JSON.stringify(coopDescription))
+  // console.log("coop: " + JSON.stringify(coopDescription))
 
   return (
     <div className="positionwriting-container">

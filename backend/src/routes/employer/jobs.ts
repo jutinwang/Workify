@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { PrismaClient, Role, Gender, Ethnicity, IdentityFlag, Prisma } from "@prisma/client";
+import { PrismaClient, Role, Gender, Ethnicity, IdentityFlag } from "@prisma/client";
 import { signToken } from "../../lib/jwt";
 import bcrypt from "bcrypt";
 import { requireAuth, requireRole } from "../../middleware/requireAuth";
@@ -9,20 +9,6 @@ import { z } from "zod";
 const prisma = new PrismaClient();
 const router = Router();
 
-function normalizeTags(tags: string[]): string[] {
-  return tags.map(t => t.trim().toLowerCase());
-}
-
-function prepareTagsForCreate(rawTags: string[] | undefined) {
-    const original = (rawTags ?? [])
-        .map(t => t.trim())
-        .filter(Boolean); 
-
-    const normalized = original.map(t => t.toLowerCase());
-
-    return { original, normalized };
-}
-
 const CreateJobBody = z.object({
     title: z.string().min(3),
     description: z.any(),
@@ -31,7 +17,6 @@ const CreateJobBody = z.object({
     salary: z.string().min(1).optional(),
     requirements: z.string().min(1).optional(),
     companyId: z.number().int().positive().optional(),
-    tags: z.array(z.string().min(1)).optional(),
 });
 
 const UpdateJobBody = CreateJobBody.partial();
@@ -58,8 +43,6 @@ router.post( "/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
                 });
             }
 
-            const { original, normalized } = prepareTagsForCreate(input.tags);
-
             const job = await prisma.job.create({
                 data: {
                     title: input.title,
@@ -71,16 +54,6 @@ router.post( "/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
 
                     company: { connect: { id: companyId } },
                     employer: { connect: { id: employer.id } },
-
-                    tags: {
-                        connectOrCreate: normalized.map((name, i) => ({
-                            where: { name },
-                            create: {
-                                name,
-                                displayName: original[i],
-                            },
-                        })),
-                    },
                 },
                 select: {
                     id: true,
@@ -142,28 +115,9 @@ router.patch("/me/jobs/:jobId", requireAuth, requireRole(Role.EMPLOYER),
                 return res.status(404).json({ error: "Job not found or you don't have permission to edit it" });
             }
 
-            const { tags, ...rest } = input as z.infer<typeof UpdateJobBody>;
-
-            const data: Prisma.JobUpdateInput = {...rest};
-
-            if (tags !== undefined) {
-                const { original, normalized } = prepareTagsForCreate(tags);
-
-                data.tags = {
-                    set: [],
-                    connectOrCreate: normalized.map((name, i) => ({
-                        where: { name },
-                            create: {
-                                name,
-                                displayName: original[i],
-                        },
-                    })),
-                };
-            }
-
             const updated = await prisma.job.update({
                 where: { id: jobId },
-                data,
+                data: input,
                 select: {
                     id: true,
                     title: true,
@@ -173,7 +127,6 @@ router.patch("/me/jobs/:jobId", requireAuth, requireRole(Role.EMPLOYER),
                     salary: true,
                     requirements: true,
                     updatedAt: true,
-                    tags: { select: { id: true, name: true } },
                 },
             });
 

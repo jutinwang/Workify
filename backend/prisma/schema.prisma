@@ -170,9 +170,11 @@ model Job {
   description String   @db.Text
   title       String
   location    String?
+  length      String?
   type        String?  // Full-time, Part-time, Internship
   salary      String?
-  requirements String? @db.Text
+  qualification String? @db.Text
+  benefits    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
