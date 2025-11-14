@@ -6,6 +6,12 @@ export type JobSearchParams = {
     tags?: string[] | null;
 };
 
+function normalizeTags(tags?: string[] | null): string[] {
+    if (!tags) return [];
+    return tags.map((t) => t.trim().toLowerCase()).filter(Boolean);
+}
+
+
 export async function searchJobs(params: JobSearchParams) {
     const { title, tags } = params;
 
@@ -18,14 +24,39 @@ export async function searchJobs(params: JobSearchParams) {
         };
     }
 
-    if (tags && tags.length > 0) {
+    const normalizedTags = normalizeTags(tags);
+    if (normalizedTags.length > 0) {
         where.tags = {
-            hasEvery: tags,
+            some: {
+                name: { in: normalizedTags },
+            },
         };
     }
     
     return prisma.job.findMany({
         where,
-        orderBy: { createdAt: "desc" },
+        include: {
+            tags: {
+                select: {
+                    id: true,
+                    name: true,
+                    displayName: true,
+                },
+            },
+            company: {
+                select: {
+                    id: true,
+                    name: true,
+                },
+            },
+            employer: {
+                select: {
+                    id: true,
+                },
+            },
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
     });
 }

@@ -9,10 +9,6 @@ import { z } from "zod";
 const prisma = new PrismaClient();
 const router = Router();
 
-function normalizeTags(tags: string[]): string[] {
-  return tags.map(t => t.trim().toLowerCase());
-}
-
 function prepareTagsForCreate(rawTags: string[] | undefined) {
     const original = (rawTags ?? [])
         .map(t => t.trim())
