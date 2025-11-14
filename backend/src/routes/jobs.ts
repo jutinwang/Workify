@@ -1,6 +1,8 @@
 import express from "express";
+import { PrismaClient } from "@prisma/client";
 import { searchJobs } from "./search/searchJobs";
 
+const prisma = new PrismaClient();
 const router = express.Router();
 
 router.get("/search", async (req, res) => {
@@ -23,5 +25,50 @@ router.get("/search", async (req, res) => {
         res.status(500).json({ error: "Failed to search jobs" });
     }
 });
+
+router.get("/:jobId", async (req, res, next) => {
+    try {
+        const jobId = Number(req.params.jobId);
+
+        if (!Number.isFinite(jobId)) {
+            return res.status(400).json({ error: "Invalid job ID" });
+        }
+
+        const job = await prisma.job.findUnique({
+            where: { id: jobId },
+            include: {
+                tags: {
+                    select: {
+                        id: true,
+                        name: true,
+                        displayName: true,
+                    },
+                },
+                company: {
+                    select: {
+                        id: true,
+                        name: true,
+                        url: true,
+                        about: true,
+                    },
+                },
+                employer: {
+                    select: {
+                        id: true,
+                    },
+                },
+            },
+        });
+
+        if (!job) {
+            return res.status(404).json({ error: "Job not found" });
+        }
+
+        return res.json({ job });
+    } catch (e) {
+        next(e);
+    }
+});
+
 
 export default router;
