@@ -215,7 +215,7 @@ const ExpandedJobDetailsView = () => {
         </section>
         <section className="ejv-section">
           <h2 className="ejv-section-title">Key Responsibilities</h2>
-          <ul className="ejv-list">Pending Update to Backend</ul>
+          <p className="ejv-text">{postingInfo.responsibilities}</p>
         </section>
         <section className="ejv-section">
           <h2 className="ejv-section-title">Qualifications</h2>
@@ -257,7 +257,8 @@ const ExpandedJobDetailsView = () => {
           <div className="ejv-company-stat">
             <span className="ejv-company-stat-label">Industry</span>
             <span className="ejv-company-stat-value">
-              {companyInfo.industry}
+              {/* {companyInfo.industry} */}
+              Technology | Software
             </span>
           </div>
           <div className="ejv-company-stat">

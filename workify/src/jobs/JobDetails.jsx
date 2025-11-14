@@ -73,6 +73,10 @@ export default function JobDetails({ job, onClose }) {
           </div>
 
           <div className="overview-grid">
+          <div className="overview-item">
+              <span className="overview-label">Length</span>
+              <span className="overview-value">${job.length}</span>
+            </div>
             <div className="overview-item">
               <span className="overview-label">Salary</span>
               <span className="overview-value">${job.salary}</span>
