@@ -24,7 +24,6 @@
 }
 
 .job-details {
-  height: 100%;
   font-family: var(--main-font);
   overflow-y: auto;
   background: var(--white);

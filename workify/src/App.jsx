@@ -34,7 +34,7 @@ export default function App() {
         <Route path="/jobs" element={<Jobs />} />
         <Route path="/applications" element={<Apps />} />
 
-        <Route path="/jobs/:id" element={<ExpandedJobView/>}></Route>
+        <Route path="/students/:id" element={<ExpandedJobView/>}></Route>
 
         {/* Routes for employer stuff */}
         {/* For all employer routing please include employer in the path name */}

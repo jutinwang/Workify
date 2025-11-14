@@ -50,6 +50,12 @@ router.get("/:jobId", async (req, res, next) => {
                         name: true,
                         url: true,
                         about: true,
+                        size: true,
+                        _count: {
+                            select: {
+                                jobs: true,
+                            },
+                        }
                     },
                 },
                 employer: {

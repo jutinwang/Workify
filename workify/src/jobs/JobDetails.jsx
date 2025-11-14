@@ -64,7 +64,7 @@ export default function JobDetails({ job, onClose }) {
           <div className="co-op-overview-header">
             <h3>Co-op Overview</h3>
             <Link
-              to={`/jobs/${job.id}`}
+              to={`/students/${job.id}`}
               className="expand-link"
               title="Expand Into Single Job View"
             >
@@ -74,38 +74,24 @@ export default function JobDetails({ job, onClose }) {
 
           <div className="overview-grid">
             <div className="overview-item">
-              <span className="overview-label">Employment Type</span>
-              <span className="overview-value">{job.type}</span>
+              <span className="overview-label">Salary</span>
+              <span className="overview-value">${job.salary}</span>
             </div>
-            {job.salary && (
-              <div className="overview-item">
-                <span className="overview-label">Salary Range</span>
-                <span className="overview-value">
-                  ${job.salary.min} – ${job.salary.max}
-                </span>
-              </div>
-            )}
           </div>
         </section>
 
         <section className="details-section">
           <h3>Co-op Description</h3>
-          <p className="job-description">{job.summary}</p>
-          <p>
-            We are seeking a talented and motivated individual to join our
-            growing team. This role offers excellent opportunities for
-            professional development and the chance to work on exciting projects
-            with cutting-edge technologies.
-          </p>
+          <p className="job-description">{job.description}</p>
         </section>
 
-        {job.skills && job.skills.length > 0 && (
+        {job.tags && (
           <section className="details-section">
             <h3>Required Skills</h3>
             <div className="skills-grid">
-              {job.skills.map((skill, index) => (
-                <span key={index} className="skill-tag">
-                  {skill}
+              {job.tags.map((tags) => (
+                <span className="skill-tag">
+                  {tags.name}
                 </span>
               ))}
             </div>
