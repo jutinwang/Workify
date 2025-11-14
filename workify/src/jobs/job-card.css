@@ -114,24 +114,8 @@
   margin: 4px 0 2px;
 }
 
-.job-facts {
-  display: flex;
-  gap: 14px;
-  color: #0f172a;
-  font-weight: 700;
-}
-.fact {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-}
-
-.job-salary {
-  font-weight: 800;
-  color: #0f172a;
-}
-
 .job-tags {
+  margin-top: 1.6rem;
   display: flex;
   gap: 8px;
   flex-wrap: wrap;

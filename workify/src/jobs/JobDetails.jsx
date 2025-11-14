@@ -2,6 +2,7 @@ import React from "react";
 import "./job-details.css";
 import "../var.css";
 import { Link } from "react-router-dom";
+import { formatRelativeDate } from "../common/utility";
 
 export default function JobDetails({ job, onClose }) {
   if (!job) {
@@ -15,12 +16,14 @@ export default function JobDetails({ job, onClose }) {
     );
   }
 
-  const initials = job.company
+  const initials = job?.company?.title
     ?.split(" ")
     .map((w) => w[0])
     .slice(0, 2)
     .join("")
     .toUpperCase();
+
+  const postedDate = formatRelativeDate(job.updatedAt || job.createdAt);
 
   return (
     <div className="job-details">
@@ -28,7 +31,7 @@ export default function JobDetails({ job, onClose }) {
         <div className="job-details-avatar">{initials}</div>
         <div className="job-details-title-block">
           <h2 className="job-details-title">{job.title}</h2>
-          <div className="job-details-company">{job.company}</div>
+          <div className="job-details-company">{job.company.name}</div>
           <div className="job-details-meta">
             <span className="details-meta-item">
               <svg width="16" height="16" viewBox="0 0 24 24">
@@ -39,8 +42,7 @@ export default function JobDetails({ job, onClose }) {
               </svg>
               {job.location}
             </span>
-            {job.remote && <span className="details-pill">Remote</span>}
-            <span className="details-posted">• {job.posted}</span>
+            <span className="details-posted">Updated {postedDate}</span>
           </div>
         </div>
         <div className="job-details-actions">
@@ -74,10 +76,6 @@ export default function JobDetails({ job, onClose }) {
             <div className="overview-item">
               <span className="overview-label">Employment Type</span>
               <span className="overview-value">{job.type}</span>
-            </div>
-            <div className="overview-item">
-              <span className="overview-label">Experience Level</span>
-              <span className="overview-value">{job.level}</span>
             </div>
             {job.salary && (
               <div className="overview-item">
