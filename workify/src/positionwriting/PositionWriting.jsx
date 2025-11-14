@@ -2,9 +2,11 @@ import { useState, useRef, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import "./PositionWriting.css";
 import RichTextEditor from "./component/RichTextEditor";
+import { employerApi } from "../api/employer";
 
 const PositionWriting = () => {
-  const [coopDescription, setCoopDescription] = useState("");
+  const [coopTitle, setCoopTitle] = useState("");
+  const [coopDescription, setCoopDescription] = useState([]);
   const [responsibilities, setResponsibilities] = useState("");
   const [qualifications, setQualifications] = useState("");
   const [benefits, setBenefits] = useState("");
@@ -16,6 +18,7 @@ const PositionWriting = () => {
 
   const textareaRef = useRef(null);
 
+  const handleCoopTitleChange = (title) => setCoopTitle(title.target.value);
   const handleCoopDescriptionChange = (description) => setCoopDescription(description.target.value);
   const handleResponsibilitiesChange = (responsibility) => setResponsibilities(responsibility.target.value);
   const handleQualificationsChange = (qualification) => setQualifications(qualification.target.value);
@@ -24,40 +27,72 @@ const PositionWriting = () => {
   const handleOfficeLocationChange = (location) => setOfficeLocation(location.target.value);
 
   function handleKeyDown(e) {
-    if (e.key !== "Enter") return;
-    const value = e.target.value;
-    if (!value.trim()) return;
-    setTags([...tags, value]);
-    e.target.value = "";
+    if (e.key === "Enter" && e.target.value.trim() !== "") {
+      e.preventDefault();
+      const newTag = e.target.value.trim();
+
+      if (!tags.includes(newTag)) {
+        setTags([...tags, newTag]);
+      }
+
+      console.log("added: " + newTag)
+      console.log(tags)
+
+      e.target.value = "";
+    }
   }
 
   // Hit x icon to delete tag
-  function removeTag(index) {
-    setTags(tags.filter((el, i) => i !== index));
-  }
+  const removeTag = (indexToRemove) => {
+    setTags(tags.filter((_, index) => index !== indexToRemove));
+  };
 
   // TODO: CHANGE CONTENTS SO IT POSTS JOB TO BACKEND
-  function postJob() {
-    setCoopDescription("");
-    setResponsibilities("");
-    setQualifications("");
-    setBenefits("");
-    setJobLength("");
-    setSalaryRange("");
-    setWorkModel("");
-    setTags([]);
-  }
+  const postJob = async(e) => {
+    const payload = {
+      title: coopTitle,
+      description: coopDescription,
+      // responsibilities: "",
+      // qualifications: "",
+      // benefits: "",
+      // jobLength: jobLength,
+      // salary: "",
+      // workModel: workModel,
+      // officeLocation: officeLocation,
+      // // tags: tags
+    };
+
+    console.log("Payload being sent:", payload);
+
+    const response = await employerApi.postCoop(payload);
+    
+    if (response.token) {
+      localStorage.setItem("authToken", response.token);
+    }
+  };
+
+  console.log("coop: " + JSON.stringify(coopDescription))
 
   return (
     <div className="positionwriting-container">
       <div className="content-wrapper">
         <h3>Create Coop Posting</h3>
         <div className="textInput">
+
+          <p>Coop Title</p>
+          <textarea className="infoInput"
+              ref={textareaRef}
+              value={coopTitle}
+              onChange={handleCoopTitleChange}
+              placeholder="Type something..."
+          />
+
           <p>Coop Description</p>
           <RichTextEditor
             placeholder=" "
             initialText="Write your co-op description here..."
             className="infoInput"
+            onChange={setCoopDescription}
           />
 
           <p>Key Responsibilities</p>

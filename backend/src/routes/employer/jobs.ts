@@ -11,7 +11,7 @@ const router = Router();
 
 const CreateJobBody = z.object({
     title: z.string().min(3),
-    description: z.string().min(10),
+    description: z.any(),
     location: z.string().min(1).optional(),
     type: z.string().min(1).optional(), 
     salary: z.string().min(1).optional(),

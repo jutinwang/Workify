@@ -126,7 +126,8 @@ const Leaf = ({ attributes, children, leaf }) => {
 const RichTextEditor = ({ 
   placeholder = " ",
   className = "infoInput",
-  initialText = ""
+  initialText = "",
+  onChange
 }) => {
   const editor = useMemo(() => withReact(createEditor()), []);
   const renderElement = useCallback((props) => <Element {...props} />, []);
@@ -140,7 +141,13 @@ const RichTextEditor = ({
   ];
 
   return (
-    <Slate editor={editor} initialValue={initialValue}>
+    <Slate 
+      editor={editor} 
+      initialValue={initialValue} 
+      onChange={(newValue) => {
+        if (onChange) onChange(newValue);
+      }}
+    >
       {/* Toolbar with buttons */}
       <div className="toolbar">
         <FormatBoldIcon 
