@@ -27,8 +27,10 @@ const CreateJobBody = z.object({
     length: z.string().min(1).optional(),
     type: z.string().min(1).optional(),
     salary: z.string().min(1).optional(),
+
     qualification: z.string().min(1).optional(),
     benefits: z.string().min(1).optional(),
+    responsibilities: z.string().min(1).optional(),
 
     companyId: z.number().int().positive().optional(),
 
@@ -71,6 +73,7 @@ router.post( "/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
                     salary: input.salary ?? null,
                     qualification: input.qualification ?? null,
                     benefits: input.benefits ?? null,
+                    responsibilities: input.responsibilities ?? null,
 
                     company: { connect: { id: companyId } },
                     employer: { connect: { id: employer.id } },
@@ -95,6 +98,7 @@ router.post( "/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
                     salary: true,
                     qualification: true,
                     benefits: true,
+                    responsibilities: true,
                     createdAt: true,
                     updatedAt: true,
                     company: { select: { id: true, name: true } },

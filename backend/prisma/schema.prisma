@@ -175,6 +175,7 @@ model Job {
   salary      String?
   qualification String? @db.Text
   benefits    String?
+  responsibilities String? @db.Text
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
