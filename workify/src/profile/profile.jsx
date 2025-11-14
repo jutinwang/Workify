@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { studentApi } from "../api/student";
 import Card from "../common/Card";
 import Section from "../common/Section";
 import Modal from "../common/Modal";
@@ -19,16 +20,28 @@ function Ring({ value = 75 }) {
   );
 }
 
-function HeaderBar() {
+function HeaderBar({ profile, user }) {
+  if (!profile || !user) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="header-bar">
       <div className="header-content">
         <div className="header-info">
-          <h1 className="header-name">Toluwanimi Emoruwa</h1>
-          <p className="header-location">Ottawa, ON · He/Him</p>
-          <p className="header-degree">4th Year Student · Bachelor's in Computer Science</p>
+          <h1 className="header-name">{user.name || 'Student'}</h1>
+          <p className="header-location">
+            {profile.phoneNumber ? `${profile.phoneNumber}` : 'Location not set'}
+          </p>
+          <p className="header-degree">
+            {profile.year ? `${profile.year}${getOrdinalSuffix(profile.year)} Year Student` : 'Student'} 
+            {profile.major ? ` · ${profile.major}` : ''}
+          </p>
           <div className="header-contact">
-            <p>temor010@uottawa.ca • +1 (289) 931-2139</p>
+            <p>
+              {user.email}
+              {profile.phoneNumber && ` • ${profile.phoneNumber}`}
+            </p>
           </div>
         </div>
         <div className="header-actions">
@@ -37,17 +50,50 @@ function HeaderBar() {
         </div>
       </div>
       <div className="header-links">
-        <div className="header-link-item">
-          <div className="header-link-top">Resume</div>
-          <div className="header-link">Resume</div>
-        </div>
-        <div className="header-link-item">
-          <div className="header-link-top">Resume</div>
-          <div className="header-link">Resume</div>
-        </div>
+        {profile.resumeUrl && (
+          <div className="header-link-item">
+            <div className="header-link-top">Resume</div>
+            <a href={profile.resumeUrl} target="_blank" rel="noopener noreferrer" className="header-link">
+              View Resume
+            </a>
+          </div>
+        )}
+        {profile.linkedInUrl && (
+          <div className="header-link-item">
+            <div className="header-link-top">LinkedIn</div>
+            <a href={profile.linkedInUrl} target="_blank" rel="noopener noreferrer" className="header-link">
+              View LinkedIn
+            </a>
+          </div>
+        )}
+        {profile.githubUrl && (
+          <div className="header-link-item">
+            <div className="header-link-top">GitHub</div>
+            <a href={profile.githubUrl} target="_blank" rel="noopener noreferrer" className="header-link">
+              View GitHub
+            </a>
+          </div>
+        )}
+        {profile.portfolio && (
+          <div className="header-link-item">
+            <div className="header-link-top">Portfolio</div>
+            <a href={profile.portfolio} target="_blank" rel="noopener noreferrer" className="header-link">
+              View Portfolio
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );
+}
+
+function getOrdinalSuffix(num) {
+  const j = num % 10;
+  const k = num % 100;
+  if (j === 1 && k !== 11) return "st";
+  if (j === 2 && k !== 12) return "nd";
+  if (j === 3 && k !== 13) return "rd";
+  return "th";
 }
 
 function Stats() {
@@ -69,7 +115,47 @@ function Stats() {
   );
 }
 
+// Helper function to map database enums to display text
+const formatGender = (gender) => {
+  const genderMap = {
+    'WOMAN': 'Woman',
+    'MAN': 'Man',
+    'NON_BINARY': 'Non-Binary',
+    'TWO_SPIRIT': 'Two-Spirit',
+    'PREFER_NOT_TO_SAY': 'Prefer not to say'
+  };
+  return genderMap[gender] || gender;
+};
+
+const formatEthnicity = (ethnicity) => {
+  const ethnicityMap = {
+    'BLACK': 'Black',
+    'EAST_ASIAN': 'East Asian',
+    'SOUTH_ASIAN': 'South Asian',
+    'SOUTHEAST_ASIAN': 'Southeast Asian',
+    'MENA': 'MENA',
+    'LATINX': 'Latinx',
+    'WHITE': 'White',
+    'MIXED': 'Mixed',
+    'PREFER_NOT_TO_SAY': 'Prefer not to say'
+  };
+  return ethnicityMap[ethnicity] || ethnicity;
+};
+
+const formatIdentityFlag = (flag) => {
+  const flagMap = {
+    'INDIGENOUS': 'Indigenous',
+    'DISABILITY': 'Person with a disability',
+    'VETERAN': 'Veteran'
+  };
+  return flagMap[flag] || flag;
+};
+
 const Profile = () => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [userData, setUserData] = useState(null);
+
   const [modals, setModals] = useState({
     about: false,
     demographics: false,
@@ -79,7 +165,7 @@ const Profile = () => {
   });
 
   const [formData, setFormData] = useState({
-    about: "About section content goes here...",
+    about: "",
     demographics: {
       genders: [],
       ethnicities: [],
@@ -87,26 +173,48 @@ const Profile = () => {
       hasDisability: false,
       isVeteran: false,
     },
-    experiences: { 
-      years: "",
-      level: "",
-      areas: [],
-      technologies: [],
-      industries: [],
-    },
+    experiences: [],
     background: [],
-    preferences: ["Frontend SWE", "Toronto", "Remote", "FinTech", "DevTools"],
+    preferences: [],
   });
 
-  const [newExperience, setNewExperience] = useState({
-    title: '',
-    company: '',
-    duration: '',
-    description: '',
-    image: ''
-  });
+  // Fetch profile data on mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        const data = await studentApi.getProfile();
+        
+        console.log('Fetched profile data:', data);
+        
+        setUserData(data);
+        
+        // Transform the data to match your component's format
+        setFormData({
+          about: data.profile.aboutMe || "No about information added yet.",
+          demographics: {
+            genders: data.profile.gender ? [data.profile.gender] : [],
+            ethnicities: data.profile.ethnicity || [],
+            isIndigenous: data.profile.optional?.includes('INDIGENOUS') || false,
+            hasDisability: data.profile.optional?.includes('DISABILITY') || false,
+            isVeteran: data.profile.optional?.includes('VETERAN') || false,
+          },
+          experiences: data.experience || [],
+          background: data.education || [],
+          preferences: [], // You can populate this from preferences if you add them
+        });
+        
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching profile:', err);
+        setError('Failed to load profile data');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const [newBackground, setNewBackground] = useState('');
+    fetchProfile();
+  }, []);
 
   const openModal = (type) => {
     setModals(prev => ({ ...prev, [type]: true }));
@@ -116,32 +224,39 @@ const Profile = () => {
     setModals(prev => ({ ...prev, [type]: false }));
   };
 
-  const handleAddExperience = () => {
-    if (newExperience.title && newExperience.company) {
-      setFormData(prev => ({
-        ...prev,
-        experience: [...prev.experience, { ...newExperience, id: Date.now() }]
-      }));
-      setNewExperience({ title: '', company: '', duration: '', description: '', image: '' });
-      closeModal('experience');
+  const handleUpdateAbout = async () => {
+    try {
+      await studentApi.updateProfile({ aboutMe: formData.about });
+      closeModal('about');
+    } catch (err) {
+      console.error('Error updating about:', err);
     }
   };
 
-  const handleAddBackground = () => {
-    if (newBackground.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        background: [...prev.background, newBackground.trim()]
-      }));
-      setNewBackground('');
-      closeModal('background');
-    }
-  };
+  if (loading) {
+    return (
+      <div className="profile-container">
+        <div className="profile-content">
+          <p>Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="profile-container">
+        <div className="profile-content">
+          <p className="error-message">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="profile-container">
       <div className="profile-content">
-        <HeaderBar />
+        <HeaderBar profile={userData?.profile} user={userData?.user || { email: 'Loading...' }} />
 
         <div className="profile-grid">
           <div className="main-content">
@@ -152,13 +267,12 @@ const Profile = () => {
             <Section title="Demographics" onEdit={() => openModal('demographics')}>
               {(() => {
                 const d = formData.demographics || {};
-                const gender = Array.isArray(d.genders) ? d.genders : [];
                 const tags = [
-                  ...gender,
-                  ...(Array.isArray(d.ethnicities) ? d.ethnicities : []),
-                  d.isIndigenous ? "Indigenous" : null,
-                  d.hasDisability ? "Person with a disability" : null,
-                  d.isVeteran ? "Veteran" : null,
+                  ...(d.genders || []).map(formatGender),
+                  ...(d.ethnicities || []).map(formatEthnicity),
+                  d.isIndigenous ? formatIdentityFlag('INDIGENOUS') : null,
+                  d.hasDisability ? formatIdentityFlag('DISABILITY') : null,
+                  d.isVeteran ? formatIdentityFlag('VETERAN') : null,
                 ].filter(Boolean);
 
                 if (!tags.length) {
@@ -177,79 +291,84 @@ const Profile = () => {
               })()}
             </Section>
 
-
-            <Section title="Background" onEdit={() => openModal('background')}>
+            <Section title="Education" onEdit={() => openModal('background')}>
               <div className="background-tags">
-                {formData.background.map((item, i) => (
-                  <span key={i} className="tag">
-                    {item}
-                  </span>
+                {formData.background.map((edu, i) => (
+                  <div key={i} style={{ marginBottom: '16px' }}>
+                    <strong>{edu.program}</strong> at {edu.schoolName}
+                    {edu.yearOfStudy && <span> • Year {edu.yearOfStudy}</span>}
+                    {edu.gradDate && (
+                      <span> • Expected Graduation: {new Date(edu.gradDate).toLocaleDateString()}</span>
+                    )}
+                  </div>
                 ))}
                 {formData.background.length === 0 && (
-                  <p className="empty-state">No background items added yet.</p>
+                  <p className="empty-state">No education added yet.</p>
                 )}
               </div>
             </Section>
 
-            <Section title="Experiences" onEdit={() => openModal('experiences')}>
-              {(() => {
-                const e = formData.experiences || {};
-                const tags = [
-                  e.years || null,
-                  e.level || null,
-                  ...(e.areas || []),
-                  ...(e.technologies || []),
-                  ...(e.industries || []),
-                ].filter(Boolean);
-
-                if (!tags.length) return <p className="empty-state">No experience added yet.</p>;
-
-                return (
-                  <div className="section-content" style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                    {tags.map((t, i) => (
-                      <span key={i} className="jobs-filter-option selected" style={{ cursor: "default" }}>
-                        {t}
+            <Section title="Experience" onEdit={() => openModal('experiences')}>
+              {formData.experiences.length === 0 ? (
+                <p className="empty-state">No experience added yet.</p>
+              ) : (
+                <div className="section-content">
+                  {formData.experiences.map((exp, i) => (
+                    <div key={i} style={{ marginBottom: '20px', borderBottom: '1px solid #eee', paddingBottom: '16px' }}>
+                      <strong>{exp.title}</strong> at {exp.company}
+                      <br />
+                      <span style={{ color: '#666', fontSize: '14px' }}>
+                        {new Date(exp.startDate).toLocaleDateString()} - {exp.endDate ? new Date(exp.endDate).toLocaleDateString() : 'Present'}
                       </span>
-                    ))}
-                  </div>
-                );
-              })()}
+                      {exp.description && (
+                        <p style={{ marginTop: '8px', color: '#333' }}>{exp.description}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </Section>
 
-
-            <Section title="Job Preferences" onEdit={() => openModal('preferences')}>
-              <div className="preferences-tags">
-                {formData.preferences.map(pref => (
-                  <span key={pref} className="tag">
-                    {pref}
-                  </span>
-                ))}
+            <Section title="Documents">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {userData?.profile?.resumeUrl && (
+                  <a href={userData.profile.resumeUrl} target="_blank" rel="noopener noreferrer" className="tag">
+                    📄 Resume
+                  </a>
+                )}
+                {userData?.profile?.transcript && (
+                  <a href={userData.profile.transcript} target="_blank" rel="noopener noreferrer" className="tag">
+                    📄 Transcript
+                  </a>
+                )}
+                {userData?.profile?.coverLetter && (
+                  <a href={userData.profile.coverLetter} target="_blank" rel="noopener noreferrer" className="tag">
+                    📄 Cover Letter
+                  </a>
+                )}
+                {!userData?.profile?.resumeUrl && !userData?.profile?.transcript && !userData?.profile?.coverLetter && (
+                  <p className="empty-state">No documents uploaded yet.</p>
+                )}
               </div>
             </Section>
           </div>
 
           <aside className="sidebar">
             <Card title="Profile Completion">
-              <Ring value={95} />
-              <span className="badge">High discoverability</span>
+              <Ring value={calculateProfileCompletion(userData?.profile)} />
+              <span className="badge">
+                {calculateProfileCompletion(userData?.profile) >= 80 ? 'High discoverability' : 'Improve visibility'}
+              </span>
             </Card>
 
             <Card title="Quick wins">
               <ul className="quick-wins-list">
-                <li>Add a 2–3 line About summary</li>
-                <li>Pin 5 top skills</li>
-                <li>Upload résumé (PDF)</li>
+                {!userData?.profile?.aboutMe && <li>Add a 2–3 line About summary</li>}
+                {!userData?.profile?.resumeUrl && <li>Upload résumé (PDF)</li>}
+                {formData.experiences.length === 0 && <li>Add work experience</li>}
+                {formData.background.length === 0 && <li>Add education details</li>}
               </ul>
               <button className="btn-full">Open checklist</button>
-            </Card>
-
-            <Card title="AI Coach">
-              <p className="coach-description">Tailor résumé, fill gaps, prep interviews.</p>
-              <div className="coach-tags">
-                {['Tailor Resume','Improve Summary','Interview Prep'].map(c => (
-                  <span key={c} className="tag small">{c}</span>
-                ))}
-              </div>
             </Card>
 
             <Card title="Key stats">
@@ -266,7 +385,7 @@ const Profile = () => {
             onChange={(e) => setFormData(prev => ({ ...prev, about: e.target.value }))}
           />
           <button 
-            onClick={() => closeModal('about')}
+            onClick={handleUpdateAbout}
             className="modal-save-btn"
           >
             Save
@@ -280,32 +399,33 @@ const Profile = () => {
           onChange={(next) => setFormData(prev => ({ ...prev, demographics: next }))}
         />
 
-        <Modal isOpen={modals.background} onClose={() => closeModal('background')} title="Add Background Item">
-          <input 
-            type="text"
-            placeholder="e.g., JavaScript, React, Node.js"
-            className="modal-input"
-            value={newBackground}
-            onChange={(e) => setNewBackground(e.target.value)}
-          />
-          <button 
-            onClick={handleAddBackground}
-            className="modal-save-btn"
-          >
-            Add Item
-          </button>
-        </Modal>
-
         <ExperiencesModal
           isOpen={modals.experiences}
           onClose={() => closeModal('experiences')}
           values={formData.experiences}
           onChange={(next) => setFormData(prev => ({ ...prev, experiences: next }))}
         />
-
       </div>
     </div>
   );
 };
+
+// Helper function to calculate profile completion percentage
+function calculateProfileCompletion(profile) {
+  if (!profile) return 0;
+  
+  const fields = [
+    profile.aboutMe,
+    profile.phoneNumber,
+    profile.resumeUrl,
+    profile.linkedInUrl,
+    profile.major,
+    profile.year,
+    profile.gender,
+  ];
+  
+  const completed = fields.filter(Boolean).length;
+  return Math.round((completed / fields.length) * 100);
+}
 
 export default Profile;
