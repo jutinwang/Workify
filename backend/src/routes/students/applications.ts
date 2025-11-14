@@ -212,9 +212,18 @@ router.get("/:applicationId", requireAuth, requireRole(Role.STUDENT),
                             title: true,
                             description: true,
                             location: true,
+                            length: true,
                             type: true,
                             salary: true,
-                            requirements: true,
+                            qualification: true,
+                            benefits: true,
+                            tags: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    displayName: true,
+                                },
+                            },
                             company: {
                                 select: {
                                     id: true,
