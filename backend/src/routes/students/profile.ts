@@ -24,46 +24,39 @@ router.post('/', requireAuth, requireRole('STUDENT'), async (req: Request, res: 
 
         // Use transaction to ensure all data is saved together
         const result = await prisma.$transaction(async (tx) => {
+            const profileData = {
+                phoneNumber: validatedData.contact.phoneNumber,
+                linkedInUrl: validatedData.contact.linkedInUrl,
+                githubUrl: validatedData.contact.githubUrl,
+                portfolio: validatedData.contact.portfolio,
+            
+                resumeUrl: validatedData.files.resumeUrl || undefined,
+                transcript: validatedData.files.transcript || undefined,
+                coverLetter: validatedData.files.coverLetter || undefined,
+            
+                aboutMe: validatedData.aboutMe,
+                major: validatedData.major,
+                year: validatedData.year,
+            
+                ...(validatedData.demographics && {
+                    gender: validatedData.demographics.gender as Gender,
+                    ethnicity: validatedData.demographics.ethnicity,
+                    optional: validatedData.demographics.optional || [],
+                }),
+            };
+
             const studentProfile = await tx.studentProfile.upsert({
                 where: { userId },
-                update: {
-                    phoneNumber: validatedData.contact.phoneNumber,
-                    linkedInUrl: validatedData.contact.linkedInUrl,
-                    githubUrl: validatedData.contact.githubUrl,
-                    portfolio: validatedData.contact.portfolio,
-                
-                    resumeUrl: validatedData.files.resumeUrl || undefined,
-                    transcript: validatedData.files.transcript || undefined,
-                    coverLetter: validatedData.files.coverLetter || undefined,
-                
-                    aboutMe: validatedData.aboutMe,
-                    major: validatedData.major,
-                    year: validatedData.year,
-                
-                    gender: validatedData.demographics?.gender as Gender | undefined,
-                    ethnicity: validatedData.demographics?.ethnicity || [],
-                    optional: validatedData.demographics?.optional || [],
-                },
+                update: profileData,
                 create: {
                     userId,
-                    phoneNumber: validatedData.contact.phoneNumber,
-                    linkedInUrl: validatedData.contact.linkedInUrl,
-                    githubUrl: validatedData.contact.githubUrl,
-                    resumeUrl: validatedData.files.resumeUrl || undefined,
-                    transcript: validatedData.files.transcript || undefined,
-                    coverLetter: validatedData.files.coverLetter || undefined,
-                    
-                    aboutMe: validatedData.aboutMe,
-                    major: validatedData.major,
-                    year: validatedData.year,
-                
-                    ...(validatedData.demographics?.gender && { 
-                        gender: validatedData.demographics.gender 
-                    }),
-                    ethnicity: validatedData.demographics?.ethnicity || [],
-                    optional: validatedData.demographics?.optional || [],
-                    
+                    ...profileData,
                     bookmarks: [],
+                    ...(!validatedData.demographics && {
+                        gender: 'PREFER_NOT_TO_SAY' as Gender,
+                        ethnicity: [],
+                        optional: [],
+                    }),
                 },
             });
 
@@ -89,22 +82,22 @@ router.post('/', requireAuth, requireRole('STUDENT'), async (req: Request, res: 
 
             if (user.student) {
                 await tx.experience.deleteMany({
-                where: { userId: user.student.id },
+                    where: { userId: user.student.id },
                 });
             }
 
             const experienceEntries = await Promise.all(
                 validatedData.experience.map((exp) =>
-                tx.experience.create({
-                    data: {
-                    userId: studentProfile.id,
-                    title: exp.title,
-                    company: exp.company,
-                    startDate: new Date(exp.startDate),
-                    endDate: exp.endDate ? new Date(exp.endDate) : undefined,
-                    description: exp.description,
-                    },
-                })
+                    tx.experience.create({
+                        data: {
+                            userId: studentProfile.id,
+                            title: exp.title,
+                            company: exp.company,
+                            startDate: new Date(exp.startDate),
+                            endDate: exp.endDate ? new Date(exp.endDate) : undefined,
+                            description: exp.description,
+                        },
+                    })
                 )
             );
 
@@ -136,16 +129,20 @@ router.post('/', requireAuth, requireRole('STUDENT'), async (req: Request, res: 
 // Get complete student profile
 router.get('/', requireAuth, async (req: Request, res: Response) => {
     try {
-        const userId = req.user!.id;
+        const userId = Number(req.user?.sub);
+        
+        if (!Number.isFinite(userId)) {
+            return res.status(401).json({ error: 'No user in auth context' });
+        }
 
         const user = await prisma.user.findUnique({
             where: { id: userId },
             include: {
                 student: {
-                include: {
-                    educations: true,
-                    experience: true,
-                },
+                    include: {
+                        educations: true,
+                        experience: true,
+                    },
                 },
             },
         });
@@ -155,6 +152,12 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
         }
 
         return res.json({
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                role: user.role,
+            },
             profile: user.student,
             education: user.student.educations,
             experience: user.student.experience,
@@ -168,7 +171,11 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
 // Partial update
 router.patch('/', requireAuth, requireRole('STUDENT'), async (req: Request, res: Response) => {
     try {
-        const userId = req.user!.id;
+        const userId = Number(req.user?.sub);
+        
+        if (!Number.isFinite(userId)) {
+            return res.status(401).json({ error: 'No user in auth context' });
+        }
 
         const user = await prisma.user.findUnique({
             where: { id: userId },
