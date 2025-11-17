@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useLocation, Link } from "react-router-dom";
 import "./expanded-job-view.css";
 import "../../var.css";
@@ -34,7 +34,51 @@ const ExpandedJobDetailsView = () => {
     }
   }, [jobId]);
 
+  const Element = ({ attributes, children, element }) => {
+  switch (element.type) {
+    case "code":
+      return (
+        <pre {...attributes}>
+          <code>{children}</code>
+        </pre>
+      );
+    case 'bulleted-list':
+      return (
+        <ul {...attributes}>
+          {children}
+        </ul>
+      );
+    case 'numbered-list':
+      return (
+        <ol {...attributes}>
+          {children}
+        </ol>
+      );
+    case 'list-item':
+      return (
+        <li {...attributes}>
+          {children}
+        </li>
+      );
+    default:
+      return <p {...attributes}>{children}</p>;
+  }
+};
+
+// Leaf renderer
+const Leaf = ({ attributes, children, leaf }) => {
+  if (leaf.bold) children = <strong>{children}</strong>;
+  if (leaf.code) children = <code>{children}</code>;
+  if (leaf.italic) children = <em>{children}</em>;
+  if (leaf.underline) children = <u>{children}</u>;
+  if (leaf.strikethrough) children = <s>{children}</s>;
+
+  return <span {...attributes}>{children}</span>;
+};
+
   const editor = useMemo(() => withReact(createEditor()), []);
+  const renderElement = useCallback((props) => <Element {...props} />, []);
+  const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
 
   useEffect(() => {
     console.log(coops);
@@ -145,10 +189,11 @@ const ExpandedJobDetailsView = () => {
           <div className="ejv-stat-card">
             <div className="ejv-stat-icon">💰</div>
             <div className="ejv-stat-label">Salary</div>
-            {/* <div className="ejv-stat-value">{`${postingInfo.salary}`}</div> */}
             <Slate className="ejv-stat-value" editor={editor} initialValue={JSON.parse(postingInfo.salary)}>
                 <Editable 
                     readOnly 
+                    renderLeaf={renderLeaf}
+                    renderElement={renderElement}
                     placeholder="No description"
                 />
             </Slate>
@@ -170,18 +215,18 @@ const ExpandedJobDetailsView = () => {
           </div>
         </div>
 
-        {/* Job Summary */}
         <section className="ejv-section">
           <h2 className="ejv-section-title">About This Role</h2>
           <Slate className="ejv-text" editor={editor} initialValue={JSON.parse(postingInfo.description)}>
                 <Editable 
                     readOnly 
+                    renderLeaf={renderLeaf}
+                    renderElement={renderElement}
                     placeholder="No description"
                 />
             </Slate>
         </section>
 
-        {/* Required Skills */}
         <section className="ejv-section">
           <h2 className="ejv-section-title">Required Skills</h2>
           <div className="ejv-skills-grid">
@@ -197,12 +242,13 @@ const ExpandedJobDetailsView = () => {
           </div>
         </section>
 
-        {/* Benefits Preview */}
         <section className="ejv-section">
           <h2 className="ejv-section-title">Benefits & Perks</h2>
           <Slate className="ejv-text" editor={editor} initialValue={JSON.parse(postingInfo.benefits)}>
               <Editable 
                   readOnly 
+                  renderLeaf={renderLeaf}
+                  renderElement={renderElement}
                   placeholder="No description"
               />
           </Slate>
@@ -219,6 +265,8 @@ const ExpandedJobDetailsView = () => {
           <Slate className="ejv-text" editor={editor} initialValue={JSON.parse(postingInfo.description)}>
               <Editable 
                   readOnly 
+                  renderLeaf={renderLeaf}
+                  renderElement={renderElement}
                   placeholder="No description"
               />
           </Slate>
@@ -228,6 +276,8 @@ const ExpandedJobDetailsView = () => {
           <Slate className="ejv-text" editor={editor} initialValue={JSON.parse(postingInfo.responsibilities)}>
               <Editable 
                   readOnly 
+                  renderLeaf={renderLeaf}
+                  renderElement={renderElement}
                   placeholder="No description"
               />
           </Slate>
@@ -237,6 +287,8 @@ const ExpandedJobDetailsView = () => {
           <Slate className="ejv-text" editor={editor} initialValue={JSON.parse(postingInfo.qualification)}>
               <Editable 
                   readOnly 
+                  renderLeaf={renderLeaf}
+                  renderElement={renderElement}
                   placeholder="No description"
               />
           </Slate>
@@ -246,6 +298,8 @@ const ExpandedJobDetailsView = () => {
           <Slate className="ejv-text" editor={editor} initialValue={JSON.parse(postingInfo.benefits)}>
               <Editable 
                   readOnly 
+                  renderLeaf={renderLeaf}
+                  renderElement={renderElement}
                   placeholder="No description"
               />
           </Slate>
@@ -270,7 +324,6 @@ const ExpandedJobDetailsView = () => {
           <div className="ejv-company-stat">
             <span className="ejv-company-stat-label">Industry</span>
             <span className="ejv-company-stat-value">
-              {/* {companyInfo.industry} */}
               Technology | Software
             </span>
           </div>

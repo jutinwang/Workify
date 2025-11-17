@@ -3,7 +3,7 @@ import "./job-details.css";
 import "../var.css";
 import { Link } from "react-router-dom";
 import { formatRelativeDate } from "../common/utility";
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { Slate, Editable, withReact } from "slate-react";
 import { createEditor } from "slate";
 
@@ -28,7 +28,52 @@ export default function JobDetails({ job, onClose }) {
 
   const postedDate = formatRelativeDate(job.updatedAt || job.createdAt);
 
+
+  const Element = ({ attributes, children, element }) => {
+  switch (element.type) {
+    case "code":
+      return (
+        <pre {...attributes}>
+          <code>{children}</code>
+        </pre>
+      );
+    case 'bulleted-list':
+      return (
+        <ul {...attributes}>
+          {children}
+        </ul>
+      );
+    case 'numbered-list':
+      return (
+        <ol {...attributes}>
+          {children}
+        </ol>
+      );
+    case 'list-item':
+      return (
+        <li {...attributes}>
+          {children}
+        </li>
+      );
+    default:
+      return <p {...attributes}>{children}</p>;
+  }
+};
+
+// Leaf renderer
+const Leaf = ({ attributes, children, leaf }) => {
+  if (leaf.bold) children = <strong>{children}</strong>;
+  if (leaf.code) children = <code>{children}</code>;
+  if (leaf.italic) children = <em>{children}</em>;
+  if (leaf.underline) children = <u>{children}</u>;
+  if (leaf.strikethrough) children = <s>{children}</s>;
+
+  return <span {...attributes}>{children}</span>;
+};
+
   const editor = useMemo(() => withReact(createEditor()), []);
+  const renderElement = useCallback((props) => <Element {...props} />, []);
+  const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
 
   return (
     <div className="job-details">
@@ -87,6 +132,8 @@ export default function JobDetails({ job, onClose }) {
               <Slate className="overview-value" editor={editor} initialValue={JSON.parse(job.salary)}>
                     <Editable 
                         readOnly 
+                        renderLeaf={renderLeaf}
+                        renderElement={renderElement}
                         placeholder="No description"
                     />
                 </Slate>
@@ -98,6 +145,8 @@ export default function JobDetails({ job, onClose }) {
           <h3>Co-op Description</h3>
           <Slate editor={editor} initialValue={JSON.parse(job.description)}>
                 <Editable 
+                    renderLeaf={renderLeaf}
+                    renderElement={renderElement}
                     readOnly 
                     placeholder="No description"
                 />
