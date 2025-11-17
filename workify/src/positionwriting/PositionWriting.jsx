@@ -55,10 +55,10 @@ const PositionWriting = () => {
       officeLocation: officeLocation,
       jobLength: jobLength,
       salary: "money",
-      responsibilities: "",
-      // qualifications: "",
-      // benefits: "",
-      // workModel: workModel,
+      responsibilities: "test",
+      qualifications: "test",
+      benefits: "test",
+      workModel: workModel,
       // tags: tags
     };
 

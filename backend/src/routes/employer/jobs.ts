@@ -44,7 +44,7 @@ router.post( "/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
         try {
             const input = CreateJobBody.parse(req.body);
 
-            const userId = getUserId(req);
+            const userId = 1;
             const employer = await prisma.employerProfile.findUnique({
                 where: { userId },
                 select: { id: true, companyId: true }
