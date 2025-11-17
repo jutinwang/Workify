@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { formatRelativeDate } from "../common/utility";
 import JobsFilter from "./JobsFilter";
 import JobCard from "./JobCard";
 import JobDetails from "./JobDetails";
@@ -53,8 +54,6 @@ const Jobs = () => {
       } catch (err) {
         console.error("❌ Error fetching jobs:", err);
         setError(err.message);
-        console.log("⚠️ Falling back to mock data");
-        setJobs(JOBS); // Fallback to mock data
       } finally {
         setLoading(false);
       }
@@ -110,10 +109,7 @@ const Jobs = () => {
 
     // Date Posted
     if (filters.datePosted && j.postedDate) {
-      const matchesDate = isWithinDateRange(
-        new Date(j.postedDate),
-        filters.datePosted
-      );
+      const matchesDate = formatRelativeDate(j.postedDate)
       if (!matchesDate) return false;
     }
     return true;
@@ -134,7 +130,7 @@ const Jobs = () => {
     return Array.from(tagsSet.values());
   }, [jobs]);
 
-  console.log("🏷️ All available tags:", allTags);
+  console.log("All available tags:", allTags);
   return (
     <div className="jobs-page-container">
       <SavedSection
