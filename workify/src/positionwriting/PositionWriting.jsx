@@ -35,9 +35,6 @@ const PositionWriting = () => {
         setTags([...tags, newTag]);
       }
 
-      // console.log("added: " + newTag)
-      // console.log(tags)
-
       e.target.value = "";
     }
   }
@@ -54,10 +51,10 @@ const PositionWriting = () => {
       description: JSON.stringify(coopDescription),
       officeLocation: officeLocation,
       jobLength: jobLength,
-      salary: "money",
-      responsibilities: "test",
-      qualifications: "test",
-      benefits: "test",
+      salary: JSON.stringify(salaryRange),
+      responsibilities: JSON.stringify(responsibilities),
+      qualifications: JSON.stringify(qualifications),
+      benefits: JSON.stringify(benefits),
       workModel: workModel,
       // tags: tags
     };
@@ -70,8 +67,6 @@ const PositionWriting = () => {
       localStorage.setItem("authToken", response.token);
     }
   };
-
-  // console.log("coop: " + JSON.stringify(coopDescription))
 
   return (
     <div className="positionwriting-container">
@@ -100,6 +95,7 @@ const PositionWriting = () => {
             placeholder=" "
             initialText="Write the co-op responsibilities here..."
             className="infoInput"
+            onChange={setResponsibilities}
           />
 
           <p>Qualifications</p>
@@ -107,6 +103,7 @@ const PositionWriting = () => {
             placeholder=" "
             initialText="Describe the needed qualification..."
             className="infoInput"
+            onChange={setQualifications}
           />
 
           <p>Benefits and Perks</p>
@@ -114,6 +111,7 @@ const PositionWriting = () => {
             placeholder=" "
             initialText="Write the benefits and perks here..."
             className="infoInput"
+            onChange={setBenefits}
           />
 
           <p>Salary Range</p>
@@ -121,6 +119,7 @@ const PositionWriting = () => {
             placeholder=" "
             initialText="Put the salary here..."
             className="infoInput"
+            onChange={setSalaryRange}
           />
 
           <div className="dropdowns">

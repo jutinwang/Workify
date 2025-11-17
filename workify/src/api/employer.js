@@ -3,10 +3,10 @@ export const employerApi = {
     return apiClient.post("/employers/me/jobs", {
       title: data.title,
       description: data.description,
-      officeLocation: data.officeLocation,
-      jobLength: data.jobLength,
+      location: data.officeLocation,
+      length: data.jobLength,
       salary: data.salary,
-      qualifications: data.qualifications,
+      qualification: data.qualifications,
       responsibilities: data.responsibilities,
       benefits: data.benefits
     //   tags: data.tags

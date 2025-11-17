@@ -41,6 +41,7 @@
   font-size: 14px;
   box-sizing: border-box;
   font-family: 'Domine' sans-serif;
+  background-color: white;
 }
 
 .dropdowns {
@@ -88,6 +89,7 @@
   flex-wrap: wrap;
   margin-bottom: 40px;
   height: 30px;
+  background-color: white;
 }
 
 .tag-item {
@@ -124,7 +126,7 @@
   padding: .5em, 0;
   border: none;
   outline: none;
-  background-color: #FAF9F6;
+  background-color: white;
 }
 
 /* Buttons */

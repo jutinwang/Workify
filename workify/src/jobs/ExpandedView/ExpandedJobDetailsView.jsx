@@ -4,6 +4,9 @@ import "./expanded-job-view.css";
 import "../../var.css";
 import masterCard from "../../assets/mastercard.png";
 import { formatRelativeDate } from "../../common/utility";
+import { useMemo } from "react";
+import { Slate, Editable, withReact } from "slate-react";
+import { createEditor } from "slate";
 
 const ExpandedJobDetailsView = () => {
   const jobId = useLocation().pathname.split("s/").pop();
@@ -30,6 +33,8 @@ const ExpandedJobDetailsView = () => {
       fetchJobDetails();
     }
   }, [jobId]);
+
+  const editor = useMemo(() => withReact(createEditor()), []);
 
   useEffect(() => {
     console.log(coops);
@@ -140,7 +145,13 @@ const ExpandedJobDetailsView = () => {
           <div className="ejv-stat-card">
             <div className="ejv-stat-icon">💰</div>
             <div className="ejv-stat-label">Salary</div>
-            <div className="ejv-stat-value">{`${postingInfo.salary}`}</div>
+            {/* <div className="ejv-stat-value">{`${postingInfo.salary}`}</div> */}
+            <Slate className="ejv-stat-value" editor={editor} initialValue={JSON.parse(postingInfo.salary)}>
+                <Editable 
+                    readOnly 
+                    placeholder="No description"
+                />
+            </Slate>
           </div>
           <div className="ejv-stat-card">
             <div className="ejv-stat-icon">⏳</div>
@@ -162,7 +173,12 @@ const ExpandedJobDetailsView = () => {
         {/* Job Summary */}
         <section className="ejv-section">
           <h2 className="ejv-section-title">About This Role</h2>
-          <p className="ejv-text">{postingInfo.description}</p>
+          <Slate className="ejv-text" editor={editor} initialValue={JSON.parse(postingInfo.description)}>
+                <Editable 
+                    readOnly 
+                    placeholder="No description"
+                />
+            </Slate>
         </section>
 
         {/* Required Skills */}
@@ -184,23 +200,12 @@ const ExpandedJobDetailsView = () => {
         {/* Benefits Preview */}
         <section className="ejv-section">
           <h2 className="ejv-section-title">Benefits & Perks</h2>
-          <div className="ejv-benefits-list">
-            {postingInfo.benefits ? (
-              postingInfo.benefits.split(",").map((benefit, index) => (
-                <div key={index} className="ejv-benefit-item">
-                  <svg width="20" height="20" viewBox="0 0 24 24">
-                    <path
-                      fill="currentColor"
-                      d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
-                    />
-                  </svg>
-                  {benefit.trim()}
-                </div>
-              ))
-            ) : (
-              <p>No benefits information available</p>
-            )}
-          </div>
+          <Slate className="ejv-text" editor={editor} initialValue={JSON.parse(postingInfo.benefits)}>
+              <Editable 
+                  readOnly 
+                  placeholder="No description"
+              />
+          </Slate>
         </section>
       </div>
     );
@@ -211,31 +216,39 @@ const ExpandedJobDetailsView = () => {
       <div className="ejv-description">
         <section className="ejv-section">
           <h2 className="ejv-section-title">Job Description</h2>
-          <p className="ejv-text">{postingInfo.description}</p>
+          <Slate className="ejv-text" editor={editor} initialValue={JSON.parse(postingInfo.description)}>
+              <Editable 
+                  readOnly 
+                  placeholder="No description"
+              />
+          </Slate>
         </section>
         <section className="ejv-section">
           <h2 className="ejv-section-title">Key Responsibilities</h2>
-          <p className="ejv-text">{postingInfo.responsibilities}</p>
+          <Slate className="ejv-text" editor={editor} initialValue={JSON.parse(postingInfo.responsibilities)}>
+              <Editable 
+                  readOnly 
+                  placeholder="No description"
+              />
+          </Slate>
         </section>
         <section className="ejv-section">
           <h2 className="ejv-section-title">Qualifications</h2>
-          <ul className="ejv-list">
-            <li>{postingInfo.qualification}</li>
-          </ul>
+          <Slate className="ejv-text" editor={editor} initialValue={JSON.parse(postingInfo.qualification)}>
+              <Editable 
+                  readOnly 
+                  placeholder="No description"
+              />
+          </Slate>
         </section>
         <section className="ejv-section">
           <h2 className="ejv-section-title">Benefits & Perks</h2>
-          <ul className="ejv-list">
-            {postingInfo.benefits ? (
-              postingInfo.benefits.split(",").map((benefit, index) => (
-                <li key={index} className="ejv-benefit-item">
-                  {benefit.trim()}
-                </li>
-              ))
-            ) : (
-              <p>No benefits information available</p>
-            )}
-          </ul>
+          <Slate className="ejv-text" editor={editor} initialValue={JSON.parse(postingInfo.benefits)}>
+              <Editable 
+                  readOnly 
+                  placeholder="No description"
+              />
+          </Slate>
         </section>
       </div>
     );

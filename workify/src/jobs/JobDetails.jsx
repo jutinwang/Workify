@@ -3,6 +3,9 @@ import "./job-details.css";
 import "../var.css";
 import { Link } from "react-router-dom";
 import { formatRelativeDate } from "../common/utility";
+import { useMemo } from "react";
+import { Slate, Editable, withReact } from "slate-react";
+import { createEditor } from "slate";
 
 export default function JobDetails({ job, onClose }) {
   if (!job) {
@@ -24,6 +27,8 @@ export default function JobDetails({ job, onClose }) {
     .toUpperCase();
 
   const postedDate = formatRelativeDate(job.updatedAt || job.createdAt);
+
+  const editor = useMemo(() => withReact(createEditor()), []);
 
   return (
     <div className="job-details">
@@ -75,18 +80,28 @@ export default function JobDetails({ job, onClose }) {
           <div className="overview-grid">
           <div className="overview-item">
               <span className="overview-label">Length</span>
-              <span className="overview-value">${job.length}</span>
+              <span className="overview-value">{job.length}</span>
             </div>
             <div className="overview-item">
               <span className="overview-label">Salary</span>
-              <span className="overview-value">${job.salary}</span>
+              <Slate className="overview-value" editor={editor} initialValue={JSON.parse(job.salary)}>
+                    <Editable 
+                        readOnly 
+                        placeholder="No description"
+                    />
+                </Slate>
             </div>
           </div>
         </section>
 
         <section className="details-section">
           <h3>Co-op Description</h3>
-          <p className="job-description">{job.description}</p>
+          <Slate editor={editor} initialValue={JSON.parse(job.description)}>
+                <Editable 
+                    readOnly 
+                    placeholder="No description"
+                />
+            </Slate>
         </section>
 
         {job.tags && (
