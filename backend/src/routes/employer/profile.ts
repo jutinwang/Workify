@@ -38,6 +38,7 @@ const deleteAccountSchema = z.object({
     password: z.string(),
     confirmation: z.literal('DELETE'),
 });
+//comment to delete
 
 const getEmployerProfile = async (req: Request, res: Response, next: Function) => {
     try {
