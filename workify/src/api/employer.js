@@ -8,8 +8,8 @@ export const employerApi = {
       salary: data.salary,
       qualification: data.qualifications,
       responsibilities: data.responsibilities,
-      benefits: data.benefits
-    //   tags: data.tags
+      benefits: data.benefits,
+      tags: data.tags
     });
   },
 };

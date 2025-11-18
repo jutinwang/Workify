@@ -19,11 +19,6 @@ const PositionWriting = () => {
   const textareaRef = useRef(null);
 
   const handleCoopTitleChange = (title) => setCoopTitle(title.target.value);
-  const handleCoopDescriptionChange = (description) => setCoopDescription(description.target.value);
-  const handleResponsibilitiesChange = (responsibility) => setResponsibilities(responsibility.target.value);
-  const handleQualificationsChange = (qualification) => setQualifications(qualification.target.value);
-  const handleBenefitsChange = (benefet) => setBenefits(benefet.target.value);
-  const handleSalaryChange = (salary) => setSalaryRange(salary.target.value);
   const handleOfficeLocationChange = (location) => setOfficeLocation(location.target.value);
 
   function handleKeyDown(e) {
@@ -44,19 +39,18 @@ const PositionWriting = () => {
     setTags(tags.filter((_, index) => index !== indexToRemove));
   };
 
-  // TODO: CHANGE CONTENTS SO IT POSTS JOB TO BACKEND
   const postJob = async(e) => {
     const payload = {
       title: coopTitle,
       description: JSON.stringify(coopDescription),
-      officeLocation: officeLocation,
+      officeLocation: officeLocation ? officeLocation : "Remote",
       jobLength: jobLength,
       salary: JSON.stringify(salaryRange),
       responsibilities: JSON.stringify(responsibilities),
       qualifications: JSON.stringify(qualifications),
       benefits: JSON.stringify(benefits),
       workModel: workModel,
-      // tags: tags
+      tags: tags
     };
 
     console.log("Payload being sent:", payload);
