@@ -28,6 +28,17 @@ export default function JobDetails({ job, onClose }) {
 
   const postedDate = formatRelativeDate(job.updatedAt || job.createdAt);
 
+  const parseSlateContent = (content, fallbackText = "No content available") => {
+  if (!content) {
+    return [{ type: "paragraph", children: [{ text: fallbackText }] }];
+  }
+  try {
+    return JSON.parse(content);
+  } catch (e) {
+    console.error('Failed to parse content:', e);
+    return [{ type: "paragraph", children: [{ text: fallbackText }] }];
+  }
+};
 
   const Element = ({ attributes, children, element }) => {
   switch (element.type) {
@@ -129,12 +140,11 @@ const Leaf = ({ attributes, children, leaf }) => {
             </div>
             <div className="overview-item">
               <span className="overview-label">Salary</span>
-              <Slate className="overview-value" editor={editor} initialValue={JSON.parse(job.salary)}>
+              <Slate className="overview-value" editor={editor} initialValue={parseSlateContent(job.salary, "No salary posted")}>
                     <Editable 
                         readOnly 
                         renderLeaf={renderLeaf}
                         renderElement={renderElement}
-                        placeholder="No description"
                     />
                 </Slate>
             </div>
@@ -143,12 +153,11 @@ const Leaf = ({ attributes, children, leaf }) => {
 
         <section className="details-section">
           <h3>Co-op Description</h3>
-          <Slate editor={editor} initialValue={JSON.parse(job.description)}>
+          <Slate editor={editor} initialValue={parseSlateContent(job.description, "No description given")}>
                 <Editable 
                     renderLeaf={renderLeaf}
                     renderElement={renderElement}
                     readOnly 
-                    placeholder="No description"
                 />
             </Slate>
         </section>

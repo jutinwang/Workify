@@ -65,6 +65,18 @@ const ExpandedJobDetailsView = () => {
   }
 };
 
+const parseSlateContent = (content, fallbackText = "No content available") => {
+  if (!content) {
+    return [{ type: "paragraph", children: [{ text: fallbackText }] }];
+  }
+  try {
+    return JSON.parse(content);
+  } catch (e) {
+    console.error('Failed to parse content:', e);
+    return [{ type: "paragraph", children: [{ text: fallbackText }] }];
+  }
+};
+
 // Leaf renderer
 const Leaf = ({ attributes, children, leaf }) => {
   if (leaf.bold) children = <strong>{children}</strong>;
@@ -189,12 +201,11 @@ const Leaf = ({ attributes, children, leaf }) => {
           <div className="ejv-stat-card">
             <div className="ejv-stat-icon">💰</div>
             <div className="ejv-stat-label">Salary</div>
-            <Slate className="ejv-stat-value" editor={editor} initialValue={JSON.parse(postingInfo.salary)}>
+            <Slate className="ejv-stat-value" editor={editor} initialValue={parseSlateContent(postingInfo.salary, "No salary posted")}>
                 <Editable 
                     readOnly 
                     renderLeaf={renderLeaf}
                     renderElement={renderElement}
-                    placeholder="No description"
                 />
             </Slate>
           </div>
@@ -217,12 +228,11 @@ const Leaf = ({ attributes, children, leaf }) => {
 
         <section className="ejv-section">
           <h2 className="ejv-section-title">About This Role</h2>
-          <Slate className="ejv-text" editor={editor} initialValue={JSON.parse(postingInfo.description)}>
+          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.description, "No description available")}>
                 <Editable 
                     readOnly 
                     renderLeaf={renderLeaf}
                     renderElement={renderElement}
-                    placeholder="No description"
                 />
             </Slate>
         </section>
@@ -244,12 +254,11 @@ const Leaf = ({ attributes, children, leaf }) => {
 
         <section className="ejv-section">
           <h2 className="ejv-section-title">Benefits & Perks</h2>
-          <Slate className="ejv-text" editor={editor} initialValue={JSON.parse(postingInfo.benefits)}>
+          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.benefits, "No benefits!")}>
               <Editable 
                   readOnly 
                   renderLeaf={renderLeaf}
                   renderElement={renderElement}
-                  placeholder="No description"
               />
           </Slate>
         </section>
@@ -262,45 +271,41 @@ const Leaf = ({ attributes, children, leaf }) => {
       <div className="ejv-description">
         <section className="ejv-section">
           <h2 className="ejv-section-title">Job Description</h2>
-          <Slate className="ejv-text" editor={editor} initialValue={JSON.parse(postingInfo.description)}>
+          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.description, "No description available")}>
               <Editable 
                   readOnly 
                   renderLeaf={renderLeaf}
                   renderElement={renderElement}
-                  placeholder="No description"
               />
           </Slate>
         </section>
         <section className="ejv-section">
           <h2 className="ejv-section-title">Key Responsibilities</h2>
-          <Slate className="ejv-text" editor={editor} initialValue={JSON.parse(postingInfo.responsibilities)}>
+          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.responsibilities, "No responsibilities given")}>
               <Editable 
                   readOnly 
                   renderLeaf={renderLeaf}
                   renderElement={renderElement}
-                  placeholder="No description"
               />
           </Slate>
         </section>
         <section className="ejv-section">
           <h2 className="ejv-section-title">Qualifications</h2>
-          <Slate className="ejv-text" editor={editor} initialValue={JSON.parse(postingInfo.qualification)}>
+          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.qualifications, "No qualifications listed")}>
               <Editable 
                   readOnly 
                   renderLeaf={renderLeaf}
                   renderElement={renderElement}
-                  placeholder="No description"
               />
           </Slate>
         </section>
         <section className="ejv-section">
           <h2 className="ejv-section-title">Benefits & Perks</h2>
-          <Slate className="ejv-text" editor={editor} initialValue={JSON.parse(postingInfo.benefits)}>
+          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.benefits, "No benefits!")}>
               <Editable 
                   readOnly 
                   renderLeaf={renderLeaf}
                   renderElement={renderElement}
-                  placeholder="No description"
               />
           </Slate>
         </section>
