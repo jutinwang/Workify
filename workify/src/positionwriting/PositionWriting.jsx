@@ -74,8 +74,8 @@ const PositionWriting = () => {
       setIsSuccess(true);
 
     } catch (err) {
-      console.error("Error posting job:", err);
-      setError(err.message || "Failed to post job. Please try again.");
+      console.error("Error posting coop position:", err);
+      setError(err.message || "Failed to post coop position. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -105,12 +105,12 @@ const PositionWriting = () => {
       <div className="positionwriting-container">
         <div className="content-wrapper success-screen">
           <div className="success-icon">✓</div>
-          <h2>Job Posted Successfully!</h2>
+          <h2>Coop Position Posted Successfully!</h2>
           <p>Your co-op posting has been published and is now live.</p>
           
           <div className="success-buttons">
             <button className="post-another-btn" onClick={handlePostAnother}>
-              Post Another Job
+              Post Another Coop
             </button>
             <button className="go-to-profile-btn" onClick={handleGoToProfile}>
               View My Profile
@@ -180,7 +180,7 @@ const PositionWriting = () => {
           />
 
           <div className="dropdowns">
-            <p>Job Length</p>
+            <p>Coop Length</p>
             <select
               className="dropdown job-length-dropdown"
               value={jobLength}
