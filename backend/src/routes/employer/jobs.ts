@@ -1,7 +1,5 @@
 import { Router } from "express";
 import { PrismaClient, Role, Gender, Ethnicity, IdentityFlag, Prisma } from "@prisma/client";
-import { signToken } from "../../lib/jwt";
-import bcrypt from "bcrypt";
 import { requireAuth, requireRole } from "../../middleware/requireAuth";
 import { getUserId } from "../students/users";
 import { z } from "zod";
