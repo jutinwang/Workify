@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { studentApi } from "../../api/student";
 import "./sections.css";
 
-export default function ReviewStep({ state, dispatch, onBack, onGoto }) {
+export default function ReviewStep({ state, onBack, onGoto }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);

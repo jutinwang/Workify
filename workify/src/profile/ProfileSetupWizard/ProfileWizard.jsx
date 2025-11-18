@@ -8,6 +8,7 @@ import FilesStep from "./FilesStep";
 import SkillsStep from "./SkillsStep";
 import PreferencesStep from "./PreferencesStep";
 import ReviewStep from "./ReviewStep";
+import ReviewStepEmployer from "./ReviewStepEmployer";
 import { useLocation } from "react-router-dom";
 import {
   initialState,
@@ -54,6 +55,7 @@ const STEP_DEFS = {
     Component: RecruiterStep,
     validate: (s) => validateRecruiter(s.recruiter),
   },
+  reviewEmployer: { label: "Review", Component: ReviewStepEmployer },
   notifications: { label: "Notifications", Component: NotifyPrefsStep },
 };
 
@@ -67,7 +69,7 @@ const FLOWS = {
     "preferences",
     "review",
   ],
-  employee: ["company", "recruiter", "notifications", "review"],
+  employee: [ "recruiter", "company", "notifications", "reviewEmployer"],
 };
 
 export default function ProfileWizard() {

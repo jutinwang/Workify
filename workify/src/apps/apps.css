@@ -96,8 +96,9 @@
 
 /* Stepper */
 .stepper {
+  /* ALI: I removed this for now, it fixed the error on the review step stepper. 
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, 1fr); */
   gap: 6px;
   align-items: center;
 }
