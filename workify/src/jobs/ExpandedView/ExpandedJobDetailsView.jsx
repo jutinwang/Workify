@@ -291,7 +291,7 @@ const Leaf = ({ attributes, children, leaf }) => {
         </section>
         <section className="ejv-section">
           <h2 className="ejv-section-title">Qualifications</h2>
-          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.qualifications, "No qualifications listed")}>
+          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.qualification, "No qualifications listed")}>
               <Editable 
                   readOnly 
                   renderLeaf={renderLeaf}

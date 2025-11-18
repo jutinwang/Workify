@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./PositionWriting.css";
 import RichTextEditor from "./component/RichTextEditor";
 import { employerApi } from "../api/employer";
@@ -16,7 +16,12 @@ const PositionWriting = () => {
   const [officeLocation, setOfficeLocation] = useState("");
   const [tags, setTags] = useState([]);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState(null);
+
   const textareaRef = useRef(null);
+  const navigate = useNavigate();
 
   const handleCoopTitleChange = (title) => setCoopTitle(title.target.value);
   const handleOfficeLocationChange = (location) => setOfficeLocation(location.target.value);
@@ -40,36 +45,94 @@ const PositionWriting = () => {
   };
 
   const postJob = async(e) => {
-    const payload = {
-      title: coopTitle,
-      description: JSON.stringify(coopDescription),
-      officeLocation: officeLocation ? officeLocation : "Remote",
-      jobLength: jobLength,
-      salary: JSON.stringify(salaryRange),
-      responsibilities: JSON.stringify(responsibilities),
-      qualifications: JSON.stringify(qualifications),
-      benefits: JSON.stringify(benefits),
-      workModel: workModel,
-      tags: tags
-    };
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
 
-    console.log("Payload being sent:", payload);
+    try {
+      const payload = {
+        title: coopTitle,
+        description: JSON.stringify(coopDescription),
+        officeLocation: officeLocation ? officeLocation : "Remote",
+        jobLength: jobLength,
+        salary: JSON.stringify(salaryRange),
+        responsibilities: JSON.stringify(responsibilities),
+        qualifications: JSON.stringify(qualifications),
+        benefits: JSON.stringify(benefits),
+        workModel: workModel,
+        tags: tags
+      };
 
-    const response = await employerApi.postCoop(payload);
-    
-    if (response.token) {
-      localStorage.setItem("authToken", response.token);
+      console.log("Payload being sent:", payload);
+
+      const response = await employerApi.postCoop(payload);
+      
+      if (response.token) {
+        localStorage.setItem("authToken", response.token);
+      }
+
+      setIsSuccess(true);
+
+    } catch (err) {
+      console.error("Error posting job:", err);
+      setError(err.message || "Failed to post job. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+    const handlePostAnother = () => {
+      setCoopTitle("");
+      setCoopDescription([]);
+      setResponsibilities("");
+      setQualifications("");
+      setBenefits("");
+      setJobLength("");
+      setSalaryRange("");
+      setWorkModel("");
+      setOfficeLocation("");
+      setTags([]);
+      setIsSuccess(false);
+      setError(null);
+  };
+
+  const handleGoToProfile = () => {
+    navigate("/profile-employer");
+  };
+
+  if (isSuccess) {
+    return (
+      <div className="positionwriting-container">
+        <div className="content-wrapper success-screen">
+          <div className="success-icon">✓</div>
+          <h2>Job Posted Successfully!</h2>
+          <p>Your co-op posting has been published and is now live.</p>
+          
+          <div className="success-buttons">
+            <button className="post-another-btn" onClick={handlePostAnother}>
+              Post Another Job
+            </button>
+            <button className="go-to-profile-btn" onClick={handleGoToProfile}>
+              View My Profile
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="positionwriting-container">
       <div className="content-wrapper">
         <h3>Create Coop Posting</h3>
+            {error && (
+              <div className="error-message">
+                {error}
+              </div>
+            )}
         <div className="textInput">
-
           <p>Coop Title</p>
-          <textarea className="infoInput"
+          <textarea className="titleInput"
               ref={textareaRef}
               value={coopTitle}
               onChange={handleCoopTitleChange}
@@ -183,8 +246,12 @@ const PositionWriting = () => {
           <Link to={`/profile-employer`} className="navigateHome" title="Go Back">
             <button className="cancel-btn">Cancel</button>
           </Link>
-          <button className="post-btn" onClick={postJob}>
-            Post
+          <button 
+            className="post-btn" 
+            onClick={postJob}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Posting..." : "Post"}
           </button>
         </div>
       </div>
