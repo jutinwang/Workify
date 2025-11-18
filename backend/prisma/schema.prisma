@@ -1,17 +1,173 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model User {
+  id        Int              @id @default(autoincrement())
+  email     String           @unique
+  password  String
+  name      String
+  role      Role             @default(STUDENT)
+  createdAt DateTime         @default(now())
+  admin     AdminProfile?
+  employer  EmployerProfile?
+  student   StudentProfile?
+}
+
+model StudentProfile {
+  id           Int                @id @default(autoincrement())
+  userId       Int                @unique
+  major        String?
+  year         Int?
+  resumeUrl    String?
+  ethnicity    Ethnicity[]
+  gender       Gender?
+  githubUrl    String?
+  linkedInUrl  String?
+  optional     IdentityFlag[]
+  aboutMe      String?
+  bookmarks    Int[]
+  coverLetter  String?
+  phoneNumber  String?
+  portfolio    String?
+  transcript   String?
+  applications Application[]
+  educations   Education[]
+  experience   Experience[]
+  interviews   InterviewRequest[]
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Experience {
+  id          Int            @id @default(autoincrement())
+  userId      Int
+  title       String
+  company     String
+  startDate   DateTime
+  endDate     DateTime?
+  description String?
+  student     StudentProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model EmployerProfile {
+  id                 Int                @id @default(autoincrement())
+  userId             Int                @unique
+  availability       String?
+  companyId          Int?
+  notificationMethod String?
+  profilePhotoUrl    String?
+  workEmail          String?
+  workPhone          String?
+  company            Company?           @relation(fields: [companyId], references: [id])
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interviews         InterviewRequest[]
+  jobs               Job[]
+
+  @@index([companyId])
+}
+
+model AdminProfile {
+  id     Int  @id @default(autoincrement())
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Education {
+  id          Int            @id @default(autoincrement())
+  studentId   Int
+  program     String
+  yearOfStudy Int?
+  gradDate    DateTime?
+  schoolName  String
+  student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+}
+
+model Company {
+  id          Int               @id @default(autoincrement())
+  name        String
+  companyId   String?           @unique
+  url         String?
+  size        String?
+  about       String?
+  careersPage String?
+  linkedInUrl String?
+  employees   EmployerProfile[]
+  jobs        Job[]
+}
+
+model Job {
+  id               Int             @id @default(autoincrement())
+  companyId        Int
+  employerId       Int
+  description      String
+  title            String
+  location         String?
+  type             String?
+  salary           String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  benefits         String?
+  length           String?
+  qualification    String?
+  responsibilities String?
+  applications     Application[]
+  company          Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  employer         EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  tags             Tag[]           @relation("JobTags")
+
+  @@index([companyId])
+  @@index([employerId])
+}
+
+model Tag {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  displayName String?
+  jobs        Job[]   @relation("JobTags")
+}
+
+model Application {
+  id          Int               @id @default(autoincrement())
+  jobId       Int
+  studentId   Int
+  status      ApplicationStatus @default(PENDING)
+  shortlisted Boolean           @default(false)
+  appliedAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  coverLetter String?
+  job         Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  student     StudentProfile    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, studentId])
+  @@index([studentId])
+  @@index([jobId])
+}
+
+model InterviewRequest {
+  id           Int             @id @default(autoincrement())
+  studentId    Int
+  employerId   Int
+  jobId        Int?
+  status       InterviewStatus @default(PENDING)
+  inviteList   Json?
+  calendarData Json?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  employer     EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  student      StudentProfile  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([employerId])
 }
 
 enum Role {
@@ -46,113 +202,6 @@ enum IdentityFlag {
   VETERAN
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  name      String
-  role      Role     @default(STUDENT)
-  createdAt DateTime @default(now())
-
-  student    StudentProfile?
-  employer   EmployerProfile?
-  admin      AdminProfile?
-}
-
-model StudentProfile {
-  id          Int     @id @default(autoincrement())
-  userId      Int     @unique
-  major       String?
-  year        Int?
-  resumeUrl   String?
-  linkedInUrl String?
-  githubUrl   String?
-  portfolio   String?
-  phoneNumber String?
-  transcript  String?
-  coverLetter String?
-  aboutMe     String?  @db.Text
-  bookmarks   Int[]
-
-  // demographics
-  gender    Gender? 
-  ethnicity Ethnicity[]  
-  optional  IdentityFlag[]
-
-  experience Experience[]
-  educations Education[] 
-  applications Application[]
-  interviews   InterviewRequest[]
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Experience {
-  id          Int       @id @default(autoincrement())
-  userId      Int
-  title       String
-  company     String
-  startDate   DateTime
-  endDate     DateTime?
-  description String?
-
-  student StudentProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-}
-
-model EmployerProfile {
-  id      Int     @id @default(autoincrement())
-  userId  Int     @unique
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  companyId       Int?
-  workPhone       String?
-  workEmail       String?
-  profilePhotoUrl String?
-  notificationMethod String?
-  availability    String?
-  
-  company    Company? @relation(fields: [companyId], references: [id])
-  jobs       Job[]
-  interviews InterviewRequest[]
-  
-  @@index([companyId])
-}
-
-model AdminProfile {
-  id     Int  @id @default(autoincrement())
-  userId Int  @unique
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Education {
-  id         Int      @id @default(autoincrement())
-  studentId  Int
-  program    String
-  yearOfStudy Int?
-  gradDate   DateTime?
-  schoolName String
-  
-  student    StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  
-  @@index([studentId])
-}
-
-model Company {
-  id            Int      @id @default(autoincrement())
-  name          String
-  companyId     String?  @unique
-  url           String?
-  size          String?
-  about         String?  @db.Text
-  careersPage   String?
-  linkedInUrl   String?
-  
-  jobs          Job[]
-  employees     EmployerProfile[]
-}
-
 enum ApplicationStatus {
   PENDING
   REVIEWED
@@ -163,78 +212,9 @@ enum ApplicationStatus {
   ACCEPTED
 }
 
-model Job {
-  id          Int      @id @default(autoincrement())
-  companyId   Int
-  employerId  Int
-  description String   @db.Text
-  title       String
-  location    String?
-  length      String?
-  type        String?  // Full-time, Part-time, Internship
-  salary      String?
-  qualification String? @db.Text
-  benefits    String?
-  responsibilities String? @db.Text
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  employer    EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
-  applications Application[]
-  tags         Tag[]           @relation("JobTags")
-  
-  @@index([companyId])
-  @@index([employerId])
-}
-
-model Tag {
-  id       Int    @id @default(autoincrement())
-  name     String @unique
-  displayName String?
-  jobs     Job[]  @relation("JobTags")
-}
-
-
-model Application {
-  id            Int      @id @default(autoincrement())
-  jobId         Int
-  studentId     Int
-  status        ApplicationStatus @default(PENDING)
-  shortlisted   Boolean  @default(false)
-  appliedAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  coverLetter   String?  @db.Text
-  
-  job           Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  student       StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  
-  @@unique([jobId, studentId]) // Student can only apply once per job
-  @@index([studentId])
-  @@index([jobId])
-}
-
 enum InterviewStatus {
   PENDING
   SCHEDULED
   COMPLETED
   CANCELLED
-}
-
-model InterviewRequest {
-  id          Int      @id @default(autoincrement())
-  studentId   Int
-  employerId  Int
-  jobId       Int?
-  status      InterviewStatus @default(PENDING)
-  inviteList  Json?    // Store list of student and employer IDs
-  calendarData Json?   // Store calendar/scheduling info
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  employer    EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
-  
-  @@index([studentId])
-  @@index([employerId])
 }

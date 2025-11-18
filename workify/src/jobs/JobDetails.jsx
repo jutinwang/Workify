@@ -3,6 +3,9 @@ import "./job-details.css";
 import "../var.css";
 import { Link } from "react-router-dom";
 import { formatRelativeDate } from "../common/utility";
+import { useMemo, useCallback } from "react";
+import { Slate, Editable, withReact } from "slate-react";
+import { createEditor } from "slate";
 
 export default function JobDetails({ job, onClose }) {
   if (!job) {
@@ -24,6 +27,64 @@ export default function JobDetails({ job, onClose }) {
     .toUpperCase();
 
   const postedDate = formatRelativeDate(job.updatedAt || job.createdAt);
+
+  const parseSlateContent = (content, fallbackText = "No content available") => {
+  if (!content) {
+    return [{ type: "paragraph", children: [{ text: fallbackText }] }];
+  }
+  try {
+    return JSON.parse(content);
+  } catch (e) {
+    console.error('Failed to parse content:', e);
+    return [{ type: "paragraph", children: [{ text: fallbackText }] }];
+  }
+};
+
+  const Element = ({ attributes, children, element }) => {
+  switch (element.type) {
+    case "code":
+      return (
+        <pre {...attributes}>
+          <code>{children}</code>
+        </pre>
+      );
+    case 'bulleted-list':
+      return (
+        <ul {...attributes}>
+          {children}
+        </ul>
+      );
+    case 'numbered-list':
+      return (
+        <ol {...attributes}>
+          {children}
+        </ol>
+      );
+    case 'list-item':
+      return (
+        <li {...attributes}>
+          {children}
+        </li>
+      );
+    default:
+      return <p {...attributes}>{children}</p>;
+  }
+};
+
+// Leaf renderer
+const Leaf = ({ attributes, children, leaf }) => {
+  if (leaf.bold) children = <strong>{children}</strong>;
+  if (leaf.code) children = <code>{children}</code>;
+  if (leaf.italic) children = <em>{children}</em>;
+  if (leaf.underline) children = <u>{children}</u>;
+  if (leaf.strikethrough) children = <s>{children}</s>;
+
+  return <span {...attributes}>{children}</span>;
+};
+
+  const editor = useMemo(() => withReact(createEditor()), []);
+  const renderElement = useCallback((props) => <Element {...props} />, []);
+  const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
 
   return (
     <div className="job-details">
@@ -75,18 +136,30 @@ export default function JobDetails({ job, onClose }) {
           <div className="overview-grid">
           <div className="overview-item">
               <span className="overview-label">Length</span>
-              <span className="overview-value">${job.length}</span>
+              <span className="overview-value">{job.length}</span>
             </div>
             <div className="overview-item">
               <span className="overview-label">Salary</span>
-              <span className="overview-value">${job.salary}</span>
+              <Slate className="overview-value" editor={editor} initialValue={parseSlateContent(job.salary, "No salary posted")}>
+                    <Editable 
+                        readOnly 
+                        renderLeaf={renderLeaf}
+                        renderElement={renderElement}
+                    />
+                </Slate>
             </div>
           </div>
         </section>
 
         <section className="details-section">
           <h3>Co-op Description</h3>
-          <p className="job-description">{job.description}</p>
+          <Slate editor={editor} initialValue={parseSlateContent(job.description, "No description given")}>
+                <Editable 
+                    renderLeaf={renderLeaf}
+                    renderElement={renderElement}
+                    readOnly 
+                />
+            </Slate>
         </section>
 
         {job.tags && (

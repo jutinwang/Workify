@@ -56,8 +56,11 @@ const LoginForm = ({ isEmployer, onSwitchToSignup }) => {
       const response = await authApi.login(form.email, form.password);
 
       // Store token and user data
-      localStorage.setItem("token", response.token);
+      localStorage.setItem("authToken", response.token);
       localStorage.setItem("user", JSON.stringify(response.user));
+
+      console.log("Token: ", JSON.stringify(response.token))
+      console.log("User: ", JSON.stringify(response.user))
 
       // Navigate based on user role
       if (response.user.role === "EMPLOYER") {

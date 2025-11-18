@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useLocation, Link } from "react-router-dom";
 import "./expanded-job-view.css";
 import "../../var.css";
 import masterCard from "../../assets/mastercard.png";
 import { formatRelativeDate } from "../../common/utility";
+import { useMemo } from "react";
+import { Slate, Editable, withReact } from "slate-react";
+import { createEditor } from "slate";
 
 const ExpandedJobDetailsView = () => {
   const jobId = useLocation().pathname.split("s/").pop();
@@ -30,6 +33,64 @@ const ExpandedJobDetailsView = () => {
       fetchJobDetails();
     }
   }, [jobId]);
+
+  const Element = ({ attributes, children, element }) => {
+  switch (element.type) {
+    case "code":
+      return (
+        <pre {...attributes}>
+          <code>{children}</code>
+        </pre>
+      );
+    case 'bulleted-list':
+      return (
+        <ul {...attributes}>
+          {children}
+        </ul>
+      );
+    case 'numbered-list':
+      return (
+        <ol {...attributes}>
+          {children}
+        </ol>
+      );
+    case 'list-item':
+      return (
+        <li {...attributes}>
+          {children}
+        </li>
+      );
+    default:
+      return <p {...attributes}>{children}</p>;
+  }
+};
+
+const parseSlateContent = (content, fallbackText = "No content available") => {
+  if (!content) {
+    return [{ type: "paragraph", children: [{ text: fallbackText }] }];
+  }
+  try {
+    return JSON.parse(content);
+  } catch (e) {
+    console.error('Failed to parse content:', e);
+    return [{ type: "paragraph", children: [{ text: fallbackText }] }];
+  }
+};
+
+// Leaf renderer
+const Leaf = ({ attributes, children, leaf }) => {
+  if (leaf.bold) children = <strong>{children}</strong>;
+  if (leaf.code) children = <code>{children}</code>;
+  if (leaf.italic) children = <em>{children}</em>;
+  if (leaf.underline) children = <u>{children}</u>;
+  if (leaf.strikethrough) children = <s>{children}</s>;
+
+  return <span {...attributes}>{children}</span>;
+};
+
+  const editor = useMemo(() => withReact(createEditor()), []);
+  const renderElement = useCallback((props) => <Element {...props} />, []);
+  const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
 
   useEffect(() => {
     console.log(coops);
@@ -140,7 +201,13 @@ const ExpandedJobDetailsView = () => {
           <div className="ejv-stat-card">
             <div className="ejv-stat-icon">💰</div>
             <div className="ejv-stat-label">Salary</div>
-            <div className="ejv-stat-value">{`${postingInfo.salary}`}</div>
+            <Slate className="ejv-stat-value" editor={editor} initialValue={parseSlateContent(postingInfo.salary, "No salary posted")}>
+                <Editable 
+                    readOnly 
+                    renderLeaf={renderLeaf}
+                    renderElement={renderElement}
+                />
+            </Slate>
           </div>
           <div className="ejv-stat-card">
             <div className="ejv-stat-icon">⏳</div>
@@ -159,13 +226,17 @@ const ExpandedJobDetailsView = () => {
           </div>
         </div>
 
-        {/* Job Summary */}
         <section className="ejv-section">
           <h2 className="ejv-section-title">About This Role</h2>
-          <p className="ejv-text">{postingInfo.description}</p>
+          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.description, "No description available")}>
+                <Editable 
+                    readOnly 
+                    renderLeaf={renderLeaf}
+                    renderElement={renderElement}
+                />
+            </Slate>
         </section>
 
-        {/* Required Skills */}
         <section className="ejv-section">
           <h2 className="ejv-section-title">Required Skills</h2>
           <div className="ejv-skills-grid">
@@ -181,26 +252,15 @@ const ExpandedJobDetailsView = () => {
           </div>
         </section>
 
-        {/* Benefits Preview */}
         <section className="ejv-section">
           <h2 className="ejv-section-title">Benefits & Perks</h2>
-          <div className="ejv-benefits-list">
-            {postingInfo.benefits ? (
-              postingInfo.benefits.split(",").map((benefit, index) => (
-                <div key={index} className="ejv-benefit-item">
-                  <svg width="20" height="20" viewBox="0 0 24 24">
-                    <path
-                      fill="currentColor"
-                      d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
-                    />
-                  </svg>
-                  {benefit.trim()}
-                </div>
-              ))
-            ) : (
-              <p>No benefits information available</p>
-            )}
-          </div>
+          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.benefits, "No benefits!")}>
+              <Editable 
+                  readOnly 
+                  renderLeaf={renderLeaf}
+                  renderElement={renderElement}
+              />
+          </Slate>
         </section>
       </div>
     );
@@ -211,31 +271,43 @@ const ExpandedJobDetailsView = () => {
       <div className="ejv-description">
         <section className="ejv-section">
           <h2 className="ejv-section-title">Job Description</h2>
-          <p className="ejv-text">{postingInfo.description}</p>
+          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.description, "No description available")}>
+              <Editable 
+                  readOnly 
+                  renderLeaf={renderLeaf}
+                  renderElement={renderElement}
+              />
+          </Slate>
         </section>
         <section className="ejv-section">
           <h2 className="ejv-section-title">Key Responsibilities</h2>
-          <p className="ejv-text">{postingInfo.responsibilities}</p>
+          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.responsibilities, "No responsibilities given")}>
+              <Editable 
+                  readOnly 
+                  renderLeaf={renderLeaf}
+                  renderElement={renderElement}
+              />
+          </Slate>
         </section>
         <section className="ejv-section">
           <h2 className="ejv-section-title">Qualifications</h2>
-          <ul className="ejv-list">
-            <li>{postingInfo.qualification}</li>
-          </ul>
+          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.qualification, "No qualifications listed")}>
+              <Editable 
+                  readOnly 
+                  renderLeaf={renderLeaf}
+                  renderElement={renderElement}
+              />
+          </Slate>
         </section>
         <section className="ejv-section">
           <h2 className="ejv-section-title">Benefits & Perks</h2>
-          <ul className="ejv-list">
-            {postingInfo.benefits ? (
-              postingInfo.benefits.split(",").map((benefit, index) => (
-                <li key={index} className="ejv-benefit-item">
-                  {benefit.trim()}
-                </li>
-              ))
-            ) : (
-              <p>No benefits information available</p>
-            )}
-          </ul>
+          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.benefits, "No benefits!")}>
+              <Editable 
+                  readOnly 
+                  renderLeaf={renderLeaf}
+                  renderElement={renderElement}
+              />
+          </Slate>
         </section>
       </div>
     );
@@ -257,7 +329,6 @@ const ExpandedJobDetailsView = () => {
           <div className="ejv-company-stat">
             <span className="ejv-company-stat-label">Industry</span>
             <span className="ejv-company-stat-value">
-              {/* {companyInfo.industry} */}
               Technology | Software
             </span>
           </div>

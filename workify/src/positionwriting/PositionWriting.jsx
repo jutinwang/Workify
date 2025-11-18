@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./PositionWriting.css";
 import RichTextEditor from "./component/RichTextEditor";
 import { employerApi } from "../api/employer";
@@ -16,14 +16,14 @@ const PositionWriting = () => {
   const [officeLocation, setOfficeLocation] = useState("");
   const [tags, setTags] = useState([]);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState(null);
+
   const textareaRef = useRef(null);
+  const navigate = useNavigate();
 
   const handleCoopTitleChange = (title) => setCoopTitle(title.target.value);
-  const handleCoopDescriptionChange = (description) => setCoopDescription(description.target.value);
-  const handleResponsibilitiesChange = (responsibility) => setResponsibilities(responsibility.target.value);
-  const handleQualificationsChange = (qualification) => setQualifications(qualification.target.value);
-  const handleBenefitsChange = (benefet) => setBenefits(benefet.target.value);
-  const handleSalaryChange = (salary) => setSalaryRange(salary.target.value);
   const handleOfficeLocationChange = (location) => setOfficeLocation(location.target.value);
 
   function handleKeyDown(e) {
@@ -35,9 +35,6 @@ const PositionWriting = () => {
         setTags([...tags, newTag]);
       }
 
-      // console.log("added: " + newTag)
-      // console.log(tags)
-
       e.target.value = "";
     }
   }
@@ -47,40 +44,95 @@ const PositionWriting = () => {
     setTags(tags.filter((_, index) => index !== indexToRemove));
   };
 
-  // TODO: CHANGE CONTENTS SO IT POSTS JOB TO BACKEND
   const postJob = async(e) => {
-    const payload = {
-      title: coopTitle,
-      description: JSON.stringify(coopDescription),
-      officeLocation: officeLocation,
-      jobLength: jobLength,
-      salary: "money",
-      responsibilities: "",
-      // qualifications: "",
-      // benefits: "",
-      // workModel: workModel,
-      // tags: tags
-    };
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
 
-    console.log("Payload being sent:", payload);
+    try {
+      const payload = {
+        title: coopTitle,
+        description: JSON.stringify(coopDescription),
+        officeLocation: officeLocation ? officeLocation : "Remote",
+        jobLength: jobLength,
+        salary: JSON.stringify(salaryRange),
+        responsibilities: JSON.stringify(responsibilities),
+        qualifications: JSON.stringify(qualifications),
+        benefits: JSON.stringify(benefits),
+        workModel: workModel,
+        tags: tags
+      };
 
-    const response = await employerApi.postCoop(payload);
-    
-    if (response.token) {
-      localStorage.setItem("authToken", response.token);
+      console.log("Payload being sent:", payload);
+
+      const response = await employerApi.postCoop(payload);
+      
+      if (response.token) {
+        localStorage.setItem("authToken", response.token);
+      }
+
+      setIsSuccess(true);
+
+    } catch (err) {
+      console.error("Error posting job:", err);
+      setError(err.message || "Failed to post job. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  // console.log("coop: " + JSON.stringify(coopDescription))
+    const handlePostAnother = () => {
+      setCoopTitle("");
+      setCoopDescription([]);
+      setResponsibilities("");
+      setQualifications("");
+      setBenefits("");
+      setJobLength("");
+      setSalaryRange("");
+      setWorkModel("");
+      setOfficeLocation("");
+      setTags([]);
+      setIsSuccess(false);
+      setError(null);
+  };
+
+  const handleGoToProfile = () => {
+    navigate("/profile-employer");
+  };
+
+  if (isSuccess) {
+    return (
+      <div className="positionwriting-container">
+        <div className="content-wrapper success-screen">
+          <div className="success-icon">✓</div>
+          <h2>Job Posted Successfully!</h2>
+          <p>Your co-op posting has been published and is now live.</p>
+          
+          <div className="success-buttons">
+            <button className="post-another-btn" onClick={handlePostAnother}>
+              Post Another Job
+            </button>
+            <button className="go-to-profile-btn" onClick={handleGoToProfile}>
+              View My Profile
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="positionwriting-container">
       <div className="content-wrapper">
         <h3>Create Coop Posting</h3>
+            {error && (
+              <div className="error-message">
+                {error}
+              </div>
+            )}
         <div className="textInput">
-
           <p>Coop Title</p>
-          <textarea className="infoInput"
+          <textarea className="titleInput"
               ref={textareaRef}
               value={coopTitle}
               onChange={handleCoopTitleChange}
@@ -100,6 +152,7 @@ const PositionWriting = () => {
             placeholder=" "
             initialText="Write the co-op responsibilities here..."
             className="infoInput"
+            onChange={setResponsibilities}
           />
 
           <p>Qualifications</p>
@@ -107,6 +160,7 @@ const PositionWriting = () => {
             placeholder=" "
             initialText="Describe the needed qualification..."
             className="infoInput"
+            onChange={setQualifications}
           />
 
           <p>Benefits and Perks</p>
@@ -114,6 +168,7 @@ const PositionWriting = () => {
             placeholder=" "
             initialText="Write the benefits and perks here..."
             className="infoInput"
+            onChange={setBenefits}
           />
 
           <p>Salary Range</p>
@@ -121,6 +176,7 @@ const PositionWriting = () => {
             placeholder=" "
             initialText="Put the salary here..."
             className="infoInput"
+            onChange={setSalaryRange}
           />
 
           <div className="dropdowns">
@@ -190,8 +246,12 @@ const PositionWriting = () => {
           <Link to={`/profile-employer`} className="navigateHome" title="Go Back">
             <button className="cancel-btn">Cancel</button>
           </Link>
-          <button className="post-btn" onClick={postJob}>
-            Post
+          <button 
+            className="post-btn" 
+            onClick={postJob}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Posting..." : "Post"}
           </button>
         </div>
       </div>

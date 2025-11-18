@@ -28,6 +28,22 @@
   margin-bottom: 10px;
 }
 
+.titleInput {
+  min-height: 40px;
+  resize: none;
+  overflow-y: auto;
+  overflow: hidden;
+  width: 100%;
+  height: 30px;
+  border: 1.5px solid black;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+  font-family: 'Domine' sans-serif;
+  background-color: white;
+}
+
 .infoInput {
   min-height: 40px;
   resize: none;
@@ -41,6 +57,7 @@
   font-size: 14px;
   box-sizing: border-box;
   font-family: 'Domine' sans-serif;
+  background-color: white;
 }
 
 .dropdowns {
@@ -88,6 +105,7 @@
   flex-wrap: wrap;
   margin-bottom: 40px;
   height: 30px;
+  background-color: white;
 }
 
 .tag-item {
@@ -124,7 +142,7 @@
   padding: .5em, 0;
   border: none;
   outline: none;
-  background-color: #FAF9F6;
+  background-color: white;
 }
 
 /* Buttons */
@@ -155,4 +173,101 @@
 
 p {
   font-family: 'Domine' sans-serif;
+}
+
+/* Success Screen Styles */
+.success-screen {
+  text-align: center;
+  padding: 60px 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.success-icon {
+  width: 80px;
+  height: 80px;
+  background-color: #4caf50;
+  color: white;
+  font-size: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 30px;
+  animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.success-screen h2 {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.success-screen p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 40px;
+}
+
+.success-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.post-another-btn,
+.go-to-profile-btn {
+  padding: 12px 30px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.post-another-btn {
+  background-color: #3f5e5a;
+  color: white;
+}
+
+.post-another-btn:hover {
+  background-color: #72a09a;
+  transform: translateY(-2px);
+}
+
+.go-to-profile-btn {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.go-to-profile-btn:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+}
+
+/* Error Message */
+.error-message {
+  background-color: #fee;
+  color: #c33;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border-left: 4px solid #c33;
+}
+
+/* Disabled state for submit button */
+.post-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
