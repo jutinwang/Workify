@@ -1,14 +1,15 @@
 .positionwriting-container {
   width: 100%;
-  min-height: calc(100vh - 40px); 
-  margin: 20px auto;
-  font-family: 'Domine', sans-serif;
-  background-color: #FAF9F6;
+  min-height: 150vh;
+  font-family: "Domine", sans-serif;
+  background-color: var(--primary-background);
 }
 
 .content-wrapper {
   width: 80%;
   margin: 0 auto;
+  background-color: var(--primary-background);
+  padding: 20px 0;
 }
 
 .positionwriting-container h3 {
@@ -21,7 +22,7 @@
 
 .textInput p {
   margin-bottom: 8px;
-  font-family: 'Domine', sans-serif;
+  font-family: "Domine", sans-serif;
 }
 
 .toolbar {
@@ -40,7 +41,7 @@
   padding: 10px;
   font-size: 14px;
   box-sizing: border-box;
-  font-family: 'Domine' sans-serif;
+  font-family: "Domine" sans-serif;
   background-color: white;
 }
 
@@ -56,7 +57,7 @@
   padding: 10px;
   font-size: 14px;
   box-sizing: border-box;
-  font-family: 'Domine' sans-serif;
+  font-family: "Domine" sans-serif;
   background-color: white;
 }
 
@@ -65,7 +66,7 @@
 }
 
 .locationInput {
-    height: 150px;
+  height: 150px;
 }
 
 .textbox {
@@ -92,57 +93,81 @@
   box-sizing: border-box;
   margin-bottom: 20px;
   background-color: white;
-  font-family: 'Domine', sans-serif;
+  font-family: "Domine", sans-serif;
 }
 
-/* Tags box */
-.tags-container {
+/* Tags Section */
+.tags-section {
+  margin-bottom: 20px;
+}
+
+.select-tags-btn {
+  padding: 0.75rem 1.5rem;
   border: 1.5px solid #333;
-  border-radius: 10px;
-  padding: .5em;
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 40px;
-  height: 30px;
-  background-color: white;
-}
-
-.tag-item {
-  background-color: #3f5e5a;
-  display: inline-block;
-  padding: 10px, 10px;
-  border-radius: 5px;
-  align-items: center;
-  color: white;
-}
-
-.tag-item .close {
-  height: 20px;
-  width: 20px;
-  display: inline-block;
-  color: white;
-  border-radius: 50%;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  margin-left: 10px;
-  font-size: 18px;
+  border-radius: 8px;
+  background: white;
+  font-size: 0.875rem;
+  font-family: "Domine", sans-serif;
   cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
 }
 
-.text {
-  padding: 10px;
-  padding-bottom: 20px;
-  font-family: 'Domine' sans-serif;
+.select-tags-btn:hover {
+  background: #f7f7f7;
+  border-color: #3f5e5a;
 }
 
-.tags-input {
-  flex-grow: 1;
-  padding: .5em, 0;
-  border: none;
-  outline: none;
-  background-color: white;
+.selected-tags-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 0.5rem 0;
+}
+
+.selected-tags-display .tag-item {
+  background: linear-gradient(135deg, #3f5e5a 0%, #2f4e4a 100%);
+  padding: 0.625rem 1rem;
+  border-radius: 20px;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(63, 94, 90, 0.2);
+  transition: all 0.2s ease;
+}
+
+.selected-tags-display .tag-item:hover {
+  box-shadow: 0 4px 8px rgba(63, 94, 90, 0.3);
+  transform: translateY(-1px);
+}
+
+.selected-tags-display .tag-item .text {
+  user-select: none;
+}
+
+.selected-tags-display .tag-item .close {
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.2rem;
+  line-height: 1;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.2);
+  margin-left: 0.25rem;
+}
+
+.selected-tags-display .tag-item .close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
 }
 
 /* Buttons */
@@ -172,7 +197,7 @@
 }
 
 p {
-  font-family: 'Domine' sans-serif;
+  font-family: "Domine" sans-serif;
 }
 
 /* Success Screen Styles */
@@ -270,4 +295,8 @@ p {
 .post-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.salary-input {
+  height: 35%;
 }

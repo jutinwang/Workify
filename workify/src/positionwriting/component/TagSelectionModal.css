@@ -1,0 +1,249 @@
+/* Modal overlay */
+.tag-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal container */
+.tag-modal {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Modal header */
+.tag-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #ebebeb;
+}
+
+.tag-modal-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #222222;
+  font-family: 'Domine', sans-serif;
+}
+
+.tag-close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #717171;
+  cursor: pointer;
+  padding: 0.25rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.tag-close-button:hover {
+  background: #f7f7f7;
+  color: #222222;
+}
+
+/* Modal body */
+.tag-modal-body {
+  padding: 1.5rem 2rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Search input */
+.tag-search-container {
+  margin-bottom: 1.5rem;
+}
+
+.tag-search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #333;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-family: 'Domine', sans-serif;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.tag-search-input:focus {
+  outline: none;
+  border-color: #3f5e5a;
+}
+
+.tag-search-input::placeholder {
+  color: #999;
+}
+
+/* Limit notice */
+.tag-limit-notice {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  color: #856404;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  font-family: 'Domine', sans-serif;
+}
+
+/* Category section */
+.tag-category-section {
+  margin-bottom: 2rem;
+}
+
+.tag-category-section:last-child {
+  margin-bottom: 0;
+}
+
+.tag-category-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #222222;
+  font-family: 'Domine', sans-serif;
+}
+
+/* Tag options */
+.tag-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag-option {
+  padding: 0.5rem 1rem;
+  border: 1px solid #b0b0b0;
+  border-radius: 24px;
+  background: white;
+  font-size: 0.875rem;
+  font-family: 'Domine', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.tag-option:hover:not(.disabled) {
+  border-color: #3f5e5a;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tag-option.selected {
+  background: #3f5e5a;
+  color: white;
+  border-color: #3f5e5a;
+}
+
+.tag-option.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* No results */
+.tag-no-results {
+  text-align: center;
+  padding: 2rem;
+  color: #717171;
+  font-family: 'Domine', sans-serif;
+}
+
+/* Modal footer */
+.tag-modal-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  border-top: 1px solid #ebebeb;
+  gap: 1rem;
+}
+
+.tag-clear-button,
+.tag-done-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: 'Domine', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.tag-clear-button {
+  background: white;
+  color: #222222;
+  border: 1.5px solid #dddddd;
+}
+
+.tag-clear-button:hover {
+  background: #f7f7f7;
+  border-color: #222222;
+}
+
+.tag-done-button {
+  background: #3f5e5a;
+  color: white;
+}
+
+.tag-done-button:hover {
+  background: #2f4e4a;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tag-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .tag-modal-header,
+  .tag-modal-body,
+  .tag-modal-footer {
+    padding: 1rem 1.5rem;
+  }
+
+  .tag-modal-title {
+    font-size: 1.25rem;
+  }
+}
