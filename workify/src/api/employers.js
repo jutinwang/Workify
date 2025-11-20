@@ -16,6 +16,10 @@ export const employerApi = {
   async completeProfile(data) {
     return apiClient.patch("/employers/complete-profile", data);
   },
+
+  async getProfile() {
+    return apiClient.get("/employers/profile");
+  },
 };
 
 

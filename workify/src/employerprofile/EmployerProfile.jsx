@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -14,14 +14,22 @@ import Paper from "@mui/material/Paper";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import ProfileModal from "./ProfileModal";
+import { employerApi } from "../api/employers";
 
-function HeaderBar() {
+function HeaderBar({ profileData }) {
   const [formData, setFormData] = useState({
     about: "About section content goes here...",
     background: [],
   });
   const [isEditing, setIsEditing] = useState(false);
   const [editedAbout, setEditedAbout] = useState(formData.about);
+
+  useEffect(() => {
+    if (profileData?.company?.about) {
+      setFormData((prev) => ({ ...prev, about: profileData.company.about }));
+      setEditedAbout(profileData.company.about);
+    }
+  }, [profileData]);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -42,9 +50,13 @@ function HeaderBar() {
     <div className="ep-header-bar">
       <div className="ep-header-content">
         <div className="ep-header-info">
-          <h1 className="ep-header-name">Employer Man</h1>
-          <p className="ep-header-location">Ottawa, ON · He/Him</p>
-          <p className="ep-header-company">Nokia</p>
+          <h1 className="ep-header-name">
+            {profileData?.user?.name || "Loading..."}
+          </h1>
+          <p className="ep-header-location">{profileData?.user?.email || ""}</p>
+          <p className="ep-header-company">
+            {profileData?.company?.name || "Company Unknown"}
+          </p>
           <p className="ep-header-role">Recruiter</p>
         </div>
         <div className="ep-header-actions">
@@ -259,6 +271,23 @@ const EmployerProfile = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await employerApi.getProfile();
+        setProfileData(response.profile);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -274,10 +303,14 @@ const EmployerProfile = () => {
     setSelectedCandidate(null);
   };
 
+  if (loading) {
+    return <div className="profile-container">Loading...</div>;
+  }
+
   return (
     <div className="profile-container">
       <div className="profile-content">
-        <HeaderBar />
+        <HeaderBar profileData={profileData} />
         <div className="profile-grid">
           <div className="main-content">
             <div className="ep-interviews-section">
@@ -295,7 +328,9 @@ const EmployerProfile = () => {
               )}
             </div>
             <div className="ep-colleagues-section">
-              <h2 className="ep-section-title">Colleagues at Nokia </h2>
+              <h2 className="ep-section-title">
+                Colleagues at {profileData?.company?.name || "Company"}
+              </h2>
             </div>
           </div>
         </div>
