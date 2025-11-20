@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./PositionWriting.css";
 import RichTextEditor from "./component/RichTextEditor";
-import { employerApi } from "../api/employer";
+import { employerApi } from "../api/employers";
 
 const PositionWriting = () => {
   const [coopTitle, setCoopTitle] = useState("");

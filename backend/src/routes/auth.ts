@@ -43,7 +43,7 @@ router.post("/students/register", async (req, res, next) => {
                 email: input.email,
                 password: hashed,
                 name: input.name,
-                role: Role.STUDENT, 
+                role: Role.STUDENT,
 
                 student: {
                     create: {
@@ -162,12 +162,12 @@ const RegisterEmployerBody = z.object({
     workPhone: z.string().optional(),
     workEmail: z.string().email().optional(),
     profilePhotoUrl: z.string().url().optional(),
-    notificationMethod: z.string().optional(), 
+    notificationMethod: z.string().optional(),
     availability: z.string().optional(),
 
     // company linkage (choose one):
-    companyId: z.number().int().positive().optional(), 
-    companyName: z.string().min(1).optional(), 
+    companyId: z.number().int().positive().optional(),
+    companyName: z.string().min(1).optional(),
     companyUrl: z.string().url().optional(),
     companySize: z.string().optional(),
     companyAbout: z.string().optional(),
@@ -196,7 +196,7 @@ router.post("/employers/register", async (req, res, next) => {
         if (input.companyId) {
             companyConnect = { connect: { id: input.companyId } };
         } else if (input.companyName) {
-            
+
             // Create a new company row, then connect
             const company = await prisma.company.create({
                 data: {
@@ -251,7 +251,12 @@ router.post("/employers/register", async (req, res, next) => {
         });
 
 
-        let token = signToken({ id: user.id, email: user.email, role: user.role });
+        const token = signToken({
+            sub: user.id,
+            email: user.email,
+            role: user.role,
+        });
+
 
         return res.status(201).json({ user, token });
     } catch (e: any) {

@@ -42,7 +42,7 @@ const deleteAccountSchema = z.object({
 
 const getEmployerProfile = async (req: Request, res: Response, next: Function) => {
     try {
-        const userId = req.user?.sub;
+        const userId = typeof req.user?.sub === 'string' ? parseInt(req.user.sub, 10) : req.user?.sub;
         
         if (!userId) {
             return res.status(401).json({ error: 'Unauthorized' });
@@ -206,7 +206,8 @@ router.patch('/profile', getEmployerProfile, async (req: Request, res: Response)
                 where: { email: data.email },
             });
             
-            if (existingUser && existingUser.id !== req.user!.sub) {
+            const userId = typeof req.user!.sub === 'string' ? parseInt(req.user!.sub, 10) : req.user!.sub;
+            if (existingUser && existingUser.id !== userId) {
                 return res.status(409).json({ error: 'Email already in use' });
             }
             
@@ -219,9 +220,10 @@ router.patch('/profile', getEmployerProfile, async (req: Request, res: Response)
 
         // Perform updates in a transaction
         const result = await prisma.$transaction(async (tx) => {
+            const userId = typeof req.user!.sub === 'string' ? parseInt(req.user!.sub, 10) : req.user!.sub;
             if (Object.keys(userUpdate).length > 0) {
                 await tx.user.update({
-                where: { id: req.user!.sub },
+                where: { id: userId },
                 data: userUpdate,
                 });
             }
@@ -275,8 +277,9 @@ router.delete('/account', getEmployerProfile, async (req: Request, res: Response
         const { password } = validation.data;
 
         // Verify password
+        const userId = typeof req.user!.sub === 'string' ? parseInt(req.user!.sub, 10) : req.user!.sub;
         const user = await prisma.user.findUnique({
-            where: { id: req.user!.sub },
+            where: { id: userId },
         });
 
         if (!user) {
@@ -291,7 +294,7 @@ router.delete('/account', getEmployerProfile, async (req: Request, res: Response
 
         // Delete user (cascade will delete employer profile and related data)
         await prisma.user.delete({
-            where: { id: req.user!.sub },
+            where: { id: userId },
         });
 
         res.status(200).json({ 

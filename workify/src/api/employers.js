@@ -12,6 +12,10 @@ export const employerApi = {
       tags: data.tags
     });
   },
+
+  async completeProfile(data) {
+    return apiClient.patch("/employers/complete-profile", data);
+  },
 };
 
 

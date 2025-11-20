@@ -66,11 +66,15 @@ const ExpandedJobDetailsView = () => {
 };
 
 const parseSlateContent = (content, fallbackText = "No content available") => {
-  if (!content) {
+  if (!content || content === "" || content.trim() === "") {
     return [{ type: "paragraph", children: [{ text: fallbackText }] }];
   }
   try {
-    return JSON.parse(content);
+    const parsed = JSON.parse(content);
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      return [{ type: "paragraph", children: [{ text: fallbackText }] }];
+    }
+    return parsed;
   } catch (e) {
     console.error('Failed to parse content:', e);
     return [{ type: "paragraph", children: [{ text: fallbackText }] }];
