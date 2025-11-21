@@ -10,6 +10,16 @@ import ChevronDownIcon from "../../common/ChevronDownIcon";
 import PDFViewerModal from "./PDFViewerModal";
 import { Link } from "react-router-dom";
 
+const formatDate = (dateString) => {
+  if (!dateString) return "Present";
+  const d = new Date(dateString);
+  if (Number.isNaN(d.getTime())) return dateString;
+  return d.toLocaleDateString("en-CA", {
+    year: "numeric",
+    month: "short",
+  });
+};
+
 const CandidateModal = ({ candidate, jobId, onClose }) => {
   const [showPDFModal, setShowPDFModal] = useState(false);
   const [isShortlisted, setIsShortlisted] = useState(false);
@@ -24,7 +34,6 @@ const CandidateModal = ({ candidate, jobId, onClose }) => {
   }, [candidate.id, jobId]);
 
   const handleShortlist = () => {
-    // Get current shortlisted data structure: { jobId: [candidateIds] }
     const shortlistedData = JSON.parse(
       localStorage.getItem("shortlistedCandidatesByJob") || "{}"
     );
@@ -34,33 +43,22 @@ const CandidateModal = ({ candidate, jobId, onClose }) => {
     }
 
     if (isShortlisted) {
-      // Remove from shortlist
       shortlistedData[jobId] = shortlistedData[jobId].filter(
         (id) => id !== candidate.id
       );
     } else {
-      // Add to shortlist
       shortlistedData[jobId] = [...shortlistedData[jobId], candidate.id];
     }
 
-    // Save back to localStorage
     localStorage.setItem(
       "shortlistedCandidatesByJob",
       JSON.stringify(shortlistedData)
     );
     setIsShortlisted(!isShortlisted);
-
-    // TODO: When backend is ready, replace with API call:
-    // await fetch(`/api/jobs/${jobId}/shortlist`, {
-    //   method: isShortlisted ? 'DELETE' : 'POST',
-    //   body: JSON.stringify({ candidateId: candidate.id })
-    // });
   };
 
   const handleSchedule = () => {
-    // Placeholder for future scheduling functionality
     alert(`Schedule interview with ${candidate.name} for this job`);
-    // TODO: API call: POST /api/jobs/${jobId}/candidates/${candidate.id}/schedule
   };
 
   const handleReject = () => {
@@ -69,12 +67,17 @@ const CandidateModal = ({ candidate, jobId, onClose }) => {
         `Are you sure you want to reject ${candidate.name} for this position?`
       )
     ) {
-      // Placeholder for future reject functionality
       alert(`${candidate.name} has been rejected for this position`);
-      // TODO: API call: POST /api/jobs/${jobId}/candidates/${candidate.id}/reject
       onClose();
     }
   };
+
+  const yearText = candidate.yearLabel || (candidate.year ? `Year ${candidate.year}` : "");
+
+  const experience = candidate.experience || [];
+  const educations = candidate.educations || [];
+
+  console.log(candidate)
 
   return (
     <>
@@ -82,53 +85,115 @@ const CandidateModal = ({ candidate, jobId, onClose }) => {
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
           <div className="modal-header">
             <div className="modal-candidate-info">
-              <img src={Was} alt={candidate.name} className="modal-avatar" />
+              <img
+                src={candidate.image || Was}
+                alt={candidate.name}
+                className="modal-avatar"
+              />
               <div>
                 <h2 className="modal-name">{candidate.name}</h2>
                 <p className="modal-school">
-                  {candidate.school} • {candidate.company}
+                  {(candidate.school || "University of Ottawa") +
+                    (candidate.major ? ` • ${candidate.major}` : "")}
                 </p>
-                <p className="modal-year">{candidate.year}</p>
+                {yearText && <p className="modal-year">{yearText}</p>}
+                {candidate.email && (
+                  <p className="modal-year" style={{ marginTop: "4px" }}>
+                    {candidate.email}
+                  </p>
+                )}
               </div>
             </div>
             <button className="modal-close" onClick={onClose}>
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-              >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
+              ×
             </button>
           </div>
 
           <div className="modal-body">
-            <Accordion className="expandable-section">
-              <AccordionSummary expandIcon={<ChevronDownIcon />}>
-                <Typography>Profile Overview</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography>
-                  Here we would display key information from the candidates
-                  profile
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
+            {candidate.aboutMe && (
+              <section className="modal-section">
+                <h3>About</h3>
+                <p>{candidate.aboutMe}</p>
+              </section>
+            )}
 
-            <Accordion className="expandable-section">
-              <AccordionSummary expandIcon={<ChevronDownIcon />}>
-                <Typography>Experience</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography>
-                  Within this section ideally we would display their work
-                  experience
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
+            {experience.length > 0 && (
+              <section className="modal-section">
+                <h3>Experience</h3>
+                <div className="modal-timeline">
+                  {experience.map((exp) => (
+                    <div key={exp.id} className="modal-timeline-item">
+                      <div className="modal-timeline-header">
+                        <h4>
+                          {exp.title}
+                          {exp.company && ` @ ${exp.company}`}
+                        </h4>
+                        <span className="modal-timeline-dates">
+                          {formatDate(exp.startDate)} –{" "}
+                          {exp.endDate ? formatDate(exp.endDate) : "Present"}
+                        </span>
+                      </div>
+                      {exp.description && (
+                        <p className="modal-timeline-description">
+                          {exp.description}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {educations.length > 0 && (
+              <section className="modal-section">
+                <h3>Education</h3>
+                <div className="modal-timeline">
+                  {educations.map((ed) => (
+                    <div key={ed.id} className="modal-timeline-item">
+                      <div className="modal-timeline-header">
+                        <h4>
+                          {ed.program}
+                          {ed.schoolName && ` • ${ed.schoolName}`}
+                        </h4>
+                        <span className="modal-timeline-dates">
+                          {ed.gradDate
+                            ? `Grad: ${formatDate(ed.gradDate)}`
+                            : ed.yearOfStudy
+                            ? `Year ${ed.yearOfStudy}`
+                            : ""}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {(candidate.linkedInUrl || candidate.githubUrl) && (
+              <section className="modal-section">
+                <h3>Links</h3>
+                <div className="modal-links">
+                  {candidate.linkedInUrl && (
+                    <a
+                      href={candidate.linkedInUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      LinkedIn
+                    </a>
+                  )}
+                  {candidate.githubUrl && (
+                    <a
+                      href={candidate.githubUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      GitHub
+                    </a>
+                  )}
+                </div>
+              </section>
+            )}
 
             <button
               className="view-resume-btn"
@@ -136,33 +201,29 @@ const CandidateModal = ({ candidate, jobId, onClose }) => {
             >
               View {candidate?.name}'s Resume
             </button>
+          </div>
 
-            <div className="modal-actions">
-              <Link
-                className="action-btn secondary"
-                to={"/employer-interviews"}
-              >
-                SCHEDULE
-              </Link>
-              <button
-                className={`action-btn ${
-                  isShortlisted ? "shortlisted" : "secondary"
-                }`}
-                onClick={handleShortlist}
-              >
-                {isShortlisted ? "SHORTLISTED ✓" : "SHORTLIST"}
-              </button>
-              <button className="action-btn reject" onClick={handleReject}>
-                REJECT
-              </button>
-            </div>
+          {/* FOOTER ACTIONS */}
+          <div className="modal-footer">
+            <button
+              className={`shortlist-btn ${isShortlisted ? "shortlisted" : ""}`}
+              onClick={handleShortlist}
+            >
+              {isShortlisted ? "Remove from shortlist" : "Shortlist"}
+            </button>
+            <button className="schedule-btn" onClick={handleSchedule}>
+              Schedule Interview
+            </button>
+            <button className="reject-btn" onClick={handleReject}>
+              Reject
+            </button>
           </div>
         </div>
       </div>
 
       {showPDFModal && (
         <PDFViewerModal
-          pdfUrl={WangResume} // TODO: Candidate?.resume
+          pdfUrl={candidate.resumeUrl || WangResume}
           candidateName={candidate?.name}
           onClose={() => setShowPDFModal(false)}
         />
