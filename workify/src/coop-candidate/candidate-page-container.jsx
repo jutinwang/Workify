@@ -19,7 +19,7 @@ const EmployerCandidateContainer = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [yearFilter, setYearFilter] = useState([]);
-  const [courseFilter, setCourseFilter] = useState([]); 
+  const [courseFilter, setCourseFilter] = useState([]);
   const [skillsFilter, setSkillsFilter] = useState([]);
   const [sortBy, setSortBy] = useState("");
   const [showShortlistedOnly, setShowShortlistedOnly] = useState(false);
@@ -106,27 +106,49 @@ const EmployerCandidateContainer = () => {
         }
 
         const apps = data.applications || [];
+        console.log(apps)
 
-        const mapped = apps.map((app) => ({
-          id: app.id, 
-          status: app.status,
-          shortlisted: app.shortlisted,
-          appliedAt: app.appliedAt,
-          updatedAt: app.updatedAt,
-          coverLetter: app.coverLetter,
+        const mapped = data.applications.map((app) => {
+          const year = app.student.year;
 
-          studentId: app.student.id,
-          major: app.student.major,
-          year: app.student.year,
-          resumeUrl: app.student.resumeUrl,
-          linkedInUrl: app.student.linkedInUrl,
-          githubUrl: app.student.githubUrl,
+          const yearLabel =
+            year === 1 ? "1st" :
+            year === 2 ? "2nd" :
+            year === 3 ? "3rd" :
+            year === 4 ? "4th" :
+            year ? `${year}th` : null;
 
-          name: app.student.user.name,
-          email: app.student.user.email,
-        }));
+          return {
+            id: app.id,
+            applicationId: app.id,
+            studentId: app.student.id,
+
+            name: app.student.user.name,
+            email: app.student.user.email,
+
+            major: app.student.major || "Computer Science",
+            school: "University of Ottawa",
+            year,
+            yearLabel, 
+
+            resumeUrl: app.student.resumeUrl,
+            linkedInUrl: app.student.linkedInUrl,
+            githubUrl: app.student.githubUrl,
+
+            status: app.status,
+            shortlisted: app.shortlisted,
+            appliedAt: app.appliedAt,
+            updatedAt: app.updatedAt,
+            experience: app.student.experience || [],
+            educations: app.student.educations || [],
+
+            skills: [],
+            keyCourses: [],
+          };
+        });
 
         setApplications(mapped);
+        console.log(mapped)
         setAppsLoading(false);
       } catch (err) {
         console.error("Error fetching applications:", err);
@@ -143,9 +165,7 @@ const EmployerCandidateContainer = () => {
   }, [token, selectedJob]);
 
   const getShortlistedCandidatesForJob = (jobId) => {
-    const shortlistedData = JSON.parse(
-      localStorage.getItem("shortlistedCandidatesByJob") || "{}"
-    );
+    const shortlistedData = JSON.parse(localStorage.getItem("shortlistedCandidatesByJob") || "{}");
     return new Set(shortlistedData[jobId] || []);
   };
 
@@ -155,7 +175,8 @@ const EmployerCandidateContainer = () => {
     let filtered = [...applications];
 
     if (showShortlistedOnly) {
-      filtered = filtered.filter((app) => app.shortlisted);
+      const shortlistedIds = getShortlistedCandidatesForJob(selectedJob.id);
+      filtered = filtered.filter((app) => shortlistedIds.has(app.id));
     }
 
     if (searchTerm) {
@@ -169,8 +190,8 @@ const EmployerCandidateContainer = () => {
     }
 
     if (yearFilter.length > 0) {
-      filtered = filtered.filter((app) =>
-        yearFilter.includes(String(app.year))
+      filtered = filtered.filter(
+        (app) => app.yearLabel && yearFilter.includes(app.yearLabel)
       );
     }
 
@@ -179,12 +200,22 @@ const EmployerCandidateContainer = () => {
         (a, b) =>
           new Date(b.appliedAt).getTime() - new Date(a.appliedAt).getTime()
       );
-    } else if (sortBy === "name") {
-      filtered.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    } else if (sortBy === "visited") {
+      const viewedSet = selectedJob
+        ? viewedCandidatesByJob[selectedJob.id] || new Set()
+        : new Set();
+
+      filtered.sort((a, b) => {
+        const aViewed = viewedSet.has(a.id);
+        const bViewed = viewedSet.has(b.id);
+        if (aViewed === bViewed) return 0;
+        return aViewed ? -1 : 1;
+      });
     }
 
     return filtered;
   };
+
 
   const handleCloseModal = () => {
     if (selectedCandidate && selectedJob) {
@@ -217,7 +248,6 @@ const EmployerCandidateContainer = () => {
   return (
     <div className="app">
       <div className="container">
-        {/* Left: job list */}
         {jobsLoading ? (
           <div>Loading your jobs...</div>
         ) : jobsError ? (
@@ -230,7 +260,6 @@ const EmployerCandidateContainer = () => {
           />
         )}
 
-        {/* Right: filters + applicants for selected job */}
         {selectedJob && (
           <>
             {appsLoading ? (
@@ -241,7 +270,7 @@ const EmployerCandidateContainer = () => {
               <>
                 <ApplicantFilter
                   selectedJob={selectedJob}
-                  totalApplicants={totalApplicants}
+                  totalApplicants={applications.length}
                   filteredCount={filteredApplicants.length}
                   searchTerm={searchTerm}
                   yearFilter={yearFilter}
@@ -257,11 +286,23 @@ const EmployerCandidateContainer = () => {
                   onShortlistedFilterChange={setShowShortlistedOnly}
                 />
 
-                <ApplicantResults
-                  applicants={filteredApplicants}
-                  onSelectCandidate={setSelectedCandidate}
-                  viewedCandidates={currentViewedCandidates}
-                />
+                {applications.length === 0 ? (
+                  <div className="no-applicants-message">
+                    <div className="empty-state">
+                      <h3>No candidates have applied yet</h3>
+                      <p>
+                        Applications will appear here once students apply to
+                        this position.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <ApplicantResults
+                    applicants={filteredApplicants}
+                    onSelectCandidate={setSelectedCandidate}
+                    viewedCandidates={currentViewedCandidates}
+                  />
+                )}
               </>
             )}
           </>

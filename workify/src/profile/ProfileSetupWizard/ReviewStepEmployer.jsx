@@ -57,7 +57,7 @@ export default function ReviewStepEmployer({ state, onBack, onGoto }) {
           <button className="btn" onClick={() => onGoto(0)}>
             Edit Profile
           </button>
-          <button className="btn" onClick={() => navigate("/employer-profile")}>
+          <button className="btn" onClick={() => navigate("/profile-employer")}>
             View Profile
           </button>
         </div>

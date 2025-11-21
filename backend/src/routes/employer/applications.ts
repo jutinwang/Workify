@@ -115,6 +115,27 @@ router.get("/jobs/:jobId/applications", requireAuth, requireRole(Role.EMPLOYER),
                                         email: true,
                                     },
                                 },
+                                experience: {
+                                    orderBy: { startDate: "desc" },
+                                    select: {
+                                        id: true,
+                                        title: true,
+                                        company: true,
+                                        startDate: true,
+                                        endDate: true,
+                                        description: true,
+                                    },
+                                },
+                                educations: {
+                                    orderBy: { gradDate: "desc" },
+                                    select: {
+                                        id: true,
+                                        program: true,
+                                        schoolName: true,
+                                        yearOfStudy: true,
+                                        gradDate: true,
+                                    },
+                                },
                             },
                         },
                     },
@@ -434,7 +455,7 @@ router.patch("/applications/bulk", requireAuth, requireRole(Role.EMPLOYER),
     }
 );
 
-router.post( "/applications/:applicationId/shortlist", requireAuth, requireRole(Role.EMPLOYER),
+router.post("/applications/:applicationId/shortlist", requireAuth, requireRole(Role.EMPLOYER),
     async (req, res, next) => {
         try {
             const userId = getUserId(req);

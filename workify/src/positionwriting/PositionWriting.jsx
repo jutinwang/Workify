@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./PositionWriting.css";
 import RichTextEditor from "./component/RichTextEditor";
@@ -25,7 +25,15 @@ const PositionWriting = () => {
   const [error, setError] = useState(null);
 
   const textareaRef = useRef(null);
+  const coopTitleRef = useRef(null);
   const navigate = useNavigate();
+
+  // Added to force focus on coop title on component load
+  useEffect(() => {
+    if (coopTitleRef.current) {
+      coopTitleRef.current.focus();
+    }
+  }, []);
 
   const handleCoopTitleChange = (title) => setCoopTitle(title.target.value);
   const handleOfficeLocationChange = (location) =>
@@ -138,7 +146,7 @@ const PositionWriting = () => {
           <p>Coop Title</p>
           <textarea
             className="titleInput"
-            ref={textareaRef}
+            ref={coopTitleRef}
             value={coopTitle}
             onChange={handleCoopTitleChange}
             placeholder="Type something..."

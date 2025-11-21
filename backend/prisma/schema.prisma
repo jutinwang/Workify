@@ -70,6 +70,7 @@ model EmployerProfile {
   user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   interviews         InterviewRequest[]
   jobs               Job[]
+  unavailableTimes   Json? 
 
   @@index([companyId])
 }
