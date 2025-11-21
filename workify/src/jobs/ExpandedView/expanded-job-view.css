@@ -126,6 +126,23 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+.ejv-btn--applied {
+  background: #22c55e;
+  color: white;
+  cursor: not-allowed;
+  opacity: 0.95;
+}
+
+.ejv-btn--applied:hover {
+  background: #22c55e;
+  transform: none;
+  box-shadow: none;
+}
+
+.ejv-btn--applied svg {
+  flex-shrink: 0;
+}
+
 .ejv-tabs-nav {
   background: var(--white);
   border-bottom: 2px solid var(--border-color);

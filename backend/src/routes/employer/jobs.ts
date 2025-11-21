@@ -43,9 +43,6 @@ const CreateJobBody = z.object({
 
 const UpdateJobBody = CreateJobBody.partial();
 
-<<<<<<< Updated upstream
-router.post("/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
-=======
 router.get("/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
     async (req, res, next) => {
         try {
@@ -126,7 +123,6 @@ router.get("/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
 
 
 router.post( "/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
->>>>>>> Stashed changes
     async (req, res, next) => {
         try {
             const input = CreateJobBody.parse(req.body);

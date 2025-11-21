@@ -1,5 +1,4 @@
 import { useState, useMemo, useEffect } from "react";
-import { formatRelativeDate } from "../common/utility";
 import JobsFilter from "./JobsFilter";
 import JobCard from "./JobCard";
 import JobDetails from "./JobDetails";
@@ -39,7 +38,14 @@ const Jobs = () => {
 
         const url = `http://localhost:4000/students/search?${params.toString()}`;
         console.log("📡 Fetching from:", url);
-        const response = await fetch(url);
+
+        const token = localStorage.getItem("authToken");
+        const headers = {};
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(url, { headers });
 
         console.log("📥 Response status:", response.status);
 
@@ -48,8 +54,6 @@ const Jobs = () => {
         }
 
         const data = await response.json();
-        console.log("✅ Received jobs:", data);
-        console.log("📊 Number of jobs:", data.length);
         setJobs(data);
       } catch (err) {
         console.error("❌ Error fetching jobs:", err);
@@ -97,30 +101,22 @@ const Jobs = () => {
     setSavedJobs((prevJobs) => prevJobs.filter((job) => job.id !== jobId));
   };
 
-  // Client-side filtering for other filters (location, date)
+  // Client-side filtering for location
   const filtered = jobs.filter((j) => {
-    // Locations
     if (filters.locations?.length > 0) {
       const matchesLocation = filters.locations.some((location) =>
         j.location?.toLowerCase().includes(location.toLowerCase())
       );
       if (!matchesLocation) return false;
     }
-
-    // Date Posted
-    if (filters.datePosted && j.postedDate) {
-      const matchesDate = formatRelativeDate(j.postedDate)
-      if (!matchesDate) return false;
-    }
     return true;
   });
 
-  // Extract unique tags from all jobs
   const allTags = useMemo(() => {
     const tagsSet = new Map();
-    jobs.forEach(job => {
+    jobs.forEach((job) => {
       if (job.tags && Array.isArray(job.tags)) {
-        job.tags.forEach(tag => {
+        job.tags.forEach((tag) => {
           if (!tagsSet.has(tag.id)) {
             tagsSet.set(tag.id, tag);
           }
@@ -130,7 +126,6 @@ const Jobs = () => {
     return Array.from(tagsSet.values());
   }, [jobs]);
 
-  console.log("All available tags:", allTags);
   return (
     <div className="jobs-page-container">
       <SavedSection

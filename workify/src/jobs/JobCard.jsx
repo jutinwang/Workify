@@ -6,8 +6,14 @@ import { formatRelativeDate } from "../common/utility";
 export default function JobCard({ job, isSelected, onClick }) {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const postedDate = formatRelativeDate(job?.updatedAt || job?.createdAt);
+  const hasApplied = job?.hasApplied || false;
 
-  const initials = "ali";
+  const initials = job.company.name
+    .split(" ")
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 
   const handleViewDetails = (e) => {
     e.preventDefault();
@@ -21,9 +27,32 @@ export default function JobCard({ job, isSelected, onClick }) {
 
   return (
     <article
-      className={`job-card ${isSelected ? "job-card--selected" : ""}`}
+      className={`job-card ${isSelected ? "job-card--selected" : ""} ${
+        hasApplied ? "job-card--applied" : ""
+      }`}
       onClick={handleViewDetails}
     >
+      {hasApplied && (
+        <div className="applied-banner">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span>
+            Applied
+            {job.applicationStatus?.appliedAt
+              ? ` • ${new Date(
+                  job.applicationStatus.appliedAt
+                ).toLocaleDateString()}`
+              : ""}
+          </span>
+        </div>
+      )}
       {/* Header */}
       <div className="job-head">
         <div className="job-avatar">{initials}</div>

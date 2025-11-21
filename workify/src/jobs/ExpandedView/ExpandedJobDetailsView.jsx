@@ -13,12 +13,12 @@ const ExpandedJobDetailsView = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [coops, setCoops] = useState();
   const [loading, setLoading] = useState(true);
-
-  console.log(jobId)
+  const [hasApplied, setHasApplied] = useState(false);
+  const [applicationStatus, setApplicationStatus] = useState(null);
 
   const handleApply = async () => {
     try {
-      const token = localStorage.getItem("authToken"); 
+      const token = localStorage.getItem("authToken");
 
       if (!token) {
         alert("You must be logged in as a student to apply.");
@@ -33,7 +33,7 @@ const ExpandedJobDetailsView = () => {
         },
         body: JSON.stringify({
           jobId: Number(jobId),
-          coverLetter: undefined 
+          coverLetter: undefined,
         }),
       });
 
@@ -43,6 +43,12 @@ const ExpandedJobDetailsView = () => {
         alert(data.error || "Failed to apply");
         return;
       }
+
+      setHasApplied(true);
+      setApplicationStatus({
+        appliedAt: new Date().toISOString(),
+        status: "PENDING",
+      });
 
       alert("Application submitted!");
     } catch (err) {
@@ -59,75 +65,85 @@ const ExpandedJobDetailsView = () => {
         const data = await response.json();
         console.log("Job data from API:", data);
         setCoops(data);
+
+        // Fetch application status if user is authenticated
+        const token = localStorage.getItem("authToken");
+        if (token) {
+          try {
+            const appliedResponse = await fetch(
+              `http://localhost:4000/students/${jobId}/applied`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+            if (appliedResponse.ok) {
+              const appliedData = await appliedResponse.json();
+              setHasApplied(appliedData.applied);
+              setApplicationStatus(appliedData.application);
+            }
+          } catch (error) {
+            console.error("Error fetching application status:", error);
+          }
+        }
       } catch (error) {
         console.error("Error fetching job:", error);
       } finally {
         setLoading(false);
       }
     };
-
-    if (true) {
-      fetchJobDetails();
-    }
+    fetchJobDetails();
   }, [jobId]);
 
   const Element = ({ attributes, children, element }) => {
-  switch (element.type) {
-    case "code":
-      return (
-        <pre {...attributes}>
-          <code>{children}</code>
-        </pre>
-      );
-    case 'bulleted-list':
-      return (
-        <ul {...attributes}>
-          {children}
-        </ul>
-      );
-    case 'numbered-list':
-      return (
-        <ol {...attributes}>
-          {children}
-        </ol>
-      );
-    case 'list-item':
-      return (
-        <li {...attributes}>
-          {children}
-        </li>
-      );
-    default:
-      return <p {...attributes}>{children}</p>;
-  }
-};
+    switch (element.type) {
+      case "code":
+        return (
+          <pre {...attributes}>
+            <code>{children}</code>
+          </pre>
+        );
+      case "bulleted-list":
+        return <ul {...attributes}>{children}</ul>;
+      case "numbered-list":
+        return <ol {...attributes}>{children}</ol>;
+      case "list-item":
+        return <li {...attributes}>{children}</li>;
+      default:
+        return <p {...attributes}>{children}</p>;
+    }
+  };
 
-const parseSlateContent = (content, fallbackText = "No content available") => {
-  if (!content || content === "" || content.trim() === "") {
-    return [{ type: "paragraph", children: [{ text: fallbackText }] }];
-  }
-  try {
-    const parsed = JSON.parse(content);
-    if (!Array.isArray(parsed) || parsed.length === 0) {
+  const parseSlateContent = (
+    content,
+    fallbackText = "No content available"
+  ) => {
+    if (!content || content === "" || content.trim() === "") {
       return [{ type: "paragraph", children: [{ text: fallbackText }] }];
     }
-    return parsed;
-  } catch (e) {
-    console.error('Failed to parse content:', e);
-    return [{ type: "paragraph", children: [{ text: fallbackText }] }];
-  }
-};
+    try {
+      const parsed = JSON.parse(content);
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        return [{ type: "paragraph", children: [{ text: fallbackText }] }];
+      }
+      return parsed;
+    } catch (e) {
+      console.error("Failed to parse content:", e);
+      return [{ type: "paragraph", children: [{ text: fallbackText }] }];
+    }
+  };
 
-// Leaf renderer
-const Leaf = ({ attributes, children, leaf }) => {
-  if (leaf.bold) children = <strong>{children}</strong>;
-  if (leaf.code) children = <code>{children}</code>;
-  if (leaf.italic) children = <em>{children}</em>;
-  if (leaf.underline) children = <u>{children}</u>;
-  if (leaf.strikethrough) children = <s>{children}</s>;
+  // Leaf renderer
+  const Leaf = ({ attributes, children, leaf }) => {
+    if (leaf.bold) children = <strong>{children}</strong>;
+    if (leaf.code) children = <code>{children}</code>;
+    if (leaf.italic) children = <em>{children}</em>;
+    if (leaf.underline) children = <u>{children}</u>;
+    if (leaf.strikethrough) children = <s>{children}</s>;
 
-  return <span {...attributes}>{children}</span>;
-};
+    return <span {...attributes}>{children}</span>;
+  };
 
   const editor = useMemo(() => withReact(createEditor()), []);
   const renderElement = useCallback((props) => <Element {...props} />, []);
@@ -201,7 +217,30 @@ const Leaf = ({ attributes, children, leaf }) => {
               </svg>
               Save
             </button>
-            <button className="ejv-btn ejv-btn--primary" onClick={handleApply}>Apply Now</button>
+            {hasApplied ? (
+              <button className="ejv-btn ejv-btn--applied" disabled>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                Applied
+                {applicationStatus?.appliedAt
+                  ? ` • ${formatRelativeDate(applicationStatus.appliedAt)}`
+                  : ""}
+              </button>
+            ) : (
+              <button
+                className="ejv-btn ejv-btn--primary"
+                onClick={handleApply}
+              >
+                Apply Now
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -242,12 +281,19 @@ const Leaf = ({ attributes, children, leaf }) => {
           <div className="ejv-stat-card">
             <div className="ejv-stat-icon">💰</div>
             <div className="ejv-stat-label">Salary</div>
-            <Slate className="ejv-stat-value" editor={editor} initialValue={parseSlateContent(postingInfo.salary, "No salary posted")}>
-                <Editable 
-                    readOnly 
-                    renderLeaf={renderLeaf}
-                    renderElement={renderElement}
-                />
+            <Slate
+              className="ejv-stat-value"
+              editor={editor}
+              initialValue={parseSlateContent(
+                postingInfo.salary,
+                "No salary posted"
+              )}
+            >
+              <Editable
+                readOnly
+                renderLeaf={renderLeaf}
+                renderElement={renderElement}
+              />
             </Slate>
           </div>
           <div className="ejv-stat-card">
@@ -269,13 +315,20 @@ const Leaf = ({ attributes, children, leaf }) => {
 
         <section className="ejv-section">
           <h2 className="ejv-section-title">About This Role</h2>
-          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.description, "No description available")}>
-                <Editable 
-                    readOnly 
-                    renderLeaf={renderLeaf}
-                    renderElement={renderElement}
-                />
-            </Slate>
+          <Slate
+            className="ejv-text"
+            editor={editor}
+            initialValue={parseSlateContent(
+              postingInfo.description,
+              "No description available"
+            )}
+          >
+            <Editable
+              readOnly
+              renderLeaf={renderLeaf}
+              renderElement={renderElement}
+            />
+          </Slate>
         </section>
 
         <section className="ejv-section">
@@ -295,12 +348,19 @@ const Leaf = ({ attributes, children, leaf }) => {
 
         <section className="ejv-section">
           <h2 className="ejv-section-title">Benefits & Perks</h2>
-          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.benefits, "No benefits!")}>
-              <Editable 
-                  readOnly 
-                  renderLeaf={renderLeaf}
-                  renderElement={renderElement}
-              />
+          <Slate
+            className="ejv-text"
+            editor={editor}
+            initialValue={parseSlateContent(
+              postingInfo.benefits,
+              "No benefits!"
+            )}
+          >
+            <Editable
+              readOnly
+              renderLeaf={renderLeaf}
+              renderElement={renderElement}
+            />
           </Slate>
         </section>
       </div>
@@ -312,42 +372,70 @@ const Leaf = ({ attributes, children, leaf }) => {
       <div className="ejv-description">
         <section className="ejv-section">
           <h2 className="ejv-section-title">Job Description</h2>
-          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.description, "No description available")}>
-              <Editable 
-                  readOnly 
-                  renderLeaf={renderLeaf}
-                  renderElement={renderElement}
-              />
+          <Slate
+            className="ejv-text"
+            editor={editor}
+            initialValue={parseSlateContent(
+              postingInfo.description,
+              "No description available"
+            )}
+          >
+            <Editable
+              readOnly
+              renderLeaf={renderLeaf}
+              renderElement={renderElement}
+            />
           </Slate>
         </section>
         <section className="ejv-section">
           <h2 className="ejv-section-title">Key Responsibilities</h2>
-          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.responsibilities, "No responsibilities given")}>
-              <Editable 
-                  readOnly 
-                  renderLeaf={renderLeaf}
-                  renderElement={renderElement}
-              />
+          <Slate
+            className="ejv-text"
+            editor={editor}
+            initialValue={parseSlateContent(
+              postingInfo.responsibilities,
+              "No responsibilities given"
+            )}
+          >
+            <Editable
+              readOnly
+              renderLeaf={renderLeaf}
+              renderElement={renderElement}
+            />
           </Slate>
         </section>
         <section className="ejv-section">
           <h2 className="ejv-section-title">Qualifications</h2>
-          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.qualification, "No qualifications listed")}>
-              <Editable 
-                  readOnly 
-                  renderLeaf={renderLeaf}
-                  renderElement={renderElement}
-              />
+          <Slate
+            className="ejv-text"
+            editor={editor}
+            initialValue={parseSlateContent(
+              postingInfo.qualification,
+              "No qualifications listed"
+            )}
+          >
+            <Editable
+              readOnly
+              renderLeaf={renderLeaf}
+              renderElement={renderElement}
+            />
           </Slate>
         </section>
         <section className="ejv-section">
           <h2 className="ejv-section-title">Benefits & Perks</h2>
-          <Slate className="ejv-text" editor={editor} initialValue={parseSlateContent(postingInfo.benefits, "No benefits!")}>
-              <Editable 
-                  readOnly 
-                  renderLeaf={renderLeaf}
-                  renderElement={renderElement}
-              />
+          <Slate
+            className="ejv-text"
+            editor={editor}
+            initialValue={parseSlateContent(
+              postingInfo.benefits,
+              "No benefits!"
+            )}
+          >
+            <Editable
+              readOnly
+              renderLeaf={renderLeaf}
+              renderElement={renderElement}
+            />
           </Slate>
         </section>
       </div>
