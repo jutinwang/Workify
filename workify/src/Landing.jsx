@@ -27,7 +27,7 @@ function Landing() {
             Explore Opportunities <span>→</span>
           </Link>
           <Link className="explore-candidates-btn" to="/signup-employer">
-            Explore Candidates <span>→</span>
+            Explore Talent <span>→</span>
           </Link>
 
           <div className="landing-line-art">
