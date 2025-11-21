@@ -10,7 +10,7 @@ const router = Router();
 function prepareTagsForCreate(rawTags: string[] | undefined) {
     const original = (rawTags ?? [])
         .map(t => t.trim())
-        .filter(Boolean); 
+        .filter(Boolean);
 
     const normalized = original.map(t => t.toLowerCase());
 
@@ -27,6 +27,7 @@ const CreateJobBody = z.object({
     salary: z.string().min(1).optional(),
 
     qualification: z.string().min(1).optional(),
+    programs: z.array(z.string().min(1)).optional(),
     benefits: z.string().min(1).optional(),
     responsibilities: z.string().min(1).optional(),
 
@@ -37,7 +38,7 @@ const CreateJobBody = z.object({
 
 const UpdateJobBody = CreateJobBody.partial();
 
-router.post( "/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
+router.post("/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
     async (req, res, next) => {
         try {
             const input = CreateJobBody.parse(req.body);
@@ -55,7 +56,7 @@ router.post( "/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
             const companyId = input.companyId ?? employer.companyId ?? null;
             if (!companyId) {
                 return res.status(400).json({
-                    error:"companyId is required. Provide companyId in the request or link a company to your employer profile first.",
+                    error: "companyId is required. Provide companyId in the request or link a company to your employer profile first.",
                 });
             }
 
@@ -70,6 +71,7 @@ router.post( "/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
                     type: input.type ?? null,
                     salary: input.salary ?? null,
                     qualification: input.qualification ?? null,
+                    programs: input.programs ?? [],
                     benefits: input.benefits ?? null,
                     responsibilities: input.responsibilities ?? null,
 
@@ -97,6 +99,7 @@ router.post( "/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
                     qualification: true,
                     benefits: true,
                     responsibilities: true,
+                    programs: true,
                     createdAt: true,
                     updatedAt: true,
                     company: { select: { id: true, name: true } },
@@ -105,7 +108,7 @@ router.post( "/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
                 },
             });
 
-            return res.status(201).json({job});
+            return res.status(201).json({ job });
 
         } catch (e: any) {
             if (e?.name === "ZodError") {
@@ -184,6 +187,7 @@ router.patch("/me/jobs/:jobId", requireAuth, requireRole(Role.EMPLOYER),
                     salary: true,
                     qualification: true,
                     benefits: true,
+                    programs: true,
                     updatedAt: true,
                     tags: { select: { id: true, name: true, displayName: true } },
                 },

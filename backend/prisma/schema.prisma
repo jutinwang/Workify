@@ -120,6 +120,7 @@ model Job {
   length           String?
   qualification    String?
   responsibilities String?
+  programs         String[]        
   applications     Application[]
   company          Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
   employer         EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)

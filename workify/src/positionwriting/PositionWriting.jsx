@@ -4,6 +4,7 @@ import "./PositionWriting.css";
 import RichTextEditor from "./component/RichTextEditor";
 import TagSelectionModal from "./component/TagSelectionModal";
 import { employerApi } from "../api/employers";
+import { AVAILABLE_PROGRAMS } from "../constants/programs";
 
 const PositionWriting = () => {
   const [coopTitle, setCoopTitle] = useState("");
@@ -17,6 +18,7 @@ const PositionWriting = () => {
   const [officeLocation, setOfficeLocation] = useState("");
   const [tags, setTags] = useState([]);
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
+  const [programs, setPrograms] = useState([]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -29,9 +31,22 @@ const PositionWriting = () => {
   const handleOfficeLocationChange = (location) =>
     setOfficeLocation(location.target.value);
 
-  // Remove a tag by value
   const removeTag = (tagToRemove) => {
     setTags(tags.filter((tag) => tag !== tagToRemove));
+  };
+
+  const handleProgramClick = (program) => {
+    if (programs.includes(program)) {
+      setPrograms(programs.filter((p) => p !== program));
+    } else {
+      if (programs.length < 3) {
+        setPrograms([...programs, program]);
+      }
+    }
+  };
+
+  const removeProgram = (programToRemove) => {
+    setPrograms(programs.filter((program) => program !== programToRemove));
   };
 
   const postJob = async (e) => {
@@ -51,6 +66,7 @@ const PositionWriting = () => {
         benefits: JSON.stringify(benefits),
         workModel: workModel,
         tags: tags,
+        programs: programs,
       };
 
       console.log("Payload being sent:", payload);
@@ -83,6 +99,7 @@ const PositionWriting = () => {
     setWorkModel("");
     setOfficeLocation("");
     setTags([]);
+    setPrograms([]);
     setIsSuccess(false);
     setError(null);
   };
@@ -126,6 +143,91 @@ const PositionWriting = () => {
             onChange={handleCoopTitleChange}
             placeholder="Type something..."
           />
+          <p style={{ marginTop: "20px" }}>
+            Eligible Programs For Applicants (Select up to 3)
+          </p>
+          <div className="programs-section">
+            <div className="program-selection-grid">
+              {AVAILABLE_PROGRAMS.map((program) => (
+                <button
+                  key={program}
+                  type="button"
+                  className={`program-select-btn ${
+                    programs.includes(program) ? "selected" : ""
+                  } ${
+                    programs.length >= 3 && !programs.includes(program)
+                      ? "disabled"
+                      : ""
+                  }`}
+                  onClick={() => handleProgramClick(program)}
+                  disabled={programs.length >= 3 && !programs.includes(program)}
+                >
+                  {program}
+                </button>
+              ))}
+            </div>
+            <p className="program-help-text">
+              Click to select up to 3 programs
+            </p>
+            {programs.length > 0 && (
+              <div className="selected-programs-display">
+                {programs.map((program, index) => (
+                  <div className="program-item" key={index}>
+                    <span className="text">{program}</span>
+                    <span
+                      className="close"
+                      onClick={() => removeProgram(program)}
+                    >
+                      &times;
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="dropdowns">
+              <p>Coop Length</p>
+              <select
+                className="dropdown job-length-dropdown"
+                value={jobLength}
+                onChange={(e) => setJobLength(e.target.value)}
+              >
+                <option value="" disabled>
+                  Select duration...
+                </option>
+                <option value="4">4 months</option>
+                <option value="8">8 months</option>
+                <option value="12">12 months</option>
+                <option value="16">16 months</option>
+              </select>
+
+              <p>Work Models</p>
+              <select
+                className="dropdown work-model-dropdown"
+                value={workModel}
+                onChange={(e) => setWorkModel(e.target.value)}
+              >
+                <option value="" disabled>
+                  Select work model...
+                </option>
+                <option value="remote">Remote</option>
+                <option value="hybrid">Hybrid</option>
+                <option value="inperson">In-Person</option>
+              </select>
+            </div>
+          </div>
+
+          {(workModel === "hybrid" || workModel === "inperson") && (
+            <>
+              <p>Office Location</p>
+              <textarea
+                className="locationInput"
+                ref={textareaRef}
+                value={officeLocation}
+                onChange={handleOfficeLocationChange}
+                placeholder="Enter office address or city..."
+              />
+            </>
+          )}
 
           <p>Coop Description</p>
           <RichTextEditor
@@ -167,51 +269,7 @@ const PositionWriting = () => {
             onChange={setSalaryRange}
             customHeight="100px"
           />
-
-          <div className="dropdowns">
-            <p>Coop Length</p>
-            <select
-              className="dropdown job-length-dropdown"
-              value={jobLength}
-              onChange={(e) => setJobLength(e.target.value)}
-            >
-              <option value="" disabled>
-                Select duration...
-              </option>
-              <option value="4">4 months</option>
-              <option value="8">8 months</option>
-              <option value="12">12 months</option>
-              <option value="16">16 months</option>
-            </select>
-
-            <p>Work Models</p>
-            <select
-              className="dropdown work-model-dropdown"
-              value={workModel}
-              onChange={(e) => setWorkModel(e.target.value)}
-            >
-              <option value="" disabled>
-                Select work model...
-              </option>
-              <option value="remote">Remote</option>
-              <option value="hybrid">Hybrid</option>
-              <option value="inperson">In-Person</option>
-            </select>
-          </div>
         </div>
-
-        {(workModel === "hybrid" || workModel === "inperson") && (
-          <>
-            <p>Office Location</p>
-            <textarea
-              className="locationInput"
-              ref={textareaRef}
-              value={officeLocation}
-              onChange={handleOfficeLocationChange}
-              placeholder="Enter office address or city..."
-            />
-          </>
-        )}
 
         <p> Role Attributes (Select up to 5)</p>
         <div className="tags-section">

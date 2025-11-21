@@ -1,6 +1,7 @@
 import React from "react";
 import "./sections.css";
 import Field from "../../common/Field";
+import { AVAILABLE_PROGRAMS } from "../../constants/programs";
 
 export default function EducationStep({ state, dispatch, errors, onNext, onBack }) {
     return (
@@ -17,11 +18,16 @@ export default function EducationStep({ state, dispatch, errors, onNext, onBack 
                     />
                 </Field>
                 <Field label="Program" error={errors.program}>
-                    <input
+                    <select
                         className="input"
                         value={state.education.program}
                         onChange={(e) => dispatch({ type: "SET_EDU", payload: { program: e.target.value } })}
-                    />
+                    >
+                        <option value="">Select program…</option>
+                        {AVAILABLE_PROGRAMS.map(program => (
+                            <option key={program} value={program}>{program}</option>
+                        ))}
+                    </select>
                 </Field>
                 <Field label="Year of Study" error={errors.year}>
                     <select
