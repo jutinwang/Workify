@@ -14,6 +14,43 @@ const ExpandedJobDetailsView = () => {
   const [coops, setCoops] = useState();
   const [loading, setLoading] = useState(true);
 
+  console.log(jobId)
+
+  const handleApply = async () => {
+    try {
+      const token = localStorage.getItem("authToken"); 
+
+      if (!token) {
+        alert("You must be logged in as a student to apply.");
+        return;
+      }
+
+      const res = await fetch("http://localhost:4000/applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          jobId: Number(jobId),
+          coverLetter: undefined 
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        alert(data.error || "Failed to apply");
+        return;
+      }
+
+      alert("Application submitted!");
+    } catch (err) {
+      console.error(err);
+      alert("Unexpected error.");
+    }
+  };
+
   useEffect(() => {
     const fetchJobDetails = async () => {
       try {
@@ -164,7 +201,7 @@ const Leaf = ({ attributes, children, leaf }) => {
               </svg>
               Save
             </button>
-            <button className="ejv-btn ejv-btn--primary">Apply Now</button>
+            <button className="ejv-btn ejv-btn--primary" onClick={handleApply}>Apply Now</button>
           </div>
         </div>
       </div>

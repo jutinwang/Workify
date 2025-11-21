@@ -8,6 +8,44 @@ import { Slate, Editable, withReact } from "slate-react";
 import { createEditor } from "slate";
 
 export default function JobDetails({ job, onClose }) {
+
+  const handleApply = async () => {
+    try {
+      const token = localStorage.getItem("authToken"); 
+
+      if (!token) {
+        alert("You must be logged in as a student to apply.");
+        return;
+      }
+
+      console.log(job)
+
+      const res = await fetch("http://localhost:4000/applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          jobId: Number(job.id),
+          coverLetter: undefined 
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        alert(data.error || "Failed to apply");
+        return;
+      }
+
+      alert("Application submitted!");
+    } catch (err) {
+      console.error(err);
+      alert("Unexpected error.");
+    }
+  };
+
   if (!job) {
     return (
       <div className="job-details-empty">
@@ -108,7 +146,7 @@ const Leaf = ({ attributes, children, leaf }) => {
         </div>
         <div className="job-details-actions">
           <button className="jd-btn btn-save">Save</button>
-          <button className="jd-btn btn-primary">Apply</button>
+          <button className="jd-btn btn-primary" onClick={handleApply}>Apply</button>
           <button className="jd-btn btn-close" onClick={onClose}>
             <svg width="20" height="20" viewBox="0 0 24 24">
               <path
