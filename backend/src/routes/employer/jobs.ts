@@ -17,6 +17,11 @@ function prepareTagsForCreate(rawTags: string[] | undefined) {
     return { original, normalized };
 }
 
+const JobsListQuery = z.object({
+    limit: z.coerce.number().int().positive().max(100).default(50),
+    offset: z.coerce.number().int().min(0).default(0),
+});
+
 const CreateJobBody = z.object({
     title: z.string().min(3),
     description: z.string().min(10),
@@ -38,12 +43,95 @@ const CreateJobBody = z.object({
 
 const UpdateJobBody = CreateJobBody.partial();
 
+<<<<<<< Updated upstream
 router.post("/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
+=======
+router.get("/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
+    async (req, res, next) => {
+        try {
+        const userId = getUserId(req);
+
+        // Find employer profile for this user
+        const employer = await prisma.employerProfile.findUnique({
+            where: { userId },
+            select: { id: true },
+        });
+
+        if (!employer) {
+            return res
+            .status(404)
+            .json({ error: "Employer profile not found" });
+        }
+
+        const query = JobsListQuery.parse(req.query);
+
+        const where = {
+            employerId: employer.id,
+        };
+
+        const [jobs, total] = await Promise.all([
+            prisma.job.findMany({
+                where,
+                orderBy: { createdAt: "desc" },
+                take: query.limit,
+                skip: query.offset,
+                select: {
+                    id: true,
+                    title: true,
+                    description: true,
+                    location: true,
+                    length: true,
+                    type: true,
+                    salary: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    company: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
+                    _count: {
+                        select: {
+                            applications: true,
+                        },
+                    },
+                },
+            }),
+            prisma.job.count({ where }),
+        ]);
+
+        return res.json({
+            jobs: jobs.map((job) => ({
+            ...job,
+            applicants: job._count.applications, // handy for your JobList UI
+            })),
+            pagination: {
+            total,
+            limit: query.limit,
+            offset: query.offset,
+            hasMore: query.offset + query.limit < total,
+            },
+        });
+        } catch (e: any) {
+        if (e?.name === "ZodError") {
+            return res
+            .status(400)
+            .json({ error: "Invalid query parameters", issues: e.issues });
+        }
+        next(e);
+        }
+    }
+);
+
+
+router.post( "/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
+>>>>>>> Stashed changes
     async (req, res, next) => {
         try {
             const input = CreateJobBody.parse(req.body);
 
-            const userId = 1;
+            const userId = getUserId(req);
             const employer = await prisma.employerProfile.findUnique({
                 where: { userId },
                 select: { id: true, companyId: true }
