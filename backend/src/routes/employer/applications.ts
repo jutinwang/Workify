@@ -455,7 +455,7 @@ router.patch("/applications/bulk", requireAuth, requireRole(Role.EMPLOYER),
     }
 );
 
-router.post( "/applications/:applicationId/shortlist", requireAuth, requireRole(Role.EMPLOYER),
+router.post("/applications/:applicationId/shortlist", requireAuth, requireRole(Role.EMPLOYER),
     async (req, res, next) => {
         try {
             const userId = getUserId(req);

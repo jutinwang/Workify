@@ -324,5 +324,45 @@ router.delete("/me/jobs/:jobId", requireAuth, requireRole(Role.EMPLOYER),
     }
 );
 
+router.get("/me/unavailable-times", requireAuth, requireRole(Role.EMPLOYER),
+    async (req, res, next) => {
+        try {
+            const userId = getUserId(req);
+
+            const emp = await prisma.employerProfile.findUnique({
+                where: { userId },
+                select: { unavailableTimes: true },
+            });
+
+            return res.json({ unavailableTimes: emp?.unavailableTimes ?? [] });
+        } 
+        catch (e) {
+            next(e);
+        }
+    }
+);
+
+router.post("/me/unavailable-times", requireAuth, requireRole(Role.EMPLOYER),
+    async (req, res, next) => {
+        try {
+            const userId = getUserId(req);
+            const { events } = req.body;
+
+        if (!Array.isArray(events)) {
+            return res.status(400).json({ error: "Events must be an array" });
+        }
+
+        const updated = await prisma.employerProfile.update({
+            where: { userId },
+            data: { unavailableTimes: events },
+            select: { unavailableTimes: true },
+        });
+
+        return res.json(updated);
+        } catch (e) {
+            next(e);
+        }
+    }
+);
 
 export default router;
