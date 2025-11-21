@@ -24,7 +24,7 @@
 
 .dropdown-list {
     position: absolute;
-    z-index: 20;
+    z-index: 100;
     top: calc(100% + 6px);
     left: 0;
     right: 0;

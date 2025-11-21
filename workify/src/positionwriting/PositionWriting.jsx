@@ -194,10 +194,10 @@ const PositionWriting = () => {
                 <option value="" disabled>
                   Select duration...
                 </option>
-                <option value="4">4 months</option>
-                <option value="8">8 months</option>
-                <option value="12">12 months</option>
-                <option value="16">16 months</option>
+                <option value="4 months">4 months</option>
+                <option value="8 months">8 months</option>
+                <option value="12 months">12 months</option>
+                <option value="16 months">16 months</option>
               </select>
 
               <p>Work Models</p>

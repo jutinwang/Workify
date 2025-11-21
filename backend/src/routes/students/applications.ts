@@ -148,6 +148,7 @@ router.get("/", requireAuth, requireRole(Role.STUDENT),
                                 title: true,
                                 location: true,
                                 type: true,
+                                length: true,
                                 salary: true,
                                 company: {
                                     select: {

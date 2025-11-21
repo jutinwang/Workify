@@ -6,6 +6,7 @@
     flex-direction: column;
     padding: 1em;
     box-sizing: border-box;
+    background-color: var(--primary-background);
 }
 .apps-header {
     display: flex;
@@ -36,7 +37,7 @@
 }
 
 .apps-filters {
-  background: #f8fafc;
+  background: #fafcff;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 12px;
@@ -79,8 +80,8 @@
 .apps-table thead th {
   text-align: left;
   padding: 12px;
-  background: #f1f5f9;
-  color: #475569;
+  color: var(--text-white);
+  background-color: var(--secondary-green);
   border-bottom: 1px solid #e2e8f0;
   position: sticky;
   top: 0;

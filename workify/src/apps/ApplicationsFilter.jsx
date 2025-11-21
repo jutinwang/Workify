@@ -7,11 +7,14 @@ const toOpts = (arr) => arr.map((x) =>
 const ApplicationsFilters = ({
     search, setSearch,
     status, setStatus,
-    type, setType,
+    location, setLocation,
+    length, setLength,
     sortBy, setSortBy,
     statusOptions,
-    typeOptions
+    locationOptions,
+    lengthOptions,
 }) => {
+    console.log('Filter props:', { locationOptions, lengthOptions, location, length });
 
     const sortOptions = [
         { value: "lastUpdatedDesc", label: "Last updated (new → old)" },
@@ -27,7 +30,7 @@ const ApplicationsFilters = ({
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="input"
-                    placeholder="Search by company, role, or location…"
+                    placeholder="Search by company name…"
                 />
 
                 <Dropdown
@@ -38,10 +41,17 @@ const ApplicationsFilters = ({
                 />
 
                 <Dropdown
-                    value={type}
-                    options={toOpts(typeOptions)}
-                    onChange={(v) => setType(v)}
-                    placeholder="Type"
+                    value={location}
+                    options={toOpts(locationOptions)}
+                    onChange={(v) => setLocation(v)}
+                    placeholder="Location"
+                />
+
+                <Dropdown
+                    value={length}
+                    options={toOpts(lengthOptions)}
+                    onChange={(v) => setLength(v)}
+                    placeholder="Length"
                 />
 
                 <Dropdown

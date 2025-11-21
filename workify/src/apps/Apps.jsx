@@ -1,47 +1,81 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import "./apps.css";
 import "../var.css";
 import { APPLICATION_STEPS, statusToStepIndex } from "./progress";
-import { mockApplications } from "./mockApplications";
+import { studentApi } from "../api/student";
 import { Box, Tab, Tabs } from "@mui/material";
-import Card from "../common/Card";
 
 import ApplicationsHeader from "./ApplicationsHeader";
 import ApplicationsFilters from "./ApplicationsFilter";
 import ApplicationsList from "./ApplicationsList";
 import Pagination from "./Pagination";
 import EmptyState from "./EmptyState";
+import InterviewComponent from "./InterviewComponent";
 
 const PAGE_SIZE = 8;
 
 const Apps = () => {
+  // Data
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   // Filters
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
+  const [location, setLocation] = useState("All");
+  const [length, setLength] = useState("All");
   const [activeTab, setActiveTab] = useState(0);
-  const [type, setType] = useState("All");
   const [sortBy, setSortBy] = useState("lastUpdatedDesc");
   // Pagination
   const [page, setPage] = useState(1);
+
+  // Fetch applications on mount
+  useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await studentApi.getApplications();
+
+        // Transform backend data to match frontend structure
+        console.log(response);
+        const transformed = response.applications.map((app) => ({
+          id: app.id,
+          company: app.job.company.name,
+          role: app.job.title,
+          length: app.job.length,
+          location: app.job.location,
+          appliedAt: app.appliedAt,
+          status: app.status,
+          lastUpdated: app.updatedAt,
+        }));
+
+        setApplications(transformed);
+      } catch (err) {
+        console.error("Failed to fetch applications:", err);
+        setError("Failed to load applications. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApplications();
+  }, []);
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
 
-  console.log(mockApplications);
-
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
 
-    let out = mockApplications.filter((a) => {
-      const matchesQ =
-        !q ||
-        a.company.toLowerCase().includes(q) ||
-        a.role.toLowerCase().includes(q) ||
-        (a.location ?? "").toLowerCase().includes(q);
+    let out = applications.filter((a) => {
+      const matchesSearch = !q || a.company.toLowerCase().includes(q);
       const matchesStatus = status === "All" || a.status === status;
-      const matchesType = type === "All" || a.type === type;
-      return matchesQ && matchesStatus && matchesType;
+      const matchesLocation = location === "All" || a.location === location;
+      const matchesLength = length === "All" || a.length === length;
+      return matchesSearch && matchesStatus && matchesLocation && matchesLength;
     });
 
     // sort
@@ -63,11 +97,44 @@ const Apps = () => {
     });
 
     return out;
-  }, [search, status, type, sortBy]);
+  }, [applications, search, status, location, length, sortBy]);
 
-  console.log(filtered);
+  // Extract unique locations and lengths for filter options
+  const locationOptions = useMemo(() => {
+    const locations = [
+      ...new Set(applications.map((a) => a.location).filter(Boolean)),
+    ];
+    const opts = ["All", ...locations.sort()];
+    console.log("Location options:", opts);
+    return opts;
+  }, [applications]);
+
+  const lengthOptions = useMemo(() => {
+    const lengths = [
+      ...new Set(applications.map((a) => a.length).filter(Boolean)),
+    ];
+    const opts = ["All", ...lengths.sort()];
+    console.log("Length options:", opts);
+    return opts;
+  }, [applications]);
 
   const ApplicationsComponent = () => {
+    if (loading) {
+      return (
+        <div className="apps-loading-state">
+          <p>Loading applications...</p>
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="apps-error-state">
+          <p>{error}</p>
+        </div>
+      );
+    }
+
     return (
       <div>
         <ApplicationsHeader total={filtered.length} />
@@ -79,253 +146,34 @@ const Apps = () => {
             setStatus(v);
             setPage(1);
           }}
-          type={type}
-          setType={(v) => {
-            setType(v);
+          location={location}
+          setLocation={(v) => {
+            setLocation(v);
+            setPage(1);
+          }}
+          length={length}
+          setLength={(v) => {
+            setLength(v);
             setPage(1);
           }}
           sortBy={sortBy}
           setSortBy={setSortBy}
           statusOptions={["All", ...APPLICATION_STEPS]}
-          typeOptions={[
-            "All",
-            "Full-time",
-            "Internship",
-            "Co-op",
-            "Contract",
-            "Part-time",
-          ]}
+          locationOptions={locationOptions}
+          lengthOptions={lengthOptions}
         />
         {paged.length === 0 ? (
           <EmptyState />
         ) : (
           <>
             <ApplicationsList applications={paged} />
-            {/* <Pagination
-      page={pageSafe}
-      totalPages={totalPages}
-      onPageChange={setPage}
-    /> */}
+            <Pagination
+              page={pageSafe}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
           </>
         )}
-      </div>
-    );
-  };
-
-  const mockInterviewData = [
-    {
-      id: 1,
-      status: "PENDING",
-      jobId: 1,
-      createdAt: "2024-12-01T10:00:00Z",
-      employer: {
-        user: {
-          name: "Sarah Connor",
-        },
-        company: {
-          name: "Innovatech Solutions",
-          url: "https://innovatech.com",
-        },
-      },
-      job: {
-        title: "Frontend Developer",
-        location: "Toronto, ON",
-        type: "Full-time",
-      },
-    },
-    {
-      id: 2,
-      status: "SCHEDULED",
-      jobId: 2,
-      createdAt: "2024-11-28T14:30:00Z",
-      calendarData: {
-        date: "2024-12-15",
-        time: "10:00 AM",
-        duration: "60 minutes",
-        meetingLink: "https://zoom.us/j/123456789",
-      },
-      employer: {
-        user: {
-          name: "John Doe",
-        },
-        company: {
-          name: "TechCorp Inc",
-        },
-      },
-      job: {
-        title: "Software Engineer",
-        location: "Vancouver, BC",
-        type: "Full-time",
-      },
-    },
-    {
-      id: 3,
-      status: "PENDING",
-      jobId: 3,
-      createdAt: "2024-11-30T16:45:00Z",
-      employer: {
-        user: {
-          name: "Jane Smith",
-        },
-        company: {
-          name: "Startup Labs",
-        },
-      },
-      job: {
-        title: "Backend Engineer",
-        location: "Remote",
-        type: "Internship",
-      },
-    },
-  ];
-
-  const InterviewComponent = () => {
-    const pendingRequests = mockInterviewData.filter(
-      (req) => req.status === "PENDING"
-    );
-    const scheduledInterviews = mockInterviewData.filter(
-      (req) => req.status === "SCHEDULED"
-    );
-
-    const handleAccept = (id) => {
-      console.log("Accepting interview request:", id);
-      // TODO: API call to update status to SCHEDULED
-      // This would trigger a calendar scheduling flow
-    };
-
-    const handleDecline = (id) => {
-      console.log("Declining interview request:", id);
-      // TODO: API call to update status to CANCELLED
-    };
-
-    const formatDate = (dateString) => {
-      return new Date(dateString).toLocaleDateString("en-CA");
-    };
-
-    return (
-      <div>
-        <Card
-          title={`Interview Requests ${
-            pendingRequests.length > 0 ? `(${pendingRequests.length})` : ""
-          }`}
-        >
-          {pendingRequests.length > 0 ? (
-            <div className="apps-interview-requests-container">
-              {pendingRequests.map((request) => (
-                <div key={request.id} className="apps-interview-request-card">
-                  <div className="apps-interview-request-header">
-                    <div className="apps-job-info">
-                      <h3 className="apps-job-title">{request.job.title}</h3>
-                      <p className="apps-company-name">
-                        {request.employer.company.name}
-                      </p>
-                      <div className="apps-job-details">
-                        <span className="apps-job-type">{request.job.type}</span>
-                        {request.job.location && (
-                          <>
-                            <span className="apps-separator">•</span>
-                            <span className="apps-job-location">
-                              {request.job.location}
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                    <div className="apps-request-meta">
-                      <p className="apps-interviewer">
-                        From: {request.employer.user.name}
-                      </p>
-                      <p className="apps-request-date">
-                        Requested: {formatDate(request.createdAt)}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="apps-interview-request-actions">
-                    <button
-                      className="btn apps-btn-success"
-                      onClick={() => handleAccept(request.id)}
-                    >
-                      Accept
-                    </button>
-                    <button
-                      className="btn apps-btn-outline"
-                      onClick={() => handleDecline(request.id)}
-                    >
-                      Decline
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="apps-empty-state">
-              <p>No pending interview requests.</p>
-            </div>
-          )}
-        </Card>
-
-        <Card title="Upcoming Interviews">
-          {scheduledInterviews.length > 0 ? (
-            <div className="apps-interviews-table-wrapper">
-              <table className="apps-interviews-table">
-                <thead>
-                  <tr>
-                    <th>Position</th>
-                    <th>Company</th>
-                    <th>Interviewer</th>
-                    <th>Date & Time</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {scheduledInterviews.map((interview) => (
-                    <tr key={interview.id}>
-                      <td>
-                        <div className="apps-position-cell">
-                          <span className="cell-strong">
-                            {interview.job.title}
-                          </span>
-                          <div className="apps-position-details">
-                            <span className="apps-job-type">
-                              {interview.job.type}
-                            </span>
-                            {interview.job.location && (
-                              <>
-                                <span className="apps-separator">•</span>
-                                <span>{interview.job.location}</span>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td>{interview.employer.company.name}</td>
-                      <td>{interview.employer.user.name}</td>
-                      <td>
-                        <div className="apps-datetime-cell">
-                          <div>{interview.calendarData?.date}</div>
-                          <div className="apps-time">
-                            {interview.calendarData?.time}
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="apps-interview-actions">
-                          <button className="btn apps-btn-small">
-                            View Details
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="apps-empty-state">
-              <p>No upcoming interviews scheduled.</p>
-            </div>
-          )}
-        </Card>
       </div>
     );
   };

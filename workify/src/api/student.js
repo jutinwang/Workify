@@ -12,5 +12,14 @@ export const studentApi = {
   async updateProfile(updates) {
     return apiClient.patch("/students/profile", updates);
   },
-};
 
+  async getApplications(params = {}) {
+    const queryString = new URLSearchParams(
+      Object.fromEntries(Object.entries(params).filter(([_, v]) => v != null))
+    ).toString();
+    const endpoint = queryString
+      ? `/applications?${queryString}`
+      : "/applications";
+    return apiClient.get(endpoint);
+  },
+};

@@ -12,10 +12,10 @@ const ApplicationsList = ({ applications }) => {
           <tr>
             <th>Company</th>
             <th>Role</th>
-            <th>Type</th>
+            <th>Length</th>
             <th>Location</th>
             <th>Applied</th>
-            <th>Progress</th>
+            <th>Status</th>
             <th>Last Updated</th>
           </tr>
         </thead>
