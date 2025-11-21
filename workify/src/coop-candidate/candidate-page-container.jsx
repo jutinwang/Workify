@@ -19,7 +19,7 @@ const EmployerCandidateContainer = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [yearFilter, setYearFilter] = useState([]);
-  const [courseFilter, setCourseFilter] = useState([]); 
+  const [courseFilter, setCourseFilter] = useState([]);
   const [skillsFilter, setSkillsFilter] = useState([]);
   const [sortBy, setSortBy] = useState("");
   const [showShortlistedOnly, setShowShortlistedOnly] = useState(false);
@@ -108,7 +108,7 @@ const EmployerCandidateContainer = () => {
         const apps = data.applications || [];
 
         const mapped = apps.map((app) => ({
-          id: app.id, 
+          id: app.id,
           status: app.status,
           shortlisted: app.shortlisted,
           appliedAt: app.appliedAt,
@@ -257,11 +257,23 @@ const EmployerCandidateContainer = () => {
                   onShortlistedFilterChange={setShowShortlistedOnly}
                 />
 
-                <ApplicantResults
-                  applicants={filteredApplicants}
-                  onSelectCandidate={setSelectedCandidate}
-                  viewedCandidates={currentViewedCandidates}
-                />
+                {applications.length === 0 ? (
+                  <div className="no-applicants-message">
+                    <div className="empty-state">
+                      <h3>No candidates have applied yet</h3>
+                      <p>
+                        Applications will appear here once students apply to
+                        this position.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <ApplicantResults
+                    applicants={filteredApplicants}
+                    onSelectCandidate={setSelectedCandidate}
+                    viewedCandidates={currentViewedCandidates}
+                  />
+                )}
               </>
             )}
           </>
