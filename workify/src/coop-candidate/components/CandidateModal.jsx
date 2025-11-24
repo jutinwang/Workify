@@ -9,23 +9,32 @@ import WangResume from "../../assets/Justin_Wang_Resume.pdf";
 import ChevronDownIcon from "../../common/ChevronDownIcon";
 import PDFViewerModal from "./PDFViewerModal";
 import { Link } from "react-router-dom";
-
-const formatDate = (dateString) => {
-  if (!dateString) return "Present";
-  const d = new Date(dateString);
-  if (Number.isNaN(d.getTime())) return dateString;
-  return d.toLocaleDateString("en-CA", {
-    year: "numeric",
-    month: "short",
-  });
-};
+import ScheduleInterviewModal from "./ScheduleInterviewModal";
 
 const CandidateModal = ({ candidate, jobId, onClose }) => {
   const [showPDFModal, setShowPDFModal] = useState(false);
   const [isShortlisted, setIsShortlisted] = useState(false);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+
+  // candidate is expected to look roughly like:
+  // {
+  //   id: number (studentId),
+  //   name: string,
+  //   email?: string,
+  //   school?: string,
+  //   major?: string,
+  //   year?: number,
+  //   yearLabel?: string,
+  //   resumeUrl?: string,
+  //   linkedInUrl?: string,
+  //   githubUrl?: string,
+  //   aboutMe?: string,
+  //   experience?: [...],
+  //   educations?: [...]
+  // }
 
   useEffect(() => {
-    // Load shortlist status for this specific job
+    // Load shortlist status for this specific job (local only for now)
     const shortlistedData = JSON.parse(
       localStorage.getItem("shortlistedCandidatesByJob") || "{}"
     );
@@ -55,10 +64,16 @@ const CandidateModal = ({ candidate, jobId, onClose }) => {
       JSON.stringify(shortlistedData)
     );
     setIsShortlisted(!isShortlisted);
+
+    // TODO: later call backend PATCH /applications/:applicationId/shortlist
   };
 
   const handleSchedule = () => {
-    alert(`Schedule interview with ${candidate.name} for this job`);
+    setShowScheduleModal(true);
+  };
+
+  const handleScheduleClose = () => {
+    setShowScheduleModal(false);
   };
 
   const handleReject = () => {
@@ -67,17 +82,17 @@ const CandidateModal = ({ candidate, jobId, onClose }) => {
         `Are you sure you want to reject ${candidate.name} for this position?`
       )
     ) {
+      // TODO: wire to backend status change if you want
       alert(`${candidate.name} has been rejected for this position`);
       onClose();
     }
   };
 
-  const yearText = candidate.yearLabel || (candidate.year ? `Year ${candidate.year}` : "");
+  const yearText =
+    candidate.yearLabel || (candidate.year ? `Year ${candidate.year}` : "");
 
-  const experience = candidate.experience || [];
+  const experiences = candidate.experience || [];
   const educations = candidate.educations || [];
-
-  console.log(candidate)
 
   return (
     <>
@@ -96,124 +111,194 @@ const CandidateModal = ({ candidate, jobId, onClose }) => {
                   {(candidate.school || "University of Ottawa") +
                     (candidate.major ? ` • ${candidate.major}` : "")}
                 </p>
-                {yearText && <p className="modal-year">{yearText}</p>}
+                {yearText && <p className="modal-year">{yearText} Year</p>}
                 {candidate.email && (
                   <p className="modal-year" style={{ marginTop: "4px" }}>
                     {candidate.email}
                   </p>
                 )}
+
+                <div className="modal-links-row">
+                  {candidate.linkedInUrl && (
+                    <Link
+                      to={candidate.linkedInUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="candidate-link"
+                    >
+                      LinkedIn
+                    </Link>
+                  )}
+                  {candidate.githubUrl && (
+                    <Link
+                      to={candidate.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="candidate-link"
+                    >
+                      GitHub
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
+
             <button className="modal-close" onClick={onClose}>
               ×
             </button>
           </div>
 
           <div className="modal-body">
-            {candidate.aboutMe && (
-              <section className="modal-section">
-                <h3>About</h3>
-                <p>{candidate.aboutMe}</p>
-              </section>
+            {(candidate.aboutMe || candidate.summary) && (
+              <Accordion defaultExpanded>
+                <AccordionSummary
+                  expandIcon={<ChevronDownIcon />}
+                  aria-controls="panel-about-content"
+                  id="panel-about-header"
+                >
+                  <Typography>About</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography>
+                    {candidate.aboutMe || candidate.summary}
+                  </Typography>
+                </AccordionDetails>
+              </Accordion>
             )}
 
-            {experience.length > 0 && (
-              <section className="modal-section">
-                <h3>Experience</h3>
-                <div className="modal-timeline">
-                  {experience.map((exp) => (
-                    <div key={exp.id} className="modal-timeline-item">
-                      <div className="modal-timeline-header">
-                        <h4>
-                          {exp.title}
-                          {exp.company && ` @ ${exp.company}`}
-                        </h4>
-                        <span className="modal-timeline-dates">
-                          {formatDate(exp.startDate)} –{" "}
-                          {exp.endDate ? formatDate(exp.endDate) : "Present"}
-                        </span>
-                      </div>
-                      {exp.description && (
-                        <p className="modal-timeline-description">
-                          {exp.description}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </section>
+            {experiences.length > 0 && (
+              <Accordion defaultExpanded>
+                <AccordionSummary
+                  expandIcon={<ChevronDownIcon />}
+                  aria-controls="panel-exp-content"
+                  id="panel-exp-header"
+                >
+                  <Typography>Experience</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <div className="experience-list">
+                    {experiences.map((exp) => {
+                      const start = exp.startDate
+                        ? new Date(exp.startDate)
+                        : null;
+                      const end = exp.endDate ? new Date(exp.endDate) : null;
+                      const range =
+                        start && end
+                          ? `${start.toLocaleDateString("en-CA", {
+                              month: "short",
+                              year: "numeric",
+                            })} – ${end.toLocaleDateString("en-CA", {
+                              month: "short",
+                              year: "numeric",
+                            })}`
+                          : start
+                          ? `${start.toLocaleDateString("en-CA", {
+                              month: "short",
+                              year: "numeric",
+                            })} – Present`
+                          : "";
+
+                      return (
+                        <div key={exp.id} className="experience-item">
+                          <div className="experience-header">
+                            <span className="experience-title">
+                              {exp.title}
+                            </span>
+                            {exp.company && (
+                              <span className="experience-company">
+                                {" "}
+                                • {exp.company}
+                              </span>
+                            )}
+                          </div>
+                          {range && (
+                            <div className="experience-dates">{range}</div>
+                          )}
+                          {exp.description && (
+                            <p className="experience-description">
+                              {exp.description}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </AccordionDetails>
+              </Accordion>
             )}
 
             {educations.length > 0 && (
-              <section className="modal-section">
-                <h3>Education</h3>
-                <div className="modal-timeline">
-                  {educations.map((ed) => (
-                    <div key={ed.id} className="modal-timeline-item">
-                      <div className="modal-timeline-header">
-                        <h4>
-                          {ed.program}
-                          {ed.schoolName && ` • ${ed.schoolName}`}
-                        </h4>
-                        <span className="modal-timeline-dates">
-                          {ed.gradDate
-                            ? `Grad: ${formatDate(ed.gradDate)}`
-                            : ed.yearOfStudy
-                            ? `Year ${ed.yearOfStudy}`
-                            : ""}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
+              <Accordion>
+                <AccordionSummary
+                  expandIcon={<ChevronDownIcon />}
+                  aria-controls="panel-edu-content"
+                  id="panel-edu-header"
+                >
+                  <Typography>Education</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <div className="education-list">
+                    {educations.map((edu) => {
+                      const grad =
+                        edu.gradDate &&
+                        new Date(edu.gradDate).toLocaleDateString("en-CA", {
+                          month: "short",
+                          year: "numeric",
+                        });
 
-            {(candidate.linkedInUrl || candidate.githubUrl) && (
-              <section className="modal-section">
-                <h3>Links</h3>
-                <div className="modal-links">
-                  {candidate.linkedInUrl && (
-                    <a
-                      href={candidate.linkedInUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      LinkedIn
-                    </a>
-                  )}
-                  {candidate.githubUrl && (
-                    <a
-                      href={candidate.githubUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      GitHub
-                    </a>
-                  )}
-                </div>
-              </section>
+                      return (
+                        <div key={edu.id} className="education-item">
+                          <div className="education-header">
+                            <span className="education-program">
+                              {edu.program}
+                            </span>
+                            {edu.schoolName && (
+                              <span className="education-school">
+                                {" "}
+                                • {edu.schoolName}
+                              </span>
+                            )}
+                          </div>
+                          <div className="education-meta">
+                            {edu.yearOfStudy && (
+                              <span>Year {edu.yearOfStudy}</span>
+                            )}
+                            {grad && (
+                              <span className="education-grad">
+                                Grad: {grad}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </AccordionDetails>
+              </Accordion>
             )}
 
             <button
               className="view-resume-btn"
               onClick={() => setShowPDFModal(true)}
             >
-              View {candidate?.name}'s Resume
+              View {candidate?.name}&apos;s Resume
             </button>
           </div>
 
-          {/* FOOTER ACTIONS */}
           <div className="modal-footer">
             <button
-              className={`shortlist-btn ${isShortlisted ? "shortlisted" : ""}`}
+              className={`shortlist-btn ${
+                isShortlisted ? "shortlisted" : ""
+              }`}
               onClick={handleShortlist}
             >
-              {isShortlisted ? "Remove from shortlist" : "Shortlist"}
+              {isShortlisted ? "Shortlisted" : "Shortlist"}
             </button>
+
             <button className="schedule-btn" onClick={handleSchedule}>
               Schedule Interview
             </button>
+
             <button className="reject-btn" onClick={handleReject}>
               Reject
             </button>
@@ -226,6 +311,14 @@ const CandidateModal = ({ candidate, jobId, onClose }) => {
           pdfUrl={candidate.resumeUrl || WangResume}
           candidateName={candidate?.name}
           onClose={() => setShowPDFModal(false)}
+        />
+      )}
+
+      {showScheduleModal && (
+        <ScheduleInterviewModal
+          candidate={candidate}
+          jobId={jobId}
+          onClose={handleScheduleClose}
         />
       )}
     </>

@@ -127,10 +127,6 @@ const InterviewScheduler = () => {
                                 backColor: "#465362",
                                 fontColor: "#fff",
                             };
-
-                            if (calendar) {
-                                calendar.events.add(newEvent);
-                            }
                             setEvents((prev) => [...prev, newEvent]);
                         }}
                         events={events}

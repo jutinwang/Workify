@@ -70,7 +70,7 @@ model EmployerProfile {
   user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   interviews         InterviewRequest[]
   jobs               Job[]
-  unavailableTimes   Json? 
+  unavailableTimes   Json?
 
   @@index([companyId])
 }
@@ -107,7 +107,7 @@ model Company {
 }
 
 model Job {
-  id               Int             @id @default(autoincrement())
+  id               Int                @id @default(autoincrement())
   companyId        Int
   employerId       Int
   description      String
@@ -115,17 +115,18 @@ model Job {
   location         String?
   type             String?
   salary           String?
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
   benefits         String?
   length           String?
   qualification    String?
   responsibilities String?
-  programs         String[]        
+  programs         String[]
   applications     Application[]
-  company          Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  employer         EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
-  tags             Tag[]           @relation("JobTags")
+  company          Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  employer         EmployerProfile    @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  tags             Tag[]              @relation("JobTags")
+  InterviewRequest InterviewRequest[]
 
   @@index([companyId])
   @@index([employerId])
@@ -139,16 +140,17 @@ model Tag {
 }
 
 model Application {
-  id          Int               @id @default(autoincrement())
-  jobId       Int
-  studentId   Int
-  status      ApplicationStatus @default(PENDING)
-  shortlisted Boolean           @default(false)
-  appliedAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  coverLetter String?
-  job         Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  student     StudentProfile    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id               Int                @id @default(autoincrement())
+  jobId            Int
+  studentId        Int
+  status           ApplicationStatus  @default(PENDING)
+  shortlisted      Boolean            @default(false)
+  appliedAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  coverLetter      String?
+  job              Job                @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  student          StudentProfile     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  InterviewRequest InterviewRequest[]
 
   @@unique([jobId, studentId])
   @@index([studentId])
@@ -156,20 +158,35 @@ model Application {
 }
 
 model InterviewRequest {
-  id           Int             @id @default(autoincrement())
-  studentId    Int
-  employerId   Int
-  jobId        Int?
-  status       InterviewStatus @default(PENDING)
-  inviteList   Json?
-  calendarData Json?
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-  employer     EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
-  student      StudentProfile  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id            Int  @id @default(autoincrement())
+  studentId     Int
+  employerId    Int
+  jobId         Int
+  applicationId Int?
+
+  status          InterviewStatus @default(PENDING)
+  durationMinutes Int
+  note            String?
+
+  availability  Json?
+  proposedSlots Json?
+
+  chosenStart DateTime?
+  chosenEnd   DateTime?
+
+  inviteList Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  employer    EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  student     StudentProfile  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  job         Job             @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  application Application?    @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
   @@index([studentId])
   @@index([employerId])
+  @@index([jobId])
 }
 
 enum Role {

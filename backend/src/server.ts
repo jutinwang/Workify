@@ -10,6 +10,7 @@ import studentProfileRouter from './routes/students/profile';
 import employerProfileRouter from './routes/employer/profile';
 import jobRouter from './routes/jobs';
 import companyRouter from './routes/company';
+import interviewRouter from './routes/interviews';
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use("/applications", applicationsRouterStudent);
 app.use("/students/profile", studentProfileRouter); 
 app.use("/students", jobRouter); 
 app.use("/company", companyRouter); 
+app.use("/interviews", interviewRouter); 
 
 const PORT = Number(process.env.PORT) || 4000;
 
