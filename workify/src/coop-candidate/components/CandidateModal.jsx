@@ -16,23 +16,6 @@ const CandidateModal = ({ candidate, jobId, onClose }) => {
   const [isShortlisted, setIsShortlisted] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
 
-  // candidate is expected to look roughly like:
-  // {
-  //   id: number (studentId),
-  //   name: string,
-  //   email?: string,
-  //   school?: string,
-  //   major?: string,
-  //   year?: number,
-  //   yearLabel?: string,
-  //   resumeUrl?: string,
-  //   linkedInUrl?: string,
-  //   githubUrl?: string,
-  //   aboutMe?: string,
-  //   experience?: [...],
-  //   educations?: [...]
-  // }
-
   useEffect(() => {
     // Load shortlist status for this specific job (local only for now)
     const shortlistedData = JSON.parse(
