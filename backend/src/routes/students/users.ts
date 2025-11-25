@@ -230,7 +230,6 @@ router.get("/me/interviews", async (req, res, next) => {
                 status: true,
                 durationMinutes: true,
                 note: true,
-                proposedSlots: true,
                 chosenStart: true,
                 chosenEnd: true,
                 createdAt: true,
@@ -264,31 +263,24 @@ router.patch("/me/interviews/:interviewId/respond", async (req, res, next) => {
         const interviewId = Number(req.params.interviewId);
         const input = InterviewRespond.parse(req.body);
 
-        await prisma.interviewRequest.findFirstOrThrow({
+        if (!Number.isFinite(interviewId)) {
+            return res.status(400).json({ error: "Invalid interview ID" });
+        }
+
+        const interview = await prisma.interviewRequest.findFirst({
             where: { id: interviewId, studentId },
-            select: { id: true },
+            select: { id: true, status: true },
         });
+
+        if (!interview) {
+            return res.status(404).json({ error: "Interview not found" });
+        }
 
         let data: any = {};
 
-        if (input.decision === "accept") {
-            data.status = InterviewStatus.SCHEDULED;
-        }
-
+        // Right now we only support decline here.
         if (input.decision === "decline") {
             data.status = InterviewStatus.CANCELLED;
-        }
-
-        if (input.decision === "propose") {
-            if (!input.availability?.length) {
-                return res.status(400).json({ error: "availability required" });
-            }
-
-            data.availability = {
-                proposedByStudent: input.availability,
-            };
-
-            data.status = InterviewStatus.PENDING;
         }
 
         const updated = await prisma.interviewRequest.update({
@@ -297,8 +289,8 @@ router.patch("/me/interviews/:interviewId/respond", async (req, res, next) => {
             select: {
                 id: true,
                 status: true,
-                proposedSlots: true,
-                availability: true,
+                durationMinutes: true,
+                note: true,
                 chosenStart: true,
                 chosenEnd: true,
             },
@@ -309,5 +301,6 @@ router.patch("/me/interviews/:interviewId/respond", async (req, res, next) => {
         next(e);
     }
 });
+
 
 export default router;
