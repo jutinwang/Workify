@@ -63,13 +63,7 @@ const InterviewScheduler = () => {
             const data = await res.json();
             console.log('Loaded events:', data);
 
-            const eventsWithDates = (data.unavailableTimes || []).map(event => ({
-                ...event,
-                start: fromLocalISOString(event.start),
-                end: fromLocalISOString(event.end),
-            }));
-
-            setEvents(eventsWithDates);
+            setEvents(data.unavailableTimes);
         }
         loadUnavailable();
     }, []);
