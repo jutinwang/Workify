@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import { DayPilotCalendar, DayPilot, DayPilotNavigator } from "@daypilot/daypilot-lite-react";
 import './InterviewScheduler.css';
+import TitleIcon from '@mui/icons-material/Title';
+import SendIcon from '@mui/icons-material/Send';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import LocationPinIcon from '@mui/icons-material/LocationPin';
+import KeyboardIcon from '@mui/icons-material/Keyboard';
+import DescriptionIcon from '@mui/icons-material/Description';
 
 const InterviewScheduler = () => {
     const [calendar, setCalendar] = useState(null);
@@ -35,6 +42,7 @@ const InterviewScheduler = () => {
     }, []);
 
     const saveEventsToBackend = async (newEvents) => {
+        console.log("click")
         const token = localStorage.getItem("authToken");
         await fetch("http://localhost:4000/employers/me/unavailable-times", {
             method: "POST",
@@ -106,7 +114,7 @@ const InterviewScheduler = () => {
         <div className="interviewscheduler-container">
             <div className="calendar-section">
                 <div className="inviteTitle">
-                    <img src="../src/assets/invite_title.png" className="inviteIcon" width="30" height="30"></img>
+                    <TitleIcon className="inviteIcon" width="30" height="30"></TitleIcon>
                     <p>Interview With Ali</p>
                 </div>
                 <div className="schedulerCalendar">
@@ -137,11 +145,11 @@ const InterviewScheduler = () => {
             
             <div className="invitedetails-section">
                 <button className="sendButton" onClick={() => saveEventsToBackend(events)}>
-                    <img src="../src/assets/send.webp" className="sendIcon" width="30" height="30"></img>
+                    <SendIcon className="sendIcon" width="30" height="30"></SendIcon>
                     Send
                 </button>
                 <div className="inviteOthersSection">
-                    <img src="../src/assets/invite_others.png" width="30" height="30"></img>
+                    <PeopleAltIcon width="30" height="30"></PeopleAltIcon>
                     <textarea className="inviteInput"
                         value={inviteText}
                         onChange={(e) => setInviteText(e.target.value)}
@@ -150,7 +158,7 @@ const InterviewScheduler = () => {
                 </div>
 
                 <div className="duration-section">
-                    <img src="../src/assets/clock.png" className="clockIcon" width="30" height="30"></img>
+                    <AccessTimeIcon className="clockIcon" width="30" height="30"></AccessTimeIcon>
                     <textarea className="durationInput"
                         value={durationText}
                         onChange={(e) => setDurationText(e.target.value)}
@@ -159,7 +167,7 @@ const InterviewScheduler = () => {
                 </div>
                 
                 <div className="location-section">
-                    <img src="../src/assets/location.png" className="locationIcon" width="30" height="30"></img>
+                    <LocationPinIcon className="locationIcon" width="30" height="30"></LocationPinIcon>
                     <textarea className="locationInput"
                         value={locationText}
                         onChange={(e) => setLocationText(e.target.value)}
@@ -168,7 +176,7 @@ const InterviewScheduler = () => {
                 </div>
 
                 <div className="interviewtype-section">
-                    <img src="../src/assets/type.png" className="typeIcon" width="30" height="30"></img>
+                    <KeyboardIcon className="typeIcon" width="30" height="30"></KeyboardIcon>
                     <textarea className="interviewInput"
                         value={interviewTypeText}
                         onChange={(e) => setInterviewTypeText(e.target.value)}
@@ -177,7 +185,7 @@ const InterviewScheduler = () => {
                 </div>
 
                 <div className="message-section">
-                    <img src="../src/assets/page.png" className="pageIcon" width="30" height="30"></img>
+                    <DescriptionIcon className="pageIcon" width="30" height="30"></DescriptionIcon>
                     <textarea className="messageInput"
                         value={messageText}
                         onChange={(e) => setMessageText(e.target.value)}
