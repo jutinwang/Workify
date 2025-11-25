@@ -38,6 +38,14 @@
   filter: brightness(0) invert(1);
 }
 
+.peopleIcon, .clockIcon, .locationIcon, .typeIcon {
+  margin: auto;
+} 
+
+.pageIcon {
+  padding-top: 10px;
+}
+
 /* The calendar itself should stretch */
 .schedulerCalendar {
   flex: 1;

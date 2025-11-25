@@ -149,7 +149,7 @@ const InterviewScheduler = () => {
                     Send
                 </button>
                 <div className="inviteOthersSection">
-                    <PeopleAltIcon width="30" height="30"></PeopleAltIcon>
+                    <PeopleAltIcon className="peopleIcon" width="30" height="30"></PeopleAltIcon>
                     <textarea className="inviteInput"
                         value={inviteText}
                         onChange={(e) => setInviteText(e.target.value)}
