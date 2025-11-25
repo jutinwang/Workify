@@ -34,6 +34,7 @@
   display: flex;
   gap: 1rem;
   align-items: center;
+  justify-content: center;
 }
 
 .modal-avatar {
@@ -80,6 +81,12 @@
 
 .modal-body {
   padding: 1.5rem;
+  display: flex;
+  height: fit-content;
+  flex-direction: column;
+}
+.modal-section{
+  height: fit-content;
 }
 
 .modal-body .MuiAccordion-root {

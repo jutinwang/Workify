@@ -23,7 +23,7 @@ export default function Header() {
             <Link to="/profile-employer">View Your Profile</Link>
           </li>
           <li>
-            <Link to="/employer-candidates">Applicants</Link>
+            <Link to="/employer-candidates">Postings & Applicants</Link>
           </li>
           <li>
             <Link to="/employer-interviews">Interviews & Schedule</Link>

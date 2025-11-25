@@ -26,10 +26,14 @@ const JobList = ({ jobs, selectedJob, onSelectJob }) => {
             />
             <span className="employer job-id">Co-op #{job.id}</span>
             <span className="employer job-title">{job.title}</span>
-            <span className="employer job-applicants">{job.applicants} Applicants</span>
+            <span className="employer job-applicants">
+              {job.applicants} Applicants
+            </span>
             <div className="employer job-actions">
               <button className="employer job-link">View</button>
-              <button className="employer job-link"><EditIcon/></button>
+              <button className="employer job-link">
+                <EditIcon />
+              </button>
             </div>
           </label>
         ))}

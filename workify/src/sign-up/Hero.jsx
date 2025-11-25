@@ -14,6 +14,7 @@ import teslaLogo from "../assets/teslaLogo.png";
 import claudeLogo from "../assets/claudeLogo.png";
 import openAiLogo from "../assets/openAiLogo.png";
 import workifyLogo from "../assets/workifyLogo2.png";
+import { Link } from "react-router-dom";
 
 const employerHero = () => {
   return (
@@ -40,9 +41,9 @@ const employerHero = () => {
 const Hero = ({ isEmployer }) => {
   return (
     <div className="hero-text-container">
-      <div className="hero-logo">
+      <Link className="hero-logo" to={"/"}>
         <img src={workifyLogo} alt="Workify Logo" />
-      </div>
+      </Link>
       {isEmployer ? (
         employerHero()
       ) : (

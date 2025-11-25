@@ -6,6 +6,7 @@
     flex-direction: column;
     padding: 1em;
     box-sizing: border-box;
+    background-color: var(--primary-background);
 }
 .apps-header {
     display: flex;
@@ -36,7 +37,7 @@
 }
 
 .apps-filters {
-  background: #f8fafc;
+  background: #fafcff;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 12px;
@@ -79,8 +80,8 @@
 .apps-table thead th {
   text-align: left;
   padding: 12px;
-  background: #f1f5f9;
-  color: #475569;
+  color: var(--text-white);
+  background-color: var(--secondary-green);
   border-bottom: 1px solid #e2e8f0;
   position: sticky;
   top: 0;
@@ -96,8 +97,9 @@
 
 /* Stepper */
 .stepper {
+  /* ALI: I removed this for now, it fixed the error on the review step stepper. 
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, 1fr); */
   gap: 6px;
   align-items: center;
 }
@@ -172,6 +174,289 @@
 .empty-emoji {
   font-size: 28px;
   margin-bottom: 8px;
+}
+
+.apps-interviews-table-wrapper {
+    overflow: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    margin-top: 16px;
+}
+
+.apps-interviews-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.apps-interviews-table thead th {
+    text-align: left;
+    padding: 12px;
+    background: #f1f5f9;
+    color: #475569;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+}
+
+.apps-interviews-table tbody td {
+    padding: 12px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.apps-interviews-table tr {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1.5fr 1.5fr 1fr;
+    align-items: center;
+}
+
+.apps-interview-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.apps-btn-small {
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+.apps-btn-danger {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #dc2626;
+}
+
+.apps-btn-danger:hover {
+    background: #fecaca;
+}
+
+/* Interview Requests Styling */
+.apps-interview-requests-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.apps-interview-request-card {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  background: var(--card-bg);
+  transition: box-shadow 0.2s ease;
+}
+
+.apps-interview-request-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.apps-interview-request-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.apps-job-info {
+  flex: 1;
+}
+
+.apps-job-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.apps-company-name {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.5rem 0;
+}
+
+.apps-job-details {
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-tertiary);
+}
+
+.apps-job-type {
+  background: var(--tag-bg);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.apps-separator {
+  color: var(--text-tertiary);
+}
+
+.apps-request-meta {
+  text-align: right;
+  font-size: 0.9rem;
+}
+
+.apps-interviewer {
+  margin: 0 0 0.25rem 0;
+  color: var(--text-secondary);
+}
+
+.apps-request-date {
+  margin: 0;
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+}
+
+.apps-interview-request-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.apps-btn-success {
+  background: var(--secondary-green);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.apps-btn-success:hover {
+  background: var(--darker-green);
+}
+
+.apps-btn-outline {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.apps-btn-outline:hover {
+  background: var(--hover-bg);
+  border-color: var(--text-secondary);
+}
+
+/* Interviews Table Enhancements */
+.apps-interviews-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.apps-interviews-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.apps-interviews-table th {
+  background: var(--table-header-bg);
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.apps-interviews-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-light);
+  vertical-align: top;
+}
+
+.apps-interviews-table tbody tr:hover {
+  background: var(--hover-bg);
+}
+
+.apps-position-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.apps-position-details {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
+.apps-datetime-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.apps-datetime-cell .apps-time {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.apps-interview-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.apps-btn-small {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background: white;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.apps-btn-small:hover {
+  background: var(--hover-bg);
+  border-color: var(--secondary-green);
+}
+
+/* Empty State */
+.apps-empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .apps-interview-request-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .apps-request-meta {
+    text-align: left;
+  }
+
+  .apps-interview-request-actions {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .apps-interviews-table-wrapper {
+    font-size: 0.9rem;
+  }
+
+  .apps-interviews-table th,
+  .apps-interviews-table td {
+    padding: 0.75rem 0.5rem;
+  }
 }
 
 @media (max-width: 820px) {

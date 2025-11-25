@@ -50,6 +50,29 @@
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
+.job-card--applied {
+  background: linear-gradient(to bottom, #f0fdf4 0%, #fff 60px);
+  border-color: #707f6f; 
+}
+
+.applied-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #707f6f; 
+  color: var(--text-white);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 4px rgba(112, 127, 111, 0.2); 
+}
+
+.applied-banner svg {
+  flex-shrink: 0;
+}
+
 .job-head {
   display: flex;
   gap: 12px;
@@ -114,24 +137,8 @@
   margin: 4px 0 2px;
 }
 
-.job-facts {
-  display: flex;
-  gap: 14px;
-  color: #0f172a;
-  font-weight: 700;
-}
-.fact {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-}
-
-.job-salary {
-  font-weight: 800;
-  color: #0f172a;
-}
-
 .job-tags {
+  margin-top: 1.6rem;
   display: flex;
   gap: 8px;
   flex-wrap: wrap;

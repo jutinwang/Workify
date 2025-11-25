@@ -14,7 +14,7 @@ export default function RecruiterStep({ state, dispatch, errors = {}, onNext, on
             <div className="info-container">
                 <label className="field">
                     <span className="label">Name</span>
-                    <input className="input" value={r.name} onChange={e=>setRecruiter({name:e.target.value})}/>
+                    <input className="input" placeholder={state.contact.fullName} value={r.name} onChange={e=>setRecruiter({name:e.target.value})}/>
                     {errors.name && <span className="error">{errors.name}</span>}
                 </label>
 

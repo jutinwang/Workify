@@ -1,0 +1,25 @@
+import { apiClient } from "./client";
+
+export const studentApi = {
+  async completeProfile(profileData) {
+    return apiClient.post("/students/profile", profileData);
+  },
+
+  async getProfile() {
+    return apiClient.get("/students/profile");
+  },
+
+  async updateProfile(updates) {
+    return apiClient.patch("/students/profile", updates);
+  },
+
+  async getApplications(params = {}) {
+    const queryString = new URLSearchParams(
+      Object.fromEntries(Object.entries(params).filter(([_, v]) => v != null))
+    ).toString();
+    const endpoint = queryString
+      ? `/applications?${queryString}`
+      : "/applications";
+    return apiClient.get(endpoint);
+  },
+};

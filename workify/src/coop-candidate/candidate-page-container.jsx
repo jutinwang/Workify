@@ -1,94 +1,221 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import JobList from "./components/JobList";
 import ApplicantFilter from "./components/ApplicantFilter";
 import ApplicantResults from "./components/ApplicantResults";
 import CandidateModal from "./components/CandidateModal";
-import { jobs, jobApplicants } from "./data/mockData";
 import "./styles/App.css";
 import "../var.css";
 
 const EmployerCandidateContainer = () => {
+  const [jobs, setJobs] = useState([]);
+  const [jobsLoading, setJobsLoading] = useState(true);
+  const [jobsError, setJobsError] = useState("");
+
   const [selectedJob, setSelectedJob] = useState(null);
+
+  const [applications, setApplications] = useState([]);
+  const [appsLoading, setAppsLoading] = useState(false);
+  const [appsError, setAppsError] = useState("");
+
   const [searchTerm, setSearchTerm] = useState("");
   const [yearFilter, setYearFilter] = useState([]);
   const [courseFilter, setCourseFilter] = useState([]);
   const [skillsFilter, setSkillsFilter] = useState([]);
   const [sortBy, setSortBy] = useState("");
   const [showShortlistedOnly, setShowShortlistedOnly] = useState(false);
+
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [viewedCandidatesByJob, setViewedCandidatesByJob] = useState({});
 
-  // Helper function to get shortlisted candidates for a specific job
+  const token = localStorage.getItem("authToken");
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        setJobsLoading(true);
+        setJobsError("");
+
+        if (!token) {
+          setJobsError("You must be logged in as an employer.");
+          setJobsLoading(false);
+          return;
+        }
+
+        const res = await fetch("http://localhost:4000/employers/me/jobs", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          setJobsError(data.error || "Failed to load jobs.");
+          setJobsLoading(false);
+          return;
+        }
+
+        const jobList = Array.isArray(data) ? data : data.jobs;
+
+        const normalizedJobs = jobList.map((job) => ({
+          ...job,
+          applicants: job.applicants ?? job._count?.applications ?? 0,
+        }));
+
+        setJobs(normalizedJobs);
+        setJobsLoading(false);
+      } catch (err) {
+        console.error("Error fetching jobs:", err);
+        setJobsError("Unexpected error while loading jobs.");
+        setJobsLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, [token]);
+
+  useEffect(() => {
+    const fetchApplications = async () => {
+      if (!selectedJob) {
+        setApplications([]);
+        return;
+      }
+
+      try {
+        setAppsLoading(true);
+        setAppsError("");
+
+        const res = await fetch(
+          `http://localhost:4000/employers/jobs/${selectedJob.id}/applications`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          setAppsError(data.error || "Failed to load applications.");
+          setApplications([]);
+          setAppsLoading(false);
+          return;
+        }
+
+        const apps = data.applications || [];
+        console.log(apps)
+
+        const mapped = data.applications.map((app) => {
+          const year = app.student.year;
+
+          const yearLabel =
+            year === 1 ? "1st" :
+            year === 2 ? "2nd" :
+            year === 3 ? "3rd" :
+            year === 4 ? "4th" :
+            year ? `${year}th` : null;
+
+          return {
+            id: app.id,
+            applicationId: app.id,
+            studentId: app.student.id,
+
+            name: app.student.user.name,
+            email: app.student.user.email,
+
+            major: app.student.major || "Computer Science",
+            school: "University of Ottawa",
+            year,
+            yearLabel, 
+
+            resumeUrl: app.student.resumeUrl,
+            linkedInUrl: app.student.linkedInUrl,
+            githubUrl: app.student.githubUrl,
+
+            status: app.status,
+            shortlisted: app.shortlisted,
+            appliedAt: app.appliedAt,
+            updatedAt: app.updatedAt,
+            experience: app.student.experience || [],
+            educations: app.student.educations || [],
+
+            skills: [],
+            keyCourses: [],
+          };
+        });
+
+        setApplications(mapped);
+        console.log(mapped)
+        setAppsLoading(false);
+      } catch (err) {
+        console.error("Error fetching applications:", err);
+        setAppsError("Unexpected error while loading applications.");
+        setAppsLoading(false);
+      }
+    };
+
+    if (token && selectedJob?.id) {
+      fetchApplications();
+    } else {
+      setApplications([]);
+    }
+  }, [token, selectedJob]);
+
   const getShortlistedCandidatesForJob = (jobId) => {
-    const shortlistedData = JSON.parse(
-      localStorage.getItem("shortlistedCandidatesByJob") || "{}"
-    );
+    const shortlistedData = JSON.parse(localStorage.getItem("shortlistedCandidatesByJob") || "{}");
     return new Set(shortlistedData[jobId] || []);
   };
 
   const getFilteredApplicants = () => {
     if (!selectedJob) return [];
 
-    const jobSpecificApplicants = jobApplicants[selectedJob.id] || [];
-    let filtered = [...jobSpecificApplicants];
+    let filtered = [...applications];
 
-    // Apply shortlist filter first if enabled
     if (showShortlistedOnly) {
       const shortlistedIds = getShortlistedCandidatesForJob(selectedJob.id);
       filtered = filtered.filter((app) => shortlistedIds.has(app.id));
     }
 
     if (searchTerm) {
+      const term = searchTerm.toLowerCase();
       filtered = filtered.filter(
         (app) =>
-          app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          app.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          app.skills.some((skill) =>
-            skill.toLowerCase().includes(searchTerm.toLowerCase())
-          )
+          app.name?.toLowerCase().includes(term) ||
+          app.email?.toLowerCase().includes(term) ||
+          app.major?.toLowerCase().includes(term)
       );
     }
 
     if (yearFilter.length > 0) {
-      filtered = filtered.filter((app) =>
-        yearFilter.some((year) => app.year.includes(year))
-      );
-    }
-
-    if (courseFilter.length > 0) {
       filtered = filtered.filter(
-        (app) =>
-          app.keyCourses &&
-          courseFilter.some((course) =>
-            app.keyCourses.some((c) =>
-              c.toLowerCase().includes(course.toLowerCase())
-            )
-          )
+        (app) => app.yearLabel && yearFilter.includes(app.yearLabel)
       );
     }
 
-    if (skillsFilter.length > 0) {
-      filtered = filtered.filter(
-        (app) =>
-          app.skills &&
-          skillsFilter.some((skill) =>
-            app.skills.some((s) =>
-              s.toLowerCase().includes(skill.toLowerCase())
-            )
-          )
-      );
-    }
-
-    if (sortBy === "match") {
+    if (sortBy === "recent") {
       filtered.sort(
-        (a, b) => parseInt(b.candidateMatch) - parseInt(a.candidateMatch)
+        (a, b) =>
+          new Date(b.appliedAt).getTime() - new Date(a.appliedAt).getTime()
       );
-    } else if (sortBy === "recent") {
-      filtered.sort((a, b) => parseInt(a.lastActive) - parseInt(b.lastActive));
+    } else if (sortBy === "visited") {
+      const viewedSet = selectedJob
+        ? viewedCandidatesByJob[selectedJob.id] || new Set()
+        : new Set();
+
+      filtered.sort((a, b) => {
+        const aViewed = viewedSet.has(a.id);
+        const bViewed = viewedSet.has(b.id);
+        if (aViewed === bViewed) return 0;
+        return aViewed ? -1 : 1;
+      });
     }
 
     return filtered;
   };
+
 
   const handleCloseModal = () => {
     if (selectedCandidate && selectedJob) {
@@ -103,16 +230,17 @@ const EmployerCandidateContainer = () => {
     setSelectedCandidate(null);
   };
 
-  // Reset shortlist filter when changing jobs
   const handleJobSelect = (job) => {
     setSelectedJob(job);
     setShowShortlistedOnly(false);
+    setSearchTerm("");
+    setYearFilter([]);
+    setCourseFilter([]);
+    setSkillsFilter([]);
   };
 
   const filteredApplicants = getFilteredApplicants();
-  const totalApplicants = selectedJob
-    ? (jobApplicants[selectedJob.id] || []).length
-    : 0;
+  const totalApplicants = applications.length;
   const currentViewedCandidates = selectedJob
     ? viewedCandidatesByJob[selectedJob.id] || new Set()
     : new Set();
@@ -120,37 +248,63 @@ const EmployerCandidateContainer = () => {
   return (
     <div className="app">
       <div className="container">
-        <JobList
-          jobs={jobs}
-          selectedJob={selectedJob}
-          onSelectJob={handleJobSelect}
-        />
+        {jobsLoading ? (
+          <div>Loading your jobs...</div>
+        ) : jobsError ? (
+          <div style={{ color: "red" }}>{jobsError}</div>
+        ) : (
+          <JobList
+            jobs={jobs}
+            selectedJob={selectedJob}
+            onSelectJob={handleJobSelect}
+          />
+        )}
 
         {selectedJob && (
           <>
-            <ApplicantFilter
-              selectedJob={selectedJob}
-              totalApplicants={totalApplicants}
-              filteredCount={filteredApplicants.length}
-              searchTerm={searchTerm}
-              yearFilter={yearFilter}
-              courseFilter={courseFilter}
-              skillsFilter={skillsFilter}
-              sortBy={sortBy}
-              showShortlistedOnly={showShortlistedOnly}
-              onSearchChange={setSearchTerm}
-              onYearChange={setYearFilter}
-              onCourseChange={setCourseFilter}
-              onSkillsChange={setSkillsFilter}
-              onSortChange={setSortBy}
-              onShortlistedFilterChange={setShowShortlistedOnly}
-            />
+            {appsLoading ? (
+              <div>Loading applicants...</div>
+            ) : appsError ? (
+              <div style={{ color: "red" }}>{appsError}</div>
+            ) : (
+              <>
+                <ApplicantFilter
+                  selectedJob={selectedJob}
+                  totalApplicants={applications.length}
+                  filteredCount={filteredApplicants.length}
+                  searchTerm={searchTerm}
+                  yearFilter={yearFilter}
+                  courseFilter={courseFilter}
+                  skillsFilter={skillsFilter}
+                  sortBy={sortBy}
+                  showShortlistedOnly={showShortlistedOnly}
+                  onSearchChange={setSearchTerm}
+                  onYearChange={setYearFilter}
+                  onCourseChange={setCourseFilter}
+                  onSkillsChange={setSkillsFilter}
+                  onSortChange={setSortBy}
+                  onShortlistedFilterChange={setShowShortlistedOnly}
+                />
 
-            <ApplicantResults
-              applicants={filteredApplicants}
-              onSelectCandidate={setSelectedCandidate}
-              viewedCandidates={currentViewedCandidates}
-            />
+                {applications.length === 0 ? (
+                  <div className="no-applicants-message">
+                    <div className="empty-state">
+                      <h3>No candidates have applied yet</h3>
+                      <p>
+                        Applications will appear here once students apply to
+                        this position.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <ApplicantResults
+                    applicants={filteredApplicants}
+                    onSelectCandidate={setSelectedCandidate}
+                    viewedCandidates={currentViewedCandidates}
+                  />
+                )}
+              </>
+            )}
           </>
         )}
 

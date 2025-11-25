@@ -2,8 +2,50 @@ import React from "react";
 import "./job-details.css";
 import "../var.css";
 import { Link } from "react-router-dom";
+import { formatRelativeDate } from "../common/utility";
+import { useMemo, useCallback } from "react";
+import { Slate, Editable, withReact } from "slate-react";
+import { createEditor } from "slate";
 
 export default function JobDetails({ job, onClose }) {
+
+  const handleApply = async () => {
+    try {
+      const token = localStorage.getItem("authToken"); 
+
+      if (!token) {
+        alert("You must be logged in as a student to apply.");
+        return;
+      }
+
+      console.log(job)
+
+      const res = await fetch("http://localhost:4000/applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          jobId: Number(job.id),
+          coverLetter: undefined 
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        alert(data.error || "Failed to apply");
+        return;
+      }
+
+      alert("Application submitted!");
+    } catch (err) {
+      console.error(err);
+      alert("Unexpected error.");
+    }
+  };
+
   if (!job) {
     return (
       <div className="job-details-empty">
@@ -15,12 +57,72 @@ export default function JobDetails({ job, onClose }) {
     );
   }
 
-  const initials = job.company
+  const initials = job?.company?.title
     ?.split(" ")
     .map((w) => w[0])
     .slice(0, 2)
     .join("")
     .toUpperCase();
+
+  const postedDate = formatRelativeDate(job.updatedAt || job.createdAt);
+
+  const parseSlateContent = (content, fallbackText = "No content available") => {
+  if (!content) {
+    return [{ type: "paragraph", children: [{ text: fallbackText }] }];
+  }
+  try {
+    return JSON.parse(content);
+  } catch (e) {
+    console.error('Failed to parse content:', e);
+    return [{ type: "paragraph", children: [{ text: fallbackText }] }];
+  }
+};
+
+  const Element = ({ attributes, children, element }) => {
+  switch (element.type) {
+    case "code":
+      return (
+        <pre {...attributes}>
+          <code>{children}</code>
+        </pre>
+      );
+    case 'bulleted-list':
+      return (
+        <ul {...attributes}>
+          {children}
+        </ul>
+      );
+    case 'numbered-list':
+      return (
+        <ol {...attributes}>
+          {children}
+        </ol>
+      );
+    case 'list-item':
+      return (
+        <li {...attributes}>
+          {children}
+        </li>
+      );
+    default:
+      return <p {...attributes}>{children}</p>;
+  }
+};
+
+// Leaf renderer
+const Leaf = ({ attributes, children, leaf }) => {
+  if (leaf.bold) children = <strong>{children}</strong>;
+  if (leaf.code) children = <code>{children}</code>;
+  if (leaf.italic) children = <em>{children}</em>;
+  if (leaf.underline) children = <u>{children}</u>;
+  if (leaf.strikethrough) children = <s>{children}</s>;
+
+  return <span {...attributes}>{children}</span>;
+};
+
+  const editor = useMemo(() => withReact(createEditor()), []);
+  const renderElement = useCallback((props) => <Element {...props} />, []);
+  const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
 
   return (
     <div className="job-details">
@@ -28,7 +130,7 @@ export default function JobDetails({ job, onClose }) {
         <div className="job-details-avatar">{initials}</div>
         <div className="job-details-title-block">
           <h2 className="job-details-title">{job.title}</h2>
-          <div className="job-details-company">{job.company}</div>
+          <div className="job-details-company">{job.company.name}</div>
           <div className="job-details-meta">
             <span className="details-meta-item">
               <svg width="16" height="16" viewBox="0 0 24 24">
@@ -39,13 +141,12 @@ export default function JobDetails({ job, onClose }) {
               </svg>
               {job.location}
             </span>
-            {job.remote && <span className="details-pill">Remote</span>}
-            <span className="details-posted">• {job.posted}</span>
+            <span className="details-posted">Updated {postedDate}</span>
           </div>
         </div>
         <div className="job-details-actions">
           <button className="jd-btn btn-save">Save</button>
-          <button className="jd-btn btn-primary">Apply</button>
+          <button className="jd-btn btn-primary" onClick={handleApply}>Apply</button>
           <button className="jd-btn btn-close" onClick={onClose}>
             <svg width="20" height="20" viewBox="0 0 24 24">
               <path
@@ -62,7 +163,7 @@ export default function JobDetails({ job, onClose }) {
           <div className="co-op-overview-header">
             <h3>Co-op Overview</h3>
             <Link
-              to={`/jobs/${job.id}`}
+              to={`/students/${job.id}`}
               className="expand-link"
               title="Expand Into Single Job View"
             >
@@ -71,43 +172,41 @@ export default function JobDetails({ job, onClose }) {
           </div>
 
           <div className="overview-grid">
-            <div className="overview-item">
-              <span className="overview-label">Employment Type</span>
-              <span className="overview-value">{job.type}</span>
+          <div className="overview-item">
+              <span className="overview-label">Length</span>
+              <span className="overview-value">{job.length}</span>
             </div>
             <div className="overview-item">
-              <span className="overview-label">Experience Level</span>
-              <span className="overview-value">{job.level}</span>
+              <span className="overview-label">Salary</span>
+              <Slate key={`salary-${job.id}`} className="overview-value" editor={editor} initialValue={parseSlateContent(job.salary, "No salary posted")}>
+                    <Editable 
+                        readOnly 
+                        renderLeaf={renderLeaf}
+                        renderElement={renderElement}
+                    />
+                </Slate>
             </div>
-            {job.salary && (
-              <div className="overview-item">
-                <span className="overview-label">Salary Range</span>
-                <span className="overview-value">
-                  ${job.salary.min} – ${job.salary.max}
-                </span>
-              </div>
-            )}
           </div>
         </section>
 
         <section className="details-section">
           <h3>Co-op Description</h3>
-          <p className="job-description">{job.summary}</p>
-          <p>
-            We are seeking a talented and motivated individual to join our
-            growing team. This role offers excellent opportunities for
-            professional development and the chance to work on exciting projects
-            with cutting-edge technologies.
-          </p>
+          <Slate key={`description-${job.id}`} editor={editor} initialValue={parseSlateContent(job.description, "No description given")}>
+                <Editable 
+                    renderLeaf={renderLeaf}
+                    renderElement={renderElement}
+                    readOnly 
+                />
+            </Slate>
         </section>
 
-        {job.skills && job.skills.length > 0 && (
+        {job.tags && (
           <section className="details-section">
             <h3>Required Skills</h3>
             <div className="skills-grid">
-              {job.skills.map((skill, index) => (
-                <span key={index} className="skill-tag">
-                  {skill}
+              {job.tags.map((tags) => (
+                <span className="skill-tag" key={tags.id || tags.name}>
+                  {tags.name}
                 </span>
               ))}
             </div>

@@ -2,7 +2,7 @@ const ApplicationsHeader = ({ total }) => {
   return (
     <header className="apps-header">
       <div>
-        <h1 className="apps-title">Your Applications</h1>
+        <h3 className="apps-title">Your Applications</h3>
         <p className="apps-subtitle">Track progress from draft to offer.</p>
       </div>
       <div className="apps-meta">

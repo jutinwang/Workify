@@ -9,6 +9,14 @@ const AuthTabs = () => {
   const location = useLocation();
   const isEmployerSignup = location.pathname === "/signup-employer";
 
+  const handleSwitchToSignup = () => {
+    setActiveTab("signup");
+  };
+
+  const handleSwitchToLogin = () => {
+    setActiveTab("login");
+  };
+
   return (
     <div className="auth-tabs">
       <div className="tab-header">
@@ -28,9 +36,15 @@ const AuthTabs = () => {
 
       <div className="tab-content">
         {activeTab === "signup" ? (
-          <SignupForm isEmployer={isEmployerSignup} />
+          <SignupForm
+            isEmployer={isEmployerSignup}
+            onSwitchToLogin={handleSwitchToLogin}
+          />
         ) : (
-          <LoginForm isEmployer={isEmployerSignup}/>
+          <LoginForm
+            isEmployer={isEmployerSignup}
+            onSwitchToSignup={handleSwitchToSignup}
+          />
         )}
       </div>
     </div>

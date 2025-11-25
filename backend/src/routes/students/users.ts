@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { Prisma, PrismaClient, Role, ApplicationStatus } from "@prisma/client";
+import { Prisma, PrismaClient, Role, ApplicationStatus, Gender, Ethnicity, IdentityFlag, InterviewStatus } from "@prisma/client";
 import { z } from "zod";
-import { requireAuth, requireRole } from "../middleware/requireAuth.js";
+import { requireAuth, requireRole } from "../../middleware/requireAuth";
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -40,8 +40,11 @@ const appSelect = {
     job: { select: { id: true, title: true, company: true, location: true } },
 } satisfies Prisma.ApplicationSelect;
 
-function getUserId(req: Express.Request): number {
-    return req.user!.id;
+export function getUserId(req: Express.Request): number {
+    const u: any = req.user ?? {};
+    const id = Number(u.id ?? u.userId ?? u.sub);
+    if (!Number.isFinite(id)) throw new Error("Unauthenticated");;
+    return id;
 }
 
 async function getStudentProfileId(userId: number): Promise<number> {
@@ -222,14 +225,38 @@ router.get("/me/interviews", async (req, res, next) => {
         const interviews = await prisma.interviewRequest.findMany({
             where: { studentId },
             orderBy: { createdAt: "desc" },
-            select: appSelect,
+            select: {
+                id: true,
+                status: true,
+                durationMinutes: true,
+                note: true,
+                proposedSlots: true,
+                chosenStart: true,
+                chosenEnd: true,
+                createdAt: true,
+                job: {
+                    select: {
+                        id: true,
+                        title: true,
+                        company: { select: { id: true, name: true } },
+                    },
+                },
+                employer: {
+                    select: {
+                        id: true,
+                        company: { select: { id: true, name: true } },
+                    },
+                },
+            },
         });
+
         res.json(interviews);
     } catch (e) {
         next(e);
     }
 });
 
+// Student responds to interview request
 router.patch("/me/interviews/:interviewId/respond", async (req, res, next) => {
     try {
         const userId = getUserId(req);
@@ -243,22 +270,40 @@ router.patch("/me/interviews/:interviewId/respond", async (req, res, next) => {
         });
 
         let data: any = {};
-        if (input.decision === "accept") data.status = "ACCEPTED";
-        if (input.decision === "decline") data.status = "DECLINED";
+
+        if (input.decision === "accept") {
+            data.status = InterviewStatus.SCHEDULED;
+        }
+
+        if (input.decision === "decline") {
+            data.status = InterviewStatus.CANCELLED;
+        }
 
         if (input.decision === "propose") {
             if (!input.availability?.length) {
                 return res.status(400).json({ error: "availability required" });
             }
-            data.calendarData = { proposedByStudent: input.availability };
-            data.status = "PENDING";
+
+            data.availability = {
+                proposedByStudent: input.availability,
+            };
+
+            data.status = InterviewStatus.PENDING;
         }
 
         const updated = await prisma.interviewRequest.update({
             where: { id: interviewId },
             data,
-            select: { id: true, status: true, calendarData: true },
+            select: {
+                id: true,
+                status: true,
+                proposedSlots: true,
+                availability: true,
+                chosenStart: true,
+                chosenEnd: true,
+            },
         });
+
         res.json(updated);
     } catch (e) {
         next(e);

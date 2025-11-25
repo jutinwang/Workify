@@ -8,7 +8,7 @@
 
 .landingpage-container {
   padding: 1.6rem;
-  height: 110vh;
+  height: 100vh;
   background: var(--primary-background);
   display: flex;
   flex-direction: column;
@@ -20,7 +20,7 @@
 }
 
 .landing-line-art img {
-  margin-top: 2.4rem;
+  margin-top: 1.8rem;
   height: 50%;
   width: 60%;
   animation: fadeIn 1.5s ease-in-out;
@@ -57,7 +57,7 @@
 }
 
 .landing-line-art{
-  margin-top: 15vh;
+  margin-top: 10vh;
 }
 
 .landing-description {
@@ -87,7 +87,7 @@
 }
 
 .explore-btn {
-  margin-top: 5.4rem;
+  margin-top: 3rem;
   padding: 12px 22px;
   max-width: fit-content;
   background: var(--secondary-green);
@@ -110,6 +110,35 @@
 .explore-btn:hover {
   background: var(--darker-green);
 }
+
+.explore-candidates-btn {
+  margin-top: 0.8rem;
+  padding: 12px 22px;
+  max-width: fit-content;
+  background: var(--primary-background);
+  border: 2px solid var(--secondary-green);
+  border-radius: 25px;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--secondary-green);
+  text-decoration: none;
+  font-family: 'Domine', serif;
+  transition: all 0.3s ease;
+}
+
+.explore-candidates-btn span {
+  font-weight: bold;
+}
+
+.explore-candidates-btn:hover {
+  background: var(--secondary-green);
+  color: var(--text-white);
+}
+
+
 
 .hero-image {
   display: flex;
