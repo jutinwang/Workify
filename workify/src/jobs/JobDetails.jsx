@@ -178,7 +178,7 @@ const Leaf = ({ attributes, children, leaf }) => {
             </div>
             <div className="overview-item">
               <span className="overview-label">Salary</span>
-              <Slate className="overview-value" editor={editor} initialValue={parseSlateContent(job.salary, "No salary posted")}>
+              <Slate key={`salary-${job.id}`} className="overview-value" editor={editor} initialValue={parseSlateContent(job.salary, "No salary posted")}>
                     <Editable 
                         readOnly 
                         renderLeaf={renderLeaf}
@@ -191,7 +191,7 @@ const Leaf = ({ attributes, children, leaf }) => {
 
         <section className="details-section">
           <h3>Co-op Description</h3>
-          <Slate editor={editor} initialValue={parseSlateContent(job.description, "No description given")}>
+          <Slate key={`description-${job.id}`} editor={editor} initialValue={parseSlateContent(job.description, "No description given")}>
                 <Editable 
                     renderLeaf={renderLeaf}
                     renderElement={renderElement}
@@ -205,7 +205,7 @@ const Leaf = ({ attributes, children, leaf }) => {
             <h3>Required Skills</h3>
             <div className="skills-grid">
               {job.tags.map((tags) => (
-                <span className="skill-tag">
+                <span className="skill-tag" key={tags.id || tags.name}>
                   {tags.name}
                 </span>
               ))}
