@@ -149,8 +149,8 @@ const InterviewScheduler = () => {
                         startDate={startDate}
                         onTimeRangeSelected={(args) => {
                             const newEvent = {
-                                start: args.start,  // Keep as DayPilot.Date for UI
-                                end: args.end,      // Keep as DayPilot.Date for UI
+                                start: args.start,
+                                end: args.end,
                                 text: "Busy",
                                 id: DayPilot.guid(),
                                 backColor: "#465362",

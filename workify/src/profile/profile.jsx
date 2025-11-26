@@ -253,6 +253,37 @@ const Profile = () => {
     );
   }
 
+  const handleUpdateExperiences = async (nextExperiences) => {
+    try {
+      setFormData(prev => ({ ...prev, experiences: nextExperiences }));
+
+      await studentApi.updateProfile({
+        experiences: nextExperiences,
+      });
+      closeModal('experiences');
+    } catch (err) {
+      console.error('Error updating experiences:', err);
+    }
+  };
+
+  const handleUpdateDemographics = async (nextDemo) => {
+    try {
+      setFormData(prev => ({ ...prev, demographics: nextDemo }));
+
+      await studentApi.updateProfile({
+        gender: nextDemo.genders[0] || null,
+        ethnicity: nextDemo.ethnicities || [],
+        optional: [
+          ...(nextDemo.isIndigenous ? ['INDIGENOUS'] : []),
+          ...(nextDemo.hasDisability ? ['DISABILITY'] : []),
+          ...(nextDemo.isVeteran ? ['VETERAN'] : []),
+        ],
+      });
+    } catch (err) {
+      console.error('Error updating demographics:', err);
+    }
+  };
+
   return (
     <div className="profile-container">
       <div className="profile-content">
@@ -396,14 +427,14 @@ const Profile = () => {
           isOpen={modals.demographics}
           onClose={() => closeModal('demographics')}
           values={formData.demographics}
-          onChange={(next) => setFormData(prev => ({ ...prev, demographics: next }))}
+          onChange={handleUpdateDemographics}
         />
 
         <ExperiencesModal
           isOpen={modals.experiences}
           onClose={() => closeModal('experiences')}
           values={formData.experiences}
-          onChange={(next) => setFormData(prev => ({ ...prev, experiences: next }))}
+          onChange={handleUpdateExperiences}
         />
       </div>
     </div>
