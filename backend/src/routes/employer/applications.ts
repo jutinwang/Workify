@@ -287,7 +287,6 @@ router.get("/applications/:applicationId", requireAuth, requireRole(Role.EMPLOYE
                             id: true,
                             title: true,
                             location: true,
-                            type: true,
                         },
                     },
                     student: {

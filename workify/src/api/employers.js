@@ -20,6 +20,16 @@ export const employerApi = {
   async getProfile() {
     return apiClient.get("/employers/profile");
   },
+
+  async updatePostingStatus(data) {
+    // Temp and should be improved
+    if (data.postingStatus === "ARCHIVED") {
+      data.postingStatus = "ACTIVE"
+    } else {
+      data.postingStatus = "ARCHIVED"
+    }
+    return apiClient.patch(`/employers/me/jobs/${data.id}`, data)
+  }
 };
 
 

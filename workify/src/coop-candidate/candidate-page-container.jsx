@@ -244,6 +244,8 @@ const EmployerCandidateContainer = () => {
   const currentViewedCandidates = selectedJob
     ? viewedCandidatesByJob[selectedJob.id] || new Set()
     : new Set();
+  const archivedJobs = jobs.filter(job => job.postingStatus === "ARCHIVED");
+  const activeJobs = jobs.filter(job => job.postingStatus !== "ARCHIVED");
 
   return (
     <div className="app">
@@ -254,7 +256,7 @@ const EmployerCandidateContainer = () => {
           <div style={{ color: "red" }}>{jobsError}</div>
         ) : (
           <JobList
-            jobs={jobs}
+            jobs={activeJobs}
             selectedJob={selectedJob}
             onSelectJob={handleJobSelect}
           />
@@ -314,6 +316,18 @@ const EmployerCandidateContainer = () => {
             jobId={selectedJob?.id}
             onClose={handleCloseModal}
           />
+        )}
+
+        {/* TODO: Need to update better */}
+        {archivedJobs.length > 0 && (
+          <div className="archived-jobs-section">
+            <h2>Archived Positions</h2>
+            <JobList
+              jobs={archivedJobs}
+              selectedJob={selectedJob}
+              onSelectJob={handleJobSelect}
+            />
+          </div>
         )}
       </div>
     </div>
