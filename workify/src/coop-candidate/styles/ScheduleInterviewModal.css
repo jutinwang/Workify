@@ -1,0 +1,54 @@
+.schedule-btn {
+  padding: 0.875rem 2rem;
+  background-color: var(--secondary-green);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--main-font);
+}
+
+.schedule-btn:hover:not(:disabled) {
+  background-color: var(--darker-green);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.schedule-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.reject-btn {
+  padding: 0.875rem 2rem;
+  background-color: transparent;
+  color: var(--text-dark);
+  border: 2px solid var(--text-light-gray);
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--main-font);
+}
+
+.reject-btn:hover {
+  background-color: var(--text-light-gray);
+  border-color: var(--text-gray);
+  color: var(--text-dark);
+}
+
+.reject-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem;
+}
