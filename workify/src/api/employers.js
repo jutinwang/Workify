@@ -37,6 +37,20 @@ export const employerApi = {
 
   async deleteCoop(data){
     return apiClient.delete(`/employers/me/jobs/${data.id}`)
+  },
+
+  async cloneCoop(data) {
+    return apiClient.post("/employers/me/jobs", {
+      title: "[DUPLICATE] " + data.title,
+      description: data.description,
+      location: data.officeLocation,
+      length: data.jobLength,
+      salary: data.salary,
+      qualification: data.qualifications,
+      responsibilities: data.responsibilities,
+      benefits: data.benefits,
+      tags: data.tags
+    });
   }
 };
 

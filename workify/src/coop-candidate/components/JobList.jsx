@@ -4,6 +4,7 @@ import '../styles/JobList.css';
 import EditIcon from '../../profile/EditIcon';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { useNavigate } from "react-router-dom";
 import { employerApi } from "../../api/employers";
 
@@ -48,6 +49,14 @@ const handleDelete = async (job) => {
   }
 };
 
+const handleCloning = async (job) => {
+  try {
+    await employerApi.cloneCoop(job);
+  } catch (error) {
+    console.error("Clone failed:", error);
+  }
+};
+
   return (
     <div className="card">
       <h2 className="section-title">Co-op Listings:</h2>
@@ -63,7 +72,8 @@ const handleDelete = async (job) => {
               <button className="employer job-link" onClick={() => handleJobToggle(job)}>View</button>
               <button className="employer job-link" > <EditIcon /> </button>
               <button className="employer job-link" onClick={() => handleArchiving(job)}> <ArchiveIcon /> </button>
-               <button className="employer job-link" onClick={() => handleDelete(job)}> <DeleteForeverIcon /> </button>
+              <button className="employer job-link" onClick={() => handleDelete(job)}> <DeleteForeverIcon /> </button>
+              <button className="employer job-link" onClick={() => handleCloning(job)}> <FileCopyIcon /> </button>
             </div>
           </label>
         ))}
