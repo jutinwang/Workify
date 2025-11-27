@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import Card from "../common/Card";
-import StudentScheduleInterviewModal from "./StudentScheduleInterviewModal"; 
+import StudentScheduleInterviewModal from "./StudentScheduleInterviewModal";
 
 const InterviewComponent = () => {
+  const navigate = useNavigate();
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
@@ -15,17 +17,14 @@ const InterviewComponent = () => {
       setError("");
       const token = localStorage.getItem("authToken");
 
-      const res = await fetch(
-        "http://localhost:4000/users/me/interviews",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        }
-      );
+      const res = await fetch("http://localhost:4000/users/me/interviews", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
 
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -47,9 +46,7 @@ const InterviewComponent = () => {
     loadInterviews();
   }, [loadInterviews]);
 
-  const pendingRequests = interviews.filter(
-    (req) => req.status === "PENDING"
-  );
+  const pendingRequests = interviews.filter((req) => req.status === "PENDING");
   const scheduledInterviews = interviews.filter(
     (req) => req.status === "SCHEDULED"
   );
@@ -204,7 +201,6 @@ const InterviewComponent = () => {
                   >
                     Decline
                   </button>
-                 
                 </div>
               </div>
             ))}
@@ -215,6 +211,8 @@ const InterviewComponent = () => {
           </div>
         )}
       </Card>
+
+      {console.log(scheduledInterviews)}
 
       <Card title="Upcoming Interviews">
         {loading ? (
@@ -267,8 +265,14 @@ const InterviewComponent = () => {
                     </td>
                     <td>
                       <div className="apps-interview-actions">
-                        <button className="btn apps-btn-small">
-                          View Details
+                        <button
+                          className="btn apps-btn-small"
+                          onClick={() =>
+                            interview.job?.id &&
+                            navigate(`/students/${interview.job.id}`)
+                          }
+                        >
+                          View Co-Op
                         </button>
                       </div>
                     </td>

@@ -14,6 +14,7 @@ import Paper from "@mui/material/Paper";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import ProfileModal from "./ProfileModal";
+import ScheduleInterviewModal from "../coop-candidate/components/ScheduleInterviewModal";
 import { employerApi } from "../api/employers";
 
 function HeaderBar({ profileData }) {
@@ -94,6 +95,7 @@ function HeaderBar({ profileData }) {
   );
 }
 
+// Table for Completed
 function BasicTable({ handleActionClick }) {
   function createData(
     candidate,
@@ -163,9 +165,10 @@ function BasicTable({ handleActionClick }) {
               Interview Info.
             </TableCell>
             <TableCell className="ep-table-header-label">Interviewer</TableCell>
-            <TableCell className="ep-table-header-label">Feedback</TableCell>
-            <TableCell className="ep-table-header-label">Outcome</TableCell>
-            <TableCell className="ep-table-header-label">Action</TableCell>
+            <TableCell className="ep-table-header-label">Status</TableCell>
+            <TableCell align="center" className="ep-table-header-label">
+              Next Steps
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -179,15 +182,14 @@ function BasicTable({ handleActionClick }) {
               </TableCell>
               <TableCell>{row.interviewInfo}</TableCell>
               <TableCell>{row.interviewer}</TableCell>
-              <TableCell>{row.feedback}</TableCell>
               <TableCell>{row.outcome}</TableCell>
               <TableCell>
-                <Button
-                  variant="contained"
+                <button
+                  className="action-btn schedule"
                   onClick={() => handleActionClick(row)}
                 >
-                  Action
-                </Button>
+                  Open Next Steps
+                </button>
               </TableCell>
             </TableRow>
           ))}
@@ -197,6 +199,7 @@ function BasicTable({ handleActionClick }) {
   );
 }
 
+// Table for Upcoming
 function UpcomingTable({ handleActionClick }) {
   function createData(candidate, posting, date, interviewer, action, link) {
     return { candidate, posting, date, interviewer, action, link };
@@ -230,8 +233,10 @@ function UpcomingTable({ handleActionClick }) {
               Interview Date & Time
             </TableCell>{" "}
             <TableCell className="ep-table-header-label">Interviewer</TableCell>
-            <TableCell className="ep-table-header-label">Action</TableCell>
             <TableCell className="ep-table-header-label">Link</TableCell>
+            <TableCell align="center" className="ep-table-header-label">
+              Action
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -250,15 +255,16 @@ function UpcomingTable({ handleActionClick }) {
                 {row.date}
               </TableCell>
               <TableCell>{row.interviewer}</TableCell>
+              <TableCell>{row.link}</TableCell>
+
               <TableCell>
-                <Button
-                  variant="contained"
+                <button
+                  className="action-btn schedule"
                   onClick={() => handleActionClick(row)}
                 >
                   Action
-                </Button>
+                </button>
               </TableCell>
-              <TableCell>{row.link}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -267,12 +273,15 @@ function UpcomingTable({ handleActionClick }) {
   );
 }
 
+// Main Employer Profile Component
 const EmployerProfile = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [scheduleCandidate, setScheduleCandidate] = useState(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -301,6 +310,20 @@ const EmployerProfile = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedCandidate(null);
+  };
+
+  const handleOpenScheduleModal = (candidate) => {
+    setScheduleCandidate(candidate);
+    setShowScheduleModal(true);
+    setIsModalOpen(false);
+  };
+
+  const handleCloseScheduleModal = (wasScheduled) => {
+    setShowScheduleModal(false);
+    setScheduleCandidate(null);
+    if (wasScheduled) {
+      // Optionally refresh data or show success message
+    }
   };
 
   if (loading) {
@@ -340,7 +363,18 @@ const EmployerProfile = () => {
         onClose={handleCloseModal}
         selectedCandidate={selectedCandidate}
         activeTab={activeTab}
+        onOpenScheduleModal={handleOpenScheduleModal}
       />
+      {showScheduleModal && scheduleCandidate && (
+        <ScheduleInterviewModal
+          candidate={{
+            name: scheduleCandidate.candidate,
+            studentId: scheduleCandidate.studentId,
+          }}
+          jobId={scheduleCandidate.jobId}
+          onClose={handleCloseScheduleModal}
+        />
+      )}
     </div>
   );
 };

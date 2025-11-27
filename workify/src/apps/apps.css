@@ -38,7 +38,7 @@
 
 .apps-filters {
   background: #fafcff;
-  border: 1px solid #e2e8f0;
+  border: none;
   border-radius: 10px;
   padding: 12px;
   margin-bottom: 16px;
@@ -424,6 +424,17 @@
 .apps-btn-small:hover {
   background: var(--hover-bg);
   border-color: var(--secondary-green);
+}
+
+.apps-btn-success {
+  background: var(--secondary-green);
+  color: var(--text-white);
+  border: 1px solid var(--secondary-green);
+}
+
+.apps-btn-success:hover {
+  background: var(--darker-green);
+  border-color: var(--darker-green);
 }
 
 /* Empty State */
