@@ -43,10 +43,10 @@ export const employerApi = {
     return apiClient.post("/employers/me/jobs", {
       title: "[DUPLICATE] " + data.title,
       description: data.description,
-      location: data.officeLocation,
-      length: data.jobLength,
+      location: data.location,
+      length: data.length,
       salary: data.salary,
-      qualification: data.qualifications,
+      qualification: data.qualification,
       responsibilities: data.responsibilities,
       benefits: data.benefits,
       tags: data.tags

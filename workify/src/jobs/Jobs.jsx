@@ -157,14 +157,18 @@ const Jobs = () => {
           {error && <div className="jobs-error">Error: {error}</div>}
           {!loading && !error && (
             <div className="jobs-grid">
-              {filtered.map((job) => (
-                <JobCard
-                  key={job.id}
-                  job={job}
-                  isSelected={selectedJob?.id === job.id}
-                  onClick={() => setSelectedJob(job)}
-                />
-              ))}
+              {filtered
+                .filter(job => job.postingStatus !== "ARCHIVED") // 👈 hide archived
+                .map(job => (
+                  <JobCard
+                    key={job.id}
+                    job={job}
+                    isSelected={selectedJob?.id === job.id}
+                    onClick={() => setSelectedJob(job)}
+                  />
+                ))
+              }
+
             </div>
           )}
         </div>
