@@ -3,6 +3,7 @@ import '../styles/App.css';
 import '../styles/JobList.css';
 import EditIcon from '../../profile/EditIcon';
 import ArchiveIcon from '@mui/icons-material/Archive';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useNavigate } from "react-router-dom";
 import { employerApi } from "../../api/employers";
 
@@ -17,9 +18,9 @@ const JobList = ({ jobs, selectedJob, onSelectJob }) => {
     }
   };
 
-  const handleJobEdit = (job) => {
-    navigate("/edit-job", { state: { job } });
-  };
+  // const handleJobEdit = (job) => {
+  //   navigate("/edit-job", { state: { job } });
+  // };
 
   const handleArchiving = async (job) => {
     try {
@@ -37,6 +38,16 @@ const JobList = ({ jobs, selectedJob, onSelectJob }) => {
     }
   };
 
+const handleDelete = async (job) => {
+  try {
+    await employerApi.deleteCoop(job);
+    setJobs(prev => prev.filter(j => j.id !== job.id));
+    window.location.reload(); 
+  } catch (error) {
+    console.error("Delete failed:", error);
+  }
+};
+
   return (
     <div className="card">
       <h2 className="section-title">Co-op Listings:</h2>
@@ -50,8 +61,9 @@ const JobList = ({ jobs, selectedJob, onSelectJob }) => {
             </span>
             <div className="employer job-actions">
               <button className="employer job-link" onClick={() => handleJobToggle(job)}>View</button>
-              <button className="employer job-link" onClick={() => handleJobEdit(job)}> <EditIcon /> </button>
+              <button className="employer job-link" > <EditIcon /> </button>
               <button className="employer job-link" onClick={() => handleArchiving(job)}> <ArchiveIcon /> </button>
+               <button className="employer job-link" onClick={() => handleDelete(job)}> <DeleteForeverIcon /> </button>
             </div>
           </label>
         ))}

@@ -29,6 +29,14 @@ export const employerApi = {
       data.postingStatus = "ARCHIVED"
     }
     return apiClient.patch(`/employers/me/jobs/${data.id}`, data)
+  },
+
+  async updateCoop(data){
+    return apiClient.patch(`/employers/me/jobs/${data.id}`, data)
+  },
+
+  async deleteCoop(data){
+    return apiClient.delete(`/employers/me/jobs/${data.id}`)
   }
 };
 
@@ -98,6 +106,26 @@ const apiClient = {
         method: 'PATCH',
         headers,
         body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Request failed');
+      return data;
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
+  },
+
+  async delete(endpoint) {
+    try {
+      const token = localStorage.getItem('authToken');
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'DELETE',
+        headers,
       });
 
       const data = await response.json();
