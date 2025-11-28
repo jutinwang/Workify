@@ -271,7 +271,6 @@ router.post("/", requireAuth, requireRole(Role.EMPLOYER),
                             id: true,
                             title: true,
                             location: true,
-                            type: true,
                             company: {
                                 select: {
                                     id: true,
