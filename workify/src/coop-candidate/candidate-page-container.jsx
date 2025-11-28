@@ -3,6 +3,7 @@ import JobList from "./components/JobList";
 import ApplicantFilter from "./components/ApplicantFilter";
 import ApplicantResults from "./components/ApplicantResults";
 import CandidateModal from "./components/CandidateModal";
+import EditJobModal from "./components/EditJobModal";
 import "./styles/App.css";
 import "../var.css";
 
@@ -26,6 +27,8 @@ const EmployerCandidateContainer = () => {
 
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [viewedCandidatesByJob, setViewedCandidatesByJob] = useState({});
+
+  const [jobBeingEdited, setJobBeingEdited] = useState(null);
 
   const token = localStorage.getItem("authToken");
 
@@ -257,6 +260,7 @@ const EmployerCandidateContainer = () => {
             jobs={jobs}
             selectedJob={selectedJob}
             onSelectJob={handleJobSelect}
+            onEditJob={(job) => setJobBeingEdited(job)}
           />
         )}
 
@@ -316,6 +320,15 @@ const EmployerCandidateContainer = () => {
           />
         )}
       </div>
+      {jobBeingEdited && (
+        <EditJobModal
+          job={jobBeingEdited}
+          onClose={() => setJobBeingEdited(null)}
+          onSaved={(updated) => {
+            setJobs(prev => prev.map(j => j.id === updated.id ? updated : j));
+          }}
+        />
+      )}
     </div>
   );
 };

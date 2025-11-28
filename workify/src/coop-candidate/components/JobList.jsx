@@ -3,7 +3,7 @@ import '../styles/App.css';
 import '../styles/JobList.css';
 import EditIcon from '../../profile/EditIcon';
 
-const JobList = ({ jobs, selectedJob, onSelectJob }) => {
+const JobList = ({ jobs, selectedJob, onSelectJob, onEditJob }) => {
   const handleJobToggle = (job) => {
     if (selectedJob?.id === job.id) {
       onSelectJob(null);
@@ -25,7 +25,13 @@ const JobList = ({ jobs, selectedJob, onSelectJob }) => {
             </span>
             <div className="employer job-actions">
               <button className="employer job-link" onClick={() => handleJobToggle(job)}>View</button>
-              <button className="employer job-link">
+              <button 
+                className="employer job-link"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEditJob(job);
+                }}
+              >
                 <EditIcon />
               </button>
             </div>
