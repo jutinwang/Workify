@@ -168,9 +168,6 @@ model InterviewRequest {
   durationMinutes Int
   note            String?
 
-  availability  Json?
-  proposedSlots Json?
-
   chosenStart DateTime?
   chosenEnd   DateTime?
 

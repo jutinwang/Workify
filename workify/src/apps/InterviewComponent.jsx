@@ -1,115 +1,163 @@
+import React, { useEffect, useState, useCallback } from "react";
 import Card from "../common/Card";
-
-const mockInterviewData = [
-  {
-    id: 1,
-    status: "PENDING",
-    jobId: 1,
-    createdAt: "2024-12-01T10:00:00Z",
-    employer: {
-      user: {
-        name: "Sarah Connor",
-      },
-      company: {
-        name: "Innovatech Solutions",
-        url: "https://innovatech.com",
-      },
-    },
-    job: {
-      title: "Frontend Developer",
-      location: "Toronto, ON",
-      type: "Full-time",
-    },
-  },
-  {
-    id: 2,
-    status: "SCHEDULED",
-    jobId: 2,
-    createdAt: "2024-11-28T14:30:00Z",
-    calendarData: {
-      date: "2024-12-15",
-      time: "10:00 AM",
-      duration: "60 minutes",
-      meetingLink: "https://zoom.us/j/123456789",
-    },
-    employer: {
-      user: {
-        name: "John Doe",
-      },
-      company: {
-        name: "TechCorp Inc",
-      },
-    },
-    job: {
-      title: "Software Engineer",
-      location: "Vancouver, BC",
-      type: "Full-time",
-    },
-  },
-  {
-    id: 3,
-    status: "PENDING",
-    jobId: 3,
-    createdAt: "2024-11-30T16:45:00Z",
-    employer: {
-      user: {
-        name: "Jane Smith",
-      },
-      company: {
-        name: "Startup Labs",
-      },
-    },
-    job: {
-      title: "Backend Engineer",
-      location: "Remote",
-      type: "Internship",
-    },
-  },
-];
+import StudentScheduleInterviewModal from "./StudentScheduleInterviewModal"; 
 
 const InterviewComponent = () => {
-  const pendingRequests = mockInterviewData.filter(
+  const [interviews, setInterviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [updatingId, setUpdatingId] = useState(null);
+  const [error, setError] = useState("");
+  const [scheduleInterview, setScheduleInterview] = useState(null);
+
+  const loadInterviews = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const token = localStorage.getItem("authToken");
+
+      const res = await fetch(
+        "http://localhost:4000/users/me/interviews",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error || "Failed to load interviews.");
+        setInterviews([]);
+      } else {
+        setInterviews(Array.isArray(data) ? data : []);
+      }
+    } catch (e) {
+      console.error("Error loading interviews:", e);
+      setError("Unexpected error while loading interviews.");
+      setInterviews([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadInterviews();
+  }, [loadInterviews]);
+
+  const pendingRequests = interviews.filter(
     (req) => req.status === "PENDING"
   );
-  const scheduledInterviews = mockInterviewData.filter(
+  const scheduledInterviews = interviews.filter(
     (req) => req.status === "SCHEDULED"
   );
 
-  const handleAccept = (id) => {
-    console.log("Accepting interview request:", id);
-    // TODO: API call to update status to SCHEDULED
-    // This would trigger a calendar scheduling flow
-  };
-
-  const handleDecline = (id) => {
-    console.log("Declining interview request:", id);
-    // TODO: API call to update status to CANCELLED
-  };
-
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-CA");
+    if (!dateString) return "";
+    const d = new Date(dateString);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("en-CA");
+  };
+
+  const formatDateTime = (dateString) => {
+    if (!dateString) return "";
+    const d = new Date(dateString);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toLocaleString("en-CA", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const handleDecline = async (id) => {
+    try {
+      setUpdatingId(id);
+      setError("");
+      const token = localStorage.getItem("authToken");
+
+      const res = await fetch(
+        "http://localhost:4000/students/me/interviews/" + id + "/respond",
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ decision: "decline" }),
+        }
+      );
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error || "Failed to update interview.");
+        return;
+      }
+
+      // reload list after decline
+      await loadInterviews();
+    } catch (e) {
+      console.error("Error declining interview:", e);
+      setError("Unexpected error while updating interview.");
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const handleScheduleClick = (interview) => {
+    setScheduleInterview(interview);
+  };
+
+  const handleScheduleModalClose = (didSchedule = false) => {
+    setScheduleInterview(null);
+    if (didSchedule) {
+      loadInterviews();
+    }
   };
 
   return (
     <div>
+      {error && (
+        <div className="apps-error-banner">
+          <p>{error}</p>
+        </div>
+      )}
+
       <Card
         title={`Interview Requests ${
           pendingRequests.length > 0 ? `(${pendingRequests.length})` : ""
         }`}
       >
-        {pendingRequests.length > 0 ? (
+        {loading ? (
+          <div className="apps-empty-state">
+            <p>Loading interview requests…</p>
+          </div>
+        ) : pendingRequests.length > 0 ? (
           <div className="apps-interview-requests-container">
             {pendingRequests.map((request) => (
               <div key={request.id} className="apps-interview-request-card">
                 <div className="apps-interview-request-header">
                   <div className="apps-job-info">
-                    <h3 className="apps-job-title">{request.job.title}</h3>
+                    <h3 className="apps-job-title">
+                      {request.job?.title || "Untitled role"}
+                    </h3>
                     <p className="apps-company-name">
-                      {request.employer.company.name}
+                      {request.job?.company?.name ||
+                        request.employer?.company?.name ||
+                        "Company"}
                     </p>
                     <div className="apps-job-details">
-                      <span className="apps-job-type">{request.job.type}</span>
-                      {request.job.location && (
+                      {request.job?.type && (
+                        <span className="apps-job-type">
+                          {request.job.type}
+                        </span>
+                      )}
+                      {request.job?.location && (
                         <>
                           <span className="apps-separator">•</span>
                           <span className="apps-job-location">
@@ -120,27 +168,43 @@ const InterviewComponent = () => {
                     </div>
                   </div>
                   <div className="apps-request-meta">
-                    <p className="apps-interviewer">
-                      From: {request.employer.user.name}
-                    </p>
+                    {request.employer?.user?.name && (
+                      <p className="apps-interviewer">
+                        From: {request.employer.user.name}
+                      </p>
+                    )}
                     <p className="apps-request-date">
                       Requested: {formatDate(request.createdAt)}
                     </p>
+                    {request.durationMinutes && (
+                      <p className="apps-request-date">
+                        Duration: {request.durationMinutes} minutes
+                      </p>
+                    )}
                   </div>
                 </div>
+
+                {request.note && (
+                  <div className="apps-interview-note">
+                    <p>{request.note}</p>
+                  </div>
+                )}
+
                 <div className="apps-interview-request-actions">
                   <button
                     className="btn apps-btn-success"
-                    onClick={() => handleAccept(request.id)}
+                    onClick={() => handleScheduleClick(request)}
                   >
-                    Accept
+                    Schedule Interview
                   </button>
                   <button
                     className="btn apps-btn-outline"
+                    disabled={updatingId === request.id}
                     onClick={() => handleDecline(request.id)}
                   >
                     Decline
                   </button>
+                 
                 </div>
               </div>
             ))}
@@ -153,15 +217,18 @@ const InterviewComponent = () => {
       </Card>
 
       <Card title="Upcoming Interviews">
-        {scheduledInterviews.length > 0 ? (
+        {loading ? (
+          <div className="apps-empty-state">
+            <p>Loading interviews…</p>
+          </div>
+        ) : scheduledInterviews.length > 0 ? (
           <div className="apps-interviews-table-wrapper">
             <table className="apps-interviews-table">
               <thead>
                 <tr>
                   <th>Position</th>
                   <th>Company</th>
-                  <th>Interviewer</th>
-                  <th>Date & Time</th>
+                  <th>Date &amp; Time</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -171,13 +238,15 @@ const InterviewComponent = () => {
                     <td>
                       <div className="apps-position-cell">
                         <span className="cell-strong">
-                          {interview.job.title}
+                          {interview.job?.title || "Untitled role"}
                         </span>
                         <div className="apps-position-details">
-                          <span className="apps-job-type">
-                            {interview.job.type}
-                          </span>
-                          {interview.job.location && (
+                          {interview.job?.type && (
+                            <span className="apps-job-type">
+                              {interview.job.type}
+                            </span>
+                          )}
+                          {interview.job?.location && (
                             <>
                               <span className="apps-separator">•</span>
                               <span>{interview.job.location}</span>
@@ -186,14 +255,14 @@ const InterviewComponent = () => {
                         </div>
                       </div>
                     </td>
-                    <td>{interview.employer.company.name}</td>
-                    <td>{interview.employer.user.name}</td>
+                    <td>
+                      {interview.job?.company?.name ||
+                        interview.employer?.company?.name ||
+                        "Company"}
+                    </td>
                     <td>
                       <div className="apps-datetime-cell">
-                        <div>{interview.calendarData?.date}</div>
-                        <div className="apps-time">
-                          {interview.calendarData?.time}
-                        </div>
+                        {formatDateTime(interview.chosenStart)}
                       </div>
                     </td>
                     <td>
@@ -214,6 +283,12 @@ const InterviewComponent = () => {
           </div>
         )}
       </Card>
+      {scheduleInterview && (
+        <StudentScheduleInterviewModal
+          interview={scheduleInterview}
+          onClose={handleScheduleModalClose}
+        />
+      )}
     </div>
   );
 };

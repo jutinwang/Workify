@@ -19,8 +19,34 @@ const InterviewScheduler = () => {
     const [messageText, setMessageText] = useState('');
     const [startDate, setStartDate] = useState("2025-10-04");
 
-    const handleChange = (event) => {
-        setText(event.target.value);
+    // Helper to normalize DayPilot.Date to local ISO string (no Z)
+    const fromLocalISOString = (isoString) => {
+        const d = new Date(isoString);
+        console.log(d)
+        return new DayPilot.Date(d);
+    };
+
+    const toLocalISOString = (date) => {
+        const d = date instanceof DayPilot.Date ? date.toDate() : new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const hour = String(d.getHours()).padStart(2, '0');
+        const minute = String(d.getMinutes()).padStart(2, '0');
+        const second = String(d.getSeconds()).padStart(2, '0');
+        return `${year}-${month}-${day}T${hour}:${minute}:${second}`;
+    };
+
+    // Normalize events before saving
+    const normalizeEvents = (evts) => {
+        return evts.map(e => ({
+            id: e.id,
+            start: toLocalISOString(e.start),
+            end: toLocalISOString(e.end),
+            text: e.text || 'Busy',
+            backColor: e.backColor || '#465362',
+            fontColor: e.fontColor || '#fff',
+        }));
     };
 
     useEffect(() => {
@@ -35,8 +61,9 @@ const InterviewScheduler = () => {
                 credentials: "include",
             });
             const data = await res.json();
-            console.log(data)
-            setEvents(data.unavailableTimes || []);
+            console.log('Loaded events:', data);
+
+            setEvents(data.unavailableTimes);
         }
         loadUnavailable();
     }, []);
@@ -44,27 +71,36 @@ const InterviewScheduler = () => {
     const saveEventsToBackend = async (newEvents) => {
         console.log("click")
         const token = localStorage.getItem("authToken");
-        await fetch("http://localhost:4000/employers/me/unavailable-times", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({ events: newEvents }),
-        });
+        // const normalized = normalizeEvents(newEvents);
+        // console.log('Saving normalized events:', normalized);
+        
+        try {
+            const response = await fetch("http://localhost:4000/employers/me/unavailable-times", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({ events: newEvents }),
+            });
+            
+            if (!response.ok) {
+                console.error('Failed to save events');
+            }
+        } catch (error) {
+            console.error('Error saving events:', error);
+        }
     };
 
-    // https://code.daypilot.org/42221/react-weekly-calendar-tutorial
     const config = {
         viewType: "WorkWeek",
         timeRangeSelectedHandling: "Enabled",
         durationBarVisible: false,
         eventCreateHandling: "Disabled",
         eventDeleteHandling: "Update",
-        cellDuration: 30, // change this to add more time
+        cellDuration: 30,
 
-        // Add delete button to each event
         onBeforeEventRender: args => {
             args.data.areas = [
                 {
@@ -83,23 +119,7 @@ const InterviewScheduler = () => {
             ];
         },
 
-        // onTimeRangeSelected: async (args) => {
-        //     const newEvent = {
-        //         id: DayPilot.guid(),
-        //         start: args.start,
-        //         end: args.end,
-        //         text: "Busy",
-        //     };
-
-        //     calendar.events.add(newEvent);
-        //     const updatedEvents = [...events, newEvent];
-        //     setEvents(updatedEvents);
-
-        //     await saveEventsToBackend(updatedEvents);
-        // },
-
         onEventClick: async (args) => {
-            console.log("click")
             const modal = await DayPilot.Modal.prompt(
                 "Update event text:",
                 args.e.text()
@@ -109,6 +129,7 @@ const InterviewScheduler = () => {
             calendar.events.update(args.e);
         },
     };
+    console.log(events)
 
     return (
         <div className="interviewscheduler-container">

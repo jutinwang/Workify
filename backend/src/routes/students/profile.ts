@@ -1,10 +1,25 @@
 import { Router, Request, Response } from 'express';
-import { Gender, PrismaClient } from '@prisma/client';
+import { Gender, PrismaClient, Ethnicity, IdentityFlag } from '@prisma/client';
 import { CompleteStudentProfileSchema } from '../../schema/studentProfile';
 import { requireAuth, requireRole } from '../../middleware/requireAuth';
+import { z } from "zod";
 
 const router = Router();
 const prisma = new PrismaClient();
+
+const UpdateStudentProfileSchema = z.object({
+    gender: z.string().optional(),
+    ethnicity: z.array(z.string()).optional(),
+    optional: z.array(z.string()).optional(),
+});
+
+const GENDER_MAP: Record<string, Gender> = {
+    Man: Gender.MAN,
+    Woman: Gender.WOMAN,
+    "Non-binary": Gender.NON_BINARY,
+    "Two-Spirit": Gender.TWO_SPIRIT,
+    "Prefer not to say": Gender.PREFER_NOT_TO_SAY
+};
 
 // Complete student profile wizard
 router.post('/', requireAuth, requireRole('STUDENT'), async (req: Request, res: Response) => {
@@ -186,14 +201,28 @@ router.patch('/', requireAuth, requireRole('STUDENT'), async (req: Request, res:
             return res.status(404).json({ error: 'Profile not found' });
         }
 
-        const updatedProfile = await prisma.studentProfile.update({
+        const raw = UpdateStudentProfileSchema.parse(req.body);
+
+        const normalizeEnum = (val?: string | null) => val ? val.toUpperCase().replace(/\s+/g, "_") : undefined; // "Prefer not to say" -> "PREFER_NOT_TO_SAY"
+
+        const genderEnum = raw.gender ? (normalizeEnum(raw.gender) as Gender) : undefined;
+
+        const ethnicityEnums = (raw.ethnicity ?? []).map((e) => normalizeEnum(e) as Ethnicity);
+
+        const optionalEnums = (raw.optional ?? []).map((f) => normalizeEnum(f) as IdentityFlag);
+
+        const updated = await prisma.studentProfile.update({
             where: { userId },
-            data: req.body,
+            data: {
+                ...(genderEnum && { gender: genderEnum }),
+                ...(ethnicityEnums.length && { ethnicity: ethnicityEnums }),
+                ...(optionalEnums.length && { optional: optionalEnums }),
+            },
         });
 
         return res.json({
             message: 'Profile updated successfully',
-            profile: updatedProfile,
+            profile: updated,
         });
     } catch (error) {
         console.error('Error updating student profile:', error);

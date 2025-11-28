@@ -334,15 +334,19 @@ router.get("/me/unavailable-times", requireAuth, requireRole(Role.EMPLOYER),
     async (req, res, next) => {
         try {
             const userId = getUserId(req);
-
-            const emp = await prisma.employerProfile.findUnique({
+            
+            const profile = await prisma.employerProfile.findUnique({
                 where: { userId },
                 select: { unavailableTimes: true },
             });
 
-            return res.json({ unavailableTimes: emp?.unavailableTimes ?? [] });
-        } 
-        catch (e) {
+            if (!profile) {
+                return res.status(404).json({ error: "Employer profile not found" });
+            }
+
+            // Return the events exactly as stored
+            return res.json({ unavailableTimes: profile.unavailableTimes || [] });
+        } catch (e) {
             next(e);
         }
     }
@@ -354,17 +358,34 @@ router.post("/me/unavailable-times", requireAuth, requireRole(Role.EMPLOYER),
             const userId = getUserId(req);
             const { events } = req.body;
 
-        if (!Array.isArray(events)) {
-            return res.status(400).json({ error: "Events must be an array" });
-        }
+            if (!Array.isArray(events)) {
+                return res.status(400).json({ error: "Events must be an array" });
+            }
 
-        const updated = await prisma.employerProfile.update({
-            where: { userId },
-            data: { unavailableTimes: events },
-            select: { unavailableTimes: true },
-        });
+            // Normalize events to ensure consistent string format (no Z suffix)
+            const normalizedEvents = events.map(event => {
+                // Remove Z suffix if present to keep as timezone-naive
+                const start = typeof event.start === 'string' 
+                    ? event.start.replace('Z', '').replace(/\.\d{3}$/, '') 
+                    : event.start;
+                const end = typeof event.end === 'string' 
+                    ? event.end.replace('Z', '').replace(/\.\d{3}$/, '') 
+                    : event.end;
 
-        return res.json(updated);
+                return {
+                    ...event,
+                    start,
+                    end,
+                };
+            });
+
+            const updated = await prisma.employerProfile.update({
+                where: { userId },
+                data: { unavailableTimes: normalizedEvents },
+                select: { unavailableTimes: true },
+            });
+
+            return res.json(updated);
         } catch (e) {
             next(e);
         }

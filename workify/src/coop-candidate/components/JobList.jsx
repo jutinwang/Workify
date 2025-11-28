@@ -9,9 +9,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate } from "react-router-dom";
 import { employerApi } from "../../api/employers";
 
-const JobList = ({ jobs, selectedJob, onSelectJob }) => {
-  const navigate = useNavigate();
-
+const JobList = ({ jobs, selectedJob, onSelectJob, onEditJob }) => {
   const handleJobToggle = (job) => {
     if (selectedJob?.id === job.id) {
       onSelectJob(null);
@@ -73,7 +71,15 @@ const handleCloning = async (job) => {
               <button className="employer job-link" onClick={() => handleJobToggle(job)}>View</button>
               <button className="employer job-link options"><MoreVertIcon /></button>
               <div className="dropdown-content">
-                <button className="employer job-link" > <EditIcon /> </button>
+                <button 
+                  className="employer job-link"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEditJob(job);
+                  }}
+                >
+                  <EditIcon />
+                </button>
                 <button className="employer job-link" onClick={() => handleArchiving(job)}> <ArchiveIcon /> </button>
                 <button className="employer job-link" onClick={() => handleDelete(job)}> <DeleteForeverIcon /> </button>
                 <button className="employer job-link" onClick={() => handleCloning(job)}> <FileCopyIcon /> </button>

@@ -20,6 +20,17 @@ export default function ExperiencesModal({ isOpen, onClose, values, onChange }) 
     const [draft, setDraft] = useState([]);
     const firstInputRef = useRef(null);
 
+    const updateField = useCallback((id, field, value) => {
+        setDraft((prev) =>
+            prev.map((row) => {
+                if (row._id !== id) return row;
+                const next = { ...row, [field]: value };
+                if (field === "current" && value) next.endDate = "";
+                return next;
+            })
+        );
+    }, []);
+
     useEffect(() => {
         if (!isOpen) return;
         const seeded = Array.isArray(values) ? values : [];
@@ -59,17 +70,6 @@ export default function ExperiencesModal({ isOpen, onClose, values, onChange }) 
     const removeExperience = (id) => {
         setDraft((prev) => prev.filter((e) => e._id !== id));
     };
-
-    const updateField = useCallback((id, field, value) => {
-        setDraft((prev) =>
-            prev.map((row) => {
-                if (row._id !== id) return row;
-                const next = { ...row, [field]: value };
-                if (field === "current" && value) next.endDate = "";
-                return next;
-            })
-        );
-    }, []);
 
     const clearAll = () => setDraft([]);
 

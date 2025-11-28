@@ -7,15 +7,6 @@ import { z } from "zod";
 const prisma = new PrismaClient();
 const router = Router();
 
-function getUserId(req: any): number {
-    const sub = req.user?.sub;
-    const id = Number(sub);
-    if (!Number.isFinite(id)) {
-        throw Object.assign(new Error("Unauthenticated"), { status: 401 });
-    }
-    return id;
-}
-
 async function getEmployerProfileId(userId: number): Promise<number> {
     const profile = await prisma.employerProfile.findUnique({
         where: { userId },
@@ -38,10 +29,189 @@ async function getStudentProfileId(userId: number): Promise<number> {
     return profile.id;
 }
 
+function getUserId(req: any): number {
+    const sub = req.user?.sub;
+    const id = Number(sub);
+    if (!Number.isFinite(id)) {
+        throw new Error("Unauthenticated");
+    }
+    return id;
+}
+
+function toLocalISOStringHelper(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    const second = String(date.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hour}:${minute}:${second}`;
+}
+
+function parseAsLocalTime(dateStr: string): Date {
+    // Remove 'Z' suffix if present to prevent UTC interpretation
+    const cleanStr = dateStr.replace('Z', '');
+    
+    // Parse the datetime components
+    const match = cleanStr.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/);
+    if (!match) {
+        return new Date(dateStr); // Fallback to default parsing
+    }
+    
+    const [, year, month, day, hour, minute, second] = match;
+    return new Date(
+        parseInt(year),
+        parseInt(month) - 1, // months are 0-indexed
+        parseInt(day),
+        parseInt(hour),
+        parseInt(minute),
+        parseInt(second)
+    );
+}
+
+// Generate slots for the next N days
+function generateSlots(
+    unavailable: { start: string; end: string }[],
+    durationMinutes: number,
+    daysAhead = 14
+): { id: string; start: string; end: string }[] {
+    const slots: { id: string; start: string; end: string }[] = [];
+
+    const now = new Date();
+    const startHour = 9;
+    const endHour = 17;
+
+    // Parse unavailable ranges - treat as local time, not UTC
+    const unavailableRanges = unavailable
+        .map((e) => {
+            // Parse as local time by removing 'Z' if present or parsing carefully
+            const s = parseAsLocalTime(e.start);
+            const eEnd = parseAsLocalTime(e.end);
+            if (Number.isNaN(s.getTime()) || Number.isNaN(eEnd.getTime())) return null;
+            return { start: s, end: eEnd };
+        })
+        .filter(Boolean) as { start: Date; end: Date }[];
+
+
+    for (let d = 0; d < daysAhead; d++) {
+        const day = new Date(now);
+        day.setDate(day.getDate() + d);
+
+        // Skip weekends
+        const dayOfWeek = day.getDay();
+        if (dayOfWeek === 0 || dayOfWeek === 6) continue;
+
+        // Set day boundaries using local time
+        const dayStart = new Date(day);
+        dayStart.setHours(startHour, 0, 0, 0);
+
+        const dayEnd = new Date(day);
+        dayEnd.setHours(endHour, 0, 0, 0);
+
+        // Skip if entire day is in the past
+        if (dayEnd <= now) continue;
+
+        // Adjust start time if day is today
+        const effectiveStart = new Date(Math.max(dayStart.getTime(), now.getTime()));
+
+        // Get unavailable periods for this day
+        const dayUnavailable = unavailableRanges
+            .filter((u) => overlaps(effectiveStart, dayEnd, u.start, u.end))
+            .map((u) => ({
+                start: new Date(Math.max(u.start.getTime(), effectiveStart.getTime())),
+                end: new Date(Math.min(u.end.getTime(), dayEnd.getTime())),
+            }))
+            .sort((a, b) => a.start.getTime() - b.start.getTime());
+
+        // Merge overlapping unavailable periods
+        const merged: { start: Date; end: Date }[] = [];
+        for (const period of dayUnavailable) {
+            if (merged.length === 0) {
+                merged.push({ ...period });
+            } else {
+                const last = merged[merged.length - 1];
+                if (period.start <= last.end) {
+                    last.end = new Date(Math.max(last.end.getTime(), period.end.getTime()));
+                } else {
+                    merged.push({ ...period });
+                }
+            }
+        }
+
+        // Generate available intervals between unavailable periods
+        const availableIntervals: { start: Date; end: Date }[] = [];
+        let currentStart = effectiveStart;
+
+        for (const busy of merged) {
+            if (currentStart < busy.start) {
+                availableIntervals.push({
+                    start: currentStart,
+                    end: busy.start,
+                });
+            }
+            currentStart = busy.end;
+        }
+
+        // Add remaining time until end of day if available
+        if (currentStart < dayEnd) {
+            availableIntervals.push({
+                start: currentStart,
+                end: dayEnd,
+            });
+        }
+
+        // Generate slots from available intervals
+        for (const interval of availableIntervals) {
+            let slotStart = new Date(interval.start);
+
+            // Round up to next minute boundary
+            if (slotStart.getSeconds() > 0 || slotStart.getMilliseconds() > 0) {
+                slotStart = new Date(slotStart);
+                slotStart.setMinutes(slotStart.getMinutes() + 1);
+                slotStart.setSeconds(0, 0);
+            }
+
+            while (slotStart < interval.end) {
+                const slotEnd = new Date(slotStart.getTime() + durationMinutes * 60000);
+
+                // Check if slot fits in the interval
+                if (slotEnd > interval.end) break;
+
+                // Use local ISO string (no Z suffix)
+                const startStr = toLocalISOStringHelper(slotStart);
+                const endStr = toLocalISOStringHelper(slotEnd);
+                const id = `${startStr}__${endStr}`;
+                slots.push({
+                    id,
+                    start: startStr,
+                    end: endStr,
+                });
+
+                // Move to next slot
+                slotStart = new Date(slotEnd);
+            }
+        }
+    }
+
+    return slots;
+}
+
+// Helper function
+function overlaps(aStart: Date, aEnd: Date, bStart: Date, bEnd: Date): boolean {
+    return aStart < bEnd && bStart < aEnd;
+}
+
 const CreateInterviewRequestBody = z.object({
     jobId: z.number().int().positive(),
     studentId: z.number().int().positive(),
     durationMinutes: z.number().int().positive().max(240),
+    note: z.string().max(5000).optional(),
+});
+
+const InterviewCreate = z.object({
+    jobId: z.number().int().positive(), 
+    studentId: z.number().int().positive(),
+    durationMinutes: z.number().int().positive().max(240), 
     note: z.string().max(5000).optional(),
 });
 
@@ -51,78 +221,75 @@ const SelectSlotBody = z.object({
 
 // employer creates an interview request 
 
-router.post("/",requireAuth,requireRole(Role.EMPLOYER),
+router.post("/", requireAuth, requireRole(Role.EMPLOYER),
     async (req, res, next) => {
         try {
             const userId = getUserId(req);
             const employerId = await getEmployerProfileId(userId);
-            const input = CreateInterviewRequestBody.parse(req.body);
+            const input = InterviewCreate.parse(req.body);
 
-            const job = await prisma.job.findFirst({
-                where: { id: input.jobId, employerId },
-                select: {
-                    id: true,
-                    title: true,
-                    company: { select: { id: true, name: true } },
-                },
+            const student = await prisma.studentProfile.findUnique({
+                where: { id: input.studentId },
+                select: { id: true, userId: true },
             });
 
-            if (!job) {
-                return res.status(404).json({ error: "Job not found or you don't have access" });
+            if (!student) {
+                return res.status(404).json({ error: "Student profile not found" });
             }
 
-            const application = await prisma.application.findFirst({
-                where: {
-                    jobId: input.jobId,
-                    studentId: input.studentId,
-                },
-                select: { id: true },
-            });
-
-            const employer = await prisma.employerProfile.findUnique({
-                where: { id: employerId },
-                select: { unavailableTimes: true },
-            });
-
-            const busy = (employer?.unavailableTimes as BusyEvent[]) || [];
-            const proposedSlots = computeProposedSlotsFromBusy(busy,input.durationMinutes);
-
-            if (proposedSlots.length === 0) {
-                return res.status(400).json({
-                    error: "No available slots could be generated with the current availability and duration.",
+            // Optional: if jobId is provided, verify it belongs to this employer
+            let jobSelect: any = null;
+            if (input.jobId) {
+                const job = await prisma.job.findFirst({
+                    where: { id: input.jobId, employerId },
+                    select: { id: true, title: true, companyId: true },
                 });
+
+                if (!job) {
+                    return res.status(404).json({ error: "Job not found or you don't have access" });
+                }
+                jobSelect = job;
             }
 
             const interview = await prisma.interviewRequest.create({
                 data: {
                     studentId: input.studentId,
                     employerId,
-                    jobId: input.jobId,
-                    applicationId: application?.id ?? null,
-                    status: InterviewStatus.PENDING,
+                    jobId: input.jobId ?? null,
                     durationMinutes: input.durationMinutes,
                     note: input.note ?? null,
-                    availability: busy,
-                    proposedSlots,
+                    status: InterviewStatus.PENDING,
                 },
                 select: {
                     id: true,
                     status: true,
                     durationMinutes: true,
                     note: true,
-                    proposedSlots: true,
                     createdAt: true,
-                    student: {
-                        select: {
-                            id: true,
-                            user: { select: { name: true, email: true } },
-                        },
-                    },
                     job: {
                         select: {
                             id: true,
                             title: true,
-                            company: { select: { id: true, name: true } },
+                            location: true,
+                            type: true,
+                            company: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                },
+                            },
+                        },
+                    },
+                    student: {
+                        select: {
+                            id: true,
+                            user: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    email: true,
+                                },
+                            },
                         },
                     },
                 },
@@ -130,54 +297,36 @@ router.post("/",requireAuth,requireRole(Role.EMPLOYER),
 
             return res.status(201).json({ interview });
         } catch (e: any) {
-            if (e?.name === "ZodError") {
-                return res.status(400).json({ error: "Invalid input", issues: e.issues });
-            }
-            if (e?.status === 404) {
-                return res.status(404).json({ error: e.message });
-            }
-            next(e);
+        if (e?.name === "ZodError") {
+            return res
+            .status(400)
+            .json({ error: "Invalid input", issues: e.issues });
+        }
+        if (e?.status === 404) {
+            return res.status(404).json({ error: e.message });
+        }
+        next(e);
         }
     }
 );
 
-//studnet gets a single interview request
-
-router.get("/student/interviews/:id",requireAuth,requireRole(Role.STUDENT),
+router.get("/student/interviews/:interviewId/slots", requireAuth, requireRole(Role.STUDENT),
     async (req, res, next) => {
         try {
             const userId = getUserId(req);
-            const studentId = await getStudentProfileId(userId);
-            const id = Number(req.params.id);
+            const interviewId = Number(req.params.interviewId);
 
-            if (!Number.isFinite(id)) {
+            if (!Number.isFinite(interviewId)) {
                 return res.status(400).json({ error: "Invalid interview ID" });
             }
 
             const interview = await prisma.interviewRequest.findFirst({
-                where: { id, studentId },
+                where: { id: interviewId, student: { userId } },
                 select: {
                     id: true,
+                    employerId: true,
                     status: true,
                     durationMinutes: true,
-                    note: true,
-                    proposedSlots: true,
-                    chosenStart: true,
-                    chosenEnd: true,
-                    createdAt: true,
-                    job: {
-                        select: {
-                            id: true,
-                            title: true,
-                            company: { select: { id: true, name: true } },
-                        },
-                    },
-                    employer: {
-                        select: {
-                            id: true,
-                            company: { select: { id: true, name: true } },
-                        },
-                    },
                 },
             });
 
@@ -185,37 +334,71 @@ router.get("/student/interviews/:id",requireAuth,requireRole(Role.STUDENT),
                 return res.status(404).json({ error: "Interview not found" });
             }
 
-            return res.json({ interview });
-        } catch (e: any) {
-            if (e?.status === 404) {
-                return res.status(404).json({ error: e.message });
+            if (!interview.durationMinutes) {
+                return res.status(400).json({ error: "Interview duration is not set by employer." });
             }
+
+            const employer = await prisma.employerProfile.findUnique({
+                where: { id: interview.employerId },
+                select: { unavailableTimes: true },
+            });
+
+            let unavailable = (employer?.unavailableTimes as any[]) || [];
+            
+            // Normalize unavailable times
+            unavailable = unavailable.map((event: any) => {
+                let start = event.start;
+                let end = event.end;
+
+                // convert UTC to local
+                if (typeof start === 'string' && (start.includes('Z') || start.includes('.'))) {
+                    const d = new Date(start);
+                    start = toLocalISOStringHelper(d);
+                }
+                if (typeof end === 'string' && (end.includes('Z') || end.includes('.'))) {
+                    const d = new Date(end);
+                    end = toLocalISOStringHelper(d);
+                }
+
+                return { start, end };
+            });
+
+            console.log("convert")
+            console.log(unavailable)
+
+            console.log('Normalized unavailable times:', unavailable);
+
+            const slots = generateSlots(unavailable, interview.durationMinutes);
+
+            return res.json({ slots });
+        } catch (e) {
             next(e);
         }
     }
 );
 
-//student chooses a slot 
-
-
-router.patch("/student/interviews/:id/select-slot",requireAuth,requireRole(Role.STUDENT),
+router.patch("/student/interviews/:interviewId/select-slot", requireAuth, requireRole(Role.STUDENT),
     async (req, res, next) => {
         try {
             const userId = getUserId(req);
-            const studentId = await getStudentProfileId(userId);
-            const id = Number(req.params.id);
-            const input = SelectSlotBody.parse(req.body);
+            const interviewId = Number(req.params.interviewId);
 
-            if (!Number.isFinite(id)) {
+            if (!Number.isFinite(interviewId)) {
                 return res.status(400).json({ error: "Invalid interview ID" });
             }
 
+            const { slotId } = req.body as { slotId?: string };
+
+            if (!slotId) {
+                return res.status(400).json({ error: "slotId is required" });
+            }
+
             const interview = await prisma.interviewRequest.findFirst({
-                where: { id, studentId },
+                where: { id: interviewId, student: { userId } },
                 select: {
                     id: true,
-                    status: true,
-                    proposedSlots: true,
+                    employerId: true,
+                    durationMinutes: true,
                 },
             });
 
@@ -223,50 +406,45 @@ router.patch("/student/interviews/:id/select-slot",requireAuth,requireRole(Role.
                 return res.status(404).json({ error: "Interview not found" });
             }
 
-            if (interview.status !== InterviewStatus.PENDING) {
-                return res.status(400).json({ error: "Interview is not in a pending state" });
+            if (!interview.durationMinutes) {
+                return res.status(400).json({ error: "Interview duration is not set by employer." });
             }
 
-            const slots = (interview.proposedSlots as Slot[]) || [];
-            const slot = slots.find((s) => s.id === input.slotId);
+            const employer = await prisma.employerProfile.findUnique({
+                where: { id: interview.employerId },
+                select: { unavailableTimes: true },
+            });
 
-            if (!slot) {
-                return res.status(400).json({ error: "Invalid slot" });
+            const unavailable = (employer?.unavailableTimes as any[]) || [];
+
+            // regenerate slots and find the one chosen
+            const slots = generateSlots(unavailable, interview.durationMinutes);
+
+            const chosen = slots.find((s) => s.id === slotId);
+            if (!chosen) {
+                return res.status(400).json({ error: "Selected slot is no longer available. Please refresh and pick another time." });
             }
 
-            const chosenStart = new Date(slot.start);
-            const chosenEnd = new Date(slot.end);
+            const chosenStart = new Date(chosen.start);
+            const chosenEnd = new Date(chosen.end);
 
             const updated = await prisma.interviewRequest.update({
-                where: { id: interview.id },
+                where: { id: interviewId },
                 data: {
+                    status: InterviewStatus.SCHEDULED,
                     chosenStart,
                     chosenEnd,
-                    status: InterviewStatus.SCHEDULED,
                 },
                 select: {
                     id: true,
                     status: true,
                     chosenStart: true,
                     chosenEnd: true,
-                    job: {
-                        select: {
-                            id: true,
-                            title: true,
-                            company: { select: { id: true, name: true } },
-                        },
-                    },
                 },
             });
 
-            return res.json({ interview: updated });
-        } catch (e: any) {
-            if (e?.name === "ZodError") {
-                return res.status(400).json({ error: "Invalid input", issues: e.issues });
-            }
-            if (e?.status === 404) {
-                return res.status(404).json({ error: e.message });
-            }
+            return res.json(updated);
+        } catch (e) {
             next(e);
         }
     }
