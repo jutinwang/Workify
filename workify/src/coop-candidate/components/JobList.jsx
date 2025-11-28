@@ -5,6 +5,7 @@ import EditIcon from '../../profile/EditIcon';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate } from "react-router-dom";
 import { employerApi } from "../../api/employers";
 
@@ -70,10 +71,13 @@ const handleCloning = async (job) => {
             </span>
             <div className="employer job-actions">
               <button className="employer job-link" onClick={() => handleJobToggle(job)}>View</button>
-              <button className="employer job-link" > <EditIcon /> </button>
-              <button className="employer job-link" onClick={() => handleArchiving(job)}> <ArchiveIcon /> </button>
-              <button className="employer job-link" onClick={() => handleDelete(job)}> <DeleteForeverIcon /> </button>
-              <button className="employer job-link" onClick={() => handleCloning(job)}> <FileCopyIcon /> </button>
+              <button className="employer job-link options"><MoreVertIcon /></button>
+              <div className="dropdown-content">
+                <button className="employer job-link" > <EditIcon /> </button>
+                <button className="employer job-link" onClick={() => handleArchiving(job)}> <ArchiveIcon /> </button>
+                <button className="employer job-link" onClick={() => handleDelete(job)}> <DeleteForeverIcon /> </button>
+                <button className="employer job-link" onClick={() => handleCloning(job)}> <FileCopyIcon /> </button>
+              </div>
             </div>
           </label>
         ))}
