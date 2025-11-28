@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { PrismaClient, Role, ApplicationStatus } from "@prisma/client";
+import { PrismaClient, Role, ApplicationStatus, InterviewStatus } from "@prisma/client";
 import { requireAuth, requireRole } from "../../middleware/requireAuth";
 import { z } from "zod";
 
@@ -645,6 +645,73 @@ router.get("/jobs/:jobId/stats", requireAuth, requireRole(Role.EMPLOYER),
                     shortlistedCount,
                 },
             });
+        } catch (e: any) {
+            if (e?.status === 404) {
+                return res.status(404).json({ error: e.message });
+            }
+            next(e);
+        }
+    }
+);
+
+// Set application status to OFFER
+router.post("/applications/:applicationId/offer", requireAuth, requireRole(Role.EMPLOYER),
+    async (req, res, next) => {
+        try {
+            const userId = getUserId(req);
+            const employerId = await getEmployerProfileId(userId);
+            const applicationId = Number(req.params.applicationId);
+
+            if (!Number.isFinite(applicationId)) {
+                return res.status(400).json({ error: "Invalid application ID" });
+            }
+
+            // Verify employer owns the job this application is for
+            const application = await prisma.application.findFirst({
+                where: {
+                    id: applicationId,
+                    job: { employerId },
+                },
+                select: { id: true, status: true },
+            });
+
+            if (!application) {
+                return res.status(404).json({ error: "Application not found or you don't have access" });
+            }
+
+            const updated = await prisma.application.update({
+                where: { id: applicationId },
+                data: { 
+                    status: ApplicationStatus.OFFER,
+                    shortlisted: true, // Automatically shortlist when offering
+                },
+                select: {
+                    id: true,
+                    status: true,
+                    shortlisted: true,
+                    updatedAt: true,
+                    student: {
+                        select: {
+                            id: true,
+                            user: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    email: true,
+                                },
+                            },
+                        },
+                    },
+                    job: {
+                        select: {
+                            id: true,
+                            title: true,
+                        },
+                    },
+                },
+            });
+
+            return res.json({ application: updated });
         } catch (e: any) {
             if (e?.status === 404) {
                 return res.status(404).json({ error: e.message });

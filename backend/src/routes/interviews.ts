@@ -449,4 +449,272 @@ router.patch("/student/interviews/:interviewId/select-slot", requireAuth, requir
     }
 );
 
+// Mark interview as completed
+router.patch("/interviews/:interviewId/complete", requireAuth, requireRole(Role.EMPLOYER),
+    async (req, res, next) => {
+        try {
+            const userId = getUserId(req);
+            const employerId = await getEmployerProfileId(userId);
+            const interviewId = Number(req.params.interviewId);
+
+            if (!Number.isFinite(interviewId)) {
+                return res.status(400).json({ error: "Invalid interview ID" });
+            }
+
+            // Verify employer owns this interview
+            const interview = await prisma.interviewRequest.findFirst({
+                where: {
+                    id: interviewId,
+                    employerId,
+                },
+                select: { 
+                    id: true, 
+                    status: true,
+                    chosenStart: true,
+                    chosenEnd: true,
+                },
+            });
+
+            if (!interview) {
+                return res.status(404).json({ error: "Interview not found or you don't have access" });
+            }
+
+            if (interview.status !== InterviewStatus.SCHEDULED) {
+                return res.status(400).json({ 
+                    error: "Interview must be scheduled before it can be marked as completed" 
+                });
+            }
+
+            const updated = await prisma.interviewRequest.update({
+                where: { id: interviewId },
+                data: { status: InterviewStatus.COMPLETED },
+                select: {
+                    id: true,
+                    status: true,
+                    chosenStart: true,
+                    chosenEnd: true,
+                    durationMinutes: true,
+                    note: true,
+                    updatedAt: true,
+                    student: {
+                        select: {
+                            id: true,
+                            user: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    email: true,
+                                },
+                            },
+                        },
+                    },
+                    job: {
+                        select: {
+                            id: true,
+                            title: true,
+                            location: true,
+                            company: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+            return res.json({ interview: updated });
+        } catch (e: any) {
+            if (e?.status === 404) {
+                return res.status(404).json({ error: e.message });
+            }
+            next(e);
+        }
+    }
+);
+
+// Get all completed interviews for employer
+router.get("/interviews/completed", requireAuth, requireRole(Role.EMPLOYER),
+    async (req, res, next) => {
+        try {
+            const userId = getUserId(req);
+            const employerId = await getEmployerProfileId(userId);
+
+            // query params for pagination
+            const limit = Number(req.query.limit) || 50;
+            const offset = Number(req.query.offset) || 0;
+
+            const [interviews, total] = await Promise.all([
+                prisma.interviewRequest.findMany({
+                    where: {
+                        employerId,
+                        status: InterviewStatus.COMPLETED,
+                    },
+                    orderBy: [
+                        { chosenStart: 'desc' },
+                    ],
+                    take: limit,
+                    skip: offset,
+                    select: {
+                        id: true,
+                        status: true,
+                        durationMinutes: true,
+                        note: true,
+                        chosenStart: true,
+                        chosenEnd: true,
+                        createdAt: true,
+                        updatedAt: true,
+                        student: {
+                            select: {
+                                id: true,
+                                major: true,
+                                year: true,
+                                user: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        email: true,
+                                    },
+                                },
+                            },
+                        },
+                        job: {
+                            select: {
+                                id: true,
+                                title: true,
+                                location: true,
+                                company: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                    },
+                                },
+                            },
+                        },
+                        application: {
+                            select: {
+                                id: true,
+                                status: true,
+                                shortlisted: true,
+                            },
+                        },
+                    },
+                }),
+                prisma.interviewRequest.count({
+                    where: {
+                        employerId,
+                        status: InterviewStatus.COMPLETED,
+                    },
+                }),
+            ]);
+
+            return res.json({
+                interviews,
+                pagination: {
+                    total,
+                    limit,
+                    offset,
+                    hasMore: offset + limit < total,
+                },
+            });
+        } catch (e: any) {
+            if (e?.status === 404) {
+                return res.status(404).json({ error: e.message });
+            }
+            next(e);
+        }
+    }
+);
+
+// Get all interviews for employer 
+router.get("/interviews", requireAuth, requireRole(Role.EMPLOYER),
+    async (req, res, next) => {
+        try {
+            const userId = getUserId(req);
+            const employerId = await getEmployerProfileId(userId);
+
+            const status = req.query.status as InterviewStatus | undefined;
+            const limit = Number(req.query.limit) || 50;
+            const offset = Number(req.query.offset) || 0;
+
+            const where: any = { employerId };
+            if (status && Object.values(InterviewStatus).includes(status)) {
+                where.status = status;
+            }
+
+            const [interviews, total] = await Promise.all([
+                prisma.interviewRequest.findMany({
+                    where,
+                    orderBy: [
+                        { createdAt: 'desc' },
+                    ],
+                    take: limit,
+                    skip: offset,
+                    select: {
+                        id: true,
+                        status: true,
+                        durationMinutes: true,
+                        note: true,
+                        chosenStart: true,
+                        chosenEnd: true,
+                        createdAt: true,
+                        updatedAt: true,
+                        student: {
+                            select: {
+                                id: true,
+                                major: true,
+                                year: true,
+                                user: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        email: true,
+                                    },
+                                },
+                            },
+                        },
+                        job: {
+                            select: {
+                                id: true,
+                                title: true,
+                                location: true,
+                                company: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                    },
+                                },
+                            },
+                        },
+                        application: {
+                            select: {
+                                id: true,
+                                status: true,
+                                shortlisted: true,
+                            },
+                        },
+                    },
+                }),
+                prisma.interviewRequest.count({ where }),
+            ]);
+
+            return res.json({
+                interviews,
+                pagination: {
+                    total,
+                    limit,
+                    offset,
+                    hasMore: offset + limit < total,
+                },
+            });
+        } catch (e: any) {
+            if (e?.status === 404) {
+                return res.status(404).json({ error: e.message });
+            }
+            next(e);
+        }
+    }
+);
+
 export default router;
