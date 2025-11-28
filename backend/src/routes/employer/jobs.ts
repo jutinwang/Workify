@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { PrismaClient, Role, Gender, Ethnicity, IdentityFlag, Prisma } from "@prisma/client";
+import { PrismaClient, Role, Gender, Ethnicity, IdentityFlag, CoopPostingStatus, Prisma } from "@prisma/client";
 import { requireAuth, requireRole } from "../../middleware/requireAuth";
 import { getUserId } from "../students/users";
 import { z } from "zod";
@@ -28,7 +28,6 @@ const CreateJobBody = z.object({
 
     location: z.string().min(1).optional(),
     length: z.string().min(1).optional(),
-    type: z.string().min(1).optional(),
     salary: z.string().min(1).optional(),
 
     qualification: z.string().min(1).optional(),
@@ -39,6 +38,7 @@ const CreateJobBody = z.object({
     companyId: z.number().int().positive().optional(),
 
     tags: z.array(z.string().min(1)).optional(),
+    postingStatus: z.nativeEnum(CoopPostingStatus).optional(),
 });
 
 const UpdateJobBody = CreateJobBody.partial();
@@ -78,8 +78,11 @@ router.get("/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
                     description: true,
                     location: true,
                     length: true,
-                    type: true,
                     salary: true,
+                    qualification: true,
+                    benefits: true,
+                    responsibilities: true,
+                    programs: true,
                     createdAt: true,
                     updatedAt: true,
                     company: {
@@ -93,6 +96,7 @@ router.get("/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
                             applications: true,
                         },
                     },
+                    postingStatus: true
                 },
             }),
             prisma.job.count({ where }),
@@ -152,7 +156,6 @@ router.post( "/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
                     description: input.description,
                     location: input.location ?? null,
                     length: input.length ?? null,
-                    type: input.type ?? null,
                     salary: input.salary ?? null,
                     qualification: input.qualification ?? null,
                     programs: input.programs ?? [],
@@ -178,7 +181,6 @@ router.post( "/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
                     description: true,
                     location: true,
                     length: true,
-                    type: true,
                     salary: true,
                     qualification: true,
                     benefits: true,
@@ -243,6 +245,10 @@ router.patch("/me/jobs/:jobId", requireAuth, requireRole(Role.EMPLOYER),
                 ...rest,
             };
 
+            if (rest.postingStatus) {
+                data.postingStatus = rest.postingStatus as CoopPostingStatus;
+            }
+
             if (tags !== undefined) {
                 const { original, normalized } = prepareTagsForCreate(tags);
                 data.tags = {
@@ -267,13 +273,13 @@ router.patch("/me/jobs/:jobId", requireAuth, requireRole(Role.EMPLOYER),
                     description: true,
                     location: true,
                     length: true,
-                    type: true,
                     salary: true,
                     qualification: true,
                     benefits: true,
                     programs: true,
                     updatedAt: true,
                     tags: { select: { id: true, name: true, displayName: true } },
+                    postingStatus: true
                 },
             });
 

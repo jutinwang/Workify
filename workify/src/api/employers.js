@@ -20,6 +20,38 @@ export const employerApi = {
   async getProfile() {
     return apiClient.get("/employers/profile");
   },
+
+  async updatePostingStatus(data) {
+    // Temp and should be improved
+    if (data.postingStatus === "ARCHIVED") {
+      data.postingStatus = "ACTIVE"
+    } else {
+      data.postingStatus = "ARCHIVED"
+    }
+    return apiClient.patch(`/employers/me/jobs/${data.id}`, data)
+  },
+
+  async updateCoop(data){
+    return apiClient.patch(`/employers/me/jobs/${data.id}`, data)
+  },
+
+  async deleteCoop(data){
+    return apiClient.delete(`/employers/me/jobs/${data.id}`)
+  },
+
+  async cloneCoop(data) {
+    return apiClient.post("/employers/me/jobs", {
+      title: "[DUPLICATE] " + data.title,
+      description: data.description,
+      location: data.location,
+      length: data.length,
+      salary: data.salary,
+      qualification: data.qualification,
+      responsibilities: data.responsibilities,
+      benefits: data.benefits,
+      tags: data.tags
+    });
+  }
 };
 
 
@@ -88,6 +120,26 @@ const apiClient = {
         method: 'PATCH',
         headers,
         body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Request failed');
+      return data;
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
+  },
+
+  async delete(endpoint) {
+    try {
+      const token = localStorage.getItem('authToken');
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'DELETE',
+        headers,
       });
 
       const data = await response.json();

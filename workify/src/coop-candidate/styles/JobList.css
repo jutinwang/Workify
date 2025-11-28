@@ -66,3 +66,33 @@
   color: white;
   text-decoration: none;
 }
+
+.employer.job-link.options {
+  border: none;
+  cursor: pointer;
+}
+
+.employer.job-actions {
+  position: relative;
+  display: flex;             /* Align buttons side-by-side */
+  align-items: center;       /* Vertically center them */
+  gap: 6px;                  
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;        /* <- important */
+  top: 100%;                 /* Below the More button */
+  right: 0;                  /* Align to the right edge */
+  background-color: #fff;
+  padding: 4px;
+  border-radius: 6px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  z-index: 10;
+}
+
+.dropdown-content a:hover {background-color: #ddd;}
+
+.employer.job-actions:hover .dropdown-content {display: flex;}
+
+.employer.job-actions:hover .dropbtn {background-color: #3e8e41;}

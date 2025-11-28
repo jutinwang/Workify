@@ -113,7 +113,6 @@ model Job {
   description      String
   title            String
   location         String?
-  type             String?
   salary           String?
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
@@ -127,6 +126,7 @@ model Job {
   employer         EmployerProfile    @relation(fields: [employerId], references: [id], onDelete: Cascade)
   tags             Tag[]              @relation("JobTags")
   InterviewRequest InterviewRequest[]
+  postingStatus    CoopPostingStatus  @default(ACTIVE)
 
   @@index([companyId])
   @@index([employerId])
@@ -233,4 +233,10 @@ enum InterviewStatus {
   SCHEDULED
   COMPLETED
   CANCELLED
+}
+
+enum CoopPostingStatus {
+  ACTIVE
+  ARCHIVED
+  DELETED
 }
