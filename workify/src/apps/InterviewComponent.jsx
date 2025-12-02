@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Card from "../common/Card";
 import StudentScheduleInterviewModal from "./StudentScheduleInterviewModal";
 
-const InterviewComponent = () => {
+const InterviewComponent = ({ onPendingCountChange }) => {
   const navigate = useNavigate();
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,6 +50,13 @@ const InterviewComponent = () => {
   const scheduledInterviews = interviews.filter(
     (req) => req.status === "SCHEDULED"
   );
+
+  // Notify parent component of pending count changes
+  useEffect(() => {
+    if (onPendingCountChange) {
+      onPendingCountChange(pendingRequests.length);
+    }
+  }, [pendingRequests.length, onPendingCountChange]);
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
@@ -212,74 +219,73 @@ const InterviewComponent = () => {
         )}
       </Card>
 
-      {console.log(scheduledInterviews)}
-
       <Card title="Upcoming Interviews">
         {loading ? (
           <div className="apps-empty-state">
             <p>Loading interviews…</p>
           </div>
         ) : scheduledInterviews.length > 0 ? (
-          <div className="apps-interviews-table-wrapper">
-            <table className="apps-interviews-table">
-              <thead>
-                <tr>
-                  <th>Position</th>
-                  <th>Company</th>
-                  <th>Date &amp; Time</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {scheduledInterviews.map((interview) => (
-                  <tr key={interview.id}>
-                    <td>
-                      <div className="apps-position-cell">
-                        <span className="cell-strong">
-                          {interview.job?.title || "Untitled role"}
-                        </span>
-                        <div className="apps-position-details">
-                          {interview.job?.type && (
-                            <span className="apps-job-type">
-                              {interview.job.type}
-                            </span>
-                          )}
-                          {interview.job?.location && (
-                            <>
-                              <span className="apps-separator">•</span>
-                              <span>{interview.job.location}</span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-                    <td>
+          <div className="apps-upcoming-interviews-container">
+            {scheduledInterviews.map((interview) => (
+              <div key={interview.id} className="apps-upcoming-interview-card">
+                <div className="apps-interview-card-header">
+                  <div className="apps-interview-job-info">
+                    <h3 className="apps-job-title">
+                      {interview.job?.title || "Untitled role"}
+                    </h3>
+                    <p className="apps-company-name">
                       {interview.job?.company?.name ||
                         interview.employer?.company?.name ||
                         "Company"}
-                    </td>
-                    <td>
-                      <div className="apps-datetime-cell">
+                    </p>
+                    {interview.job?.location && (
+                      <div className="apps-job-details">
+                        <span className="apps-job-location">
+                          📍 {interview.job.location}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="apps-interview-datetime">
+                    <div className="apps-datetime-badge">
+                      <span className="apps-datetime-icon">📅</span>
+                      <span className="apps-datetime-text">
                         {formatDateTime(interview.chosenStart)}
-                      </div>
-                    </td>
-                    <td>
-                      <div className="apps-interview-actions">
-                        <button
-                          className="btn apps-btn-small"
-                          onClick={() =>
-                            interview.job?.id &&
-                            navigate(`/students/${interview.job.id}`)
-                          }
-                        >
-                          View Co-Op
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      </span>
+                    </div>
+                    {interview.durationMinutes && (
+                      <p className="apps-interview-duration">
+                        ⏱️ {interview.durationMinutes} minutes
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="apps-interview-card-actions">
+                  <button
+                    className="btn apps-btn-view"
+                    onClick={() =>
+                      interview.job?.id &&
+                      navigate(`/students/${interview.job.id}`)
+                    }
+                  >
+                    View Position
+                  </button>
+                  <button
+                    className="btn apps-btn-link"
+                    onClick={() => {
+                      // TODO: Backend implementation needed for interview links
+                      if (interview.meetingLink) {
+                        window.open(interview.meetingLink, '_blank');
+                      } else {
+                        alert('Meeting link not yet available. Please check back closer to your interview time.');
+                      }
+                    }}
+                  >
+                    Interview Link
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           <div className="apps-empty-state">

@@ -31,8 +31,41 @@ const Apps = () => {
   const [sortBy, setSortBy] = useState("lastUpdatedDesc");
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [applicationToWithdraw, setApplicationToWithdraw] = useState(null);
+  const [pendingInterviewCount, setPendingInterviewCount] = useState(0);
+  const [pendingOfferCount, setPendingOfferCount] = useState(0);
   // Pagination
   const [page, setPage] = useState(1);
+
+  // Getting pending interview count on mount
+  useEffect(() => {
+    const fetchPendingInterviews = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) return;
+
+        const res = await fetch("http://localhost:4000/users/me/interviews", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+
+        const data = await res.json().catch(() => []);
+        if (res.ok && Array.isArray(data)) {
+          const pendingCount = data.filter(
+            (req) => req.status === "PENDING"
+          ).length;
+          setPendingInterviewCount(pendingCount);
+        }
+      } catch (err) {
+        console.error("Failed to fetch interview count:", err);
+      }
+    };
+
+    fetchPendingInterviews();
+  }, []);
 
   // Fetch applications on mount
   useEffect(() => {
@@ -69,6 +102,14 @@ const Apps = () => {
 
     fetchApplications();
   }, []);
+
+  // Update pending offer count whenever applications change
+  useEffect(() => {
+    const offerCount = applications.filter(
+      (app) => app.status === "OFFER"
+    ).length;
+    setPendingOfferCount(offerCount);
+  }, [applications]);
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -307,11 +348,35 @@ const Apps = () => {
     <div className="applications-page-container">
       <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
         <Tabs value={activeTab} onChange={handleTabChange}>
-          <Tab label="Applications" />
-          <Tab label="Interviews" />
+          <Tab
+            label={
+              <span>
+                Applications
+                {pendingOfferCount > 0 && (
+                  <span className="apps-tab-badge">{pendingOfferCount}</span>
+                )}
+              </span>
+            }
+          />
+          <Tab
+            label={
+              <span>
+                Interviews
+                {pendingInterviewCount > 0 && (
+                  <span className="apps-tab-badge">
+                    {pendingInterviewCount}
+                  </span>
+                )}
+              </span>
+            }
+          />
         </Tabs>
       </Box>
-      {activeTab === 0 ? <ApplicationsComponent /> : <InterviewComponent />}
+      {activeTab === 0 ? (
+        <ApplicationsComponent />
+      ) : (
+        <InterviewComponent onPendingCountChange={setPendingInterviewCount} />
+      )}
       {selectedOffer && (
         <OfferModal
           application={selectedOffer}
