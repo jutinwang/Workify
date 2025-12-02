@@ -74,6 +74,37 @@ export const employerApi = {
   async shortlistApplication(applicationId) {
     return apiClient.post(`/employers/applications/${applicationId}/shortlist`);
   },
+
+  // Account Management
+  async updateAccountInfo(updates) {
+    return apiClient.patch("/employers/profile", updates);
+  },
+
+  async changePassword(currentPassword, newPassword) {
+    return apiClient.patch("/employers/account/password", {
+      currentPassword,
+      newPassword,
+    });
+  },
+
+  async deleteAccount(password, confirmation) {
+    const token = localStorage.getItem("authToken");
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    const response = await fetch(`${API_BASE_URL}/employers/account`, {
+      method: "DELETE",
+      headers,
+      body: JSON.stringify({ password, confirmation }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.error || "Failed to delete account");
+    }
+
+    return response.json();
+  },
 };
 
 const API_BASE_URL = "http://localhost:4000";

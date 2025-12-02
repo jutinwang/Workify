@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -19,6 +20,7 @@ import { employerApi } from "../api/employers";
 import { formatDateTime } from "../common/utility";
 
 function HeaderBar({ profileData }) {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     about: "About section content goes here...",
     background: [],
@@ -64,6 +66,25 @@ function HeaderBar({ profileData }) {
         <div className="ep-header-actions">
           <button className="ep-btn-primary" onClick={handleEdit}>
             Edit Profile
+          </button>
+          <button 
+            className="ep-btn-icon" 
+            onClick={() => navigate('/settings')}
+            title="Settings"
+            style={{ 
+              marginLeft: '0.5rem',
+              padding: '0.5rem 0.75rem',
+              fontSize: '1.25rem',
+              border: '1px solid #d1d5db',
+              borderRadius: '0.5rem',
+              background: 'white',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseOver={(e) => e.target.style.background = '#f3f4f6'}
+            onMouseOut={(e) => e.target.style.background = 'white'}
+          >
+            ⚙️
           </button>
         </div>
       </div>

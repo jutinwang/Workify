@@ -41,20 +41,23 @@ export const studentApi = {
   },
 
   async unsaveJob(jobId) {
-    const token = localStorage.getItem('authToken');
-    const headers = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const token = localStorage.getItem("authToken");
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
 
-    const response = await fetch(`http://localhost:4000/students/saved-jobs/${jobId}`, {
-      method: 'DELETE',
-      headers,
-    });
+    const response = await fetch(
+      `http://localhost:4000/students/saved-jobs/${jobId}`,
+      {
+        method: "DELETE",
+        headers,
+      }
+    );
 
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
-      throw new Error(data.error || 'Failed to unsave job');
+      throw new Error(data.error || "Failed to unsave job");
     }
-    
+
     return;
   },
 
@@ -68,24 +71,61 @@ export const studentApi = {
   },
 
   async deleteSearch(searchId) {
-    const token = localStorage.getItem('authToken');
-    const headers = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const token = localStorage.getItem("authToken");
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
 
-    const response = await fetch(`http://localhost:4000/students/saved-searches/${searchId}`, {
-      method: 'DELETE',
-      headers,
-    });
+    const response = await fetch(
+      `http://localhost:4000/students/saved-searches/${searchId}`,
+      {
+        method: "DELETE",
+        headers,
+      }
+    );
 
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
-      throw new Error(data.error || 'Failed to delete search');
+      throw new Error(data.error || "Failed to delete search");
     }
-    
+
     return;
   },
 
   async getSavedSearches() {
     return apiClient.get("/students/saved-searches");
+  },
+
+  // Account Management
+  async updateAccountInfo(updates) {
+    return apiClient.patch("/students/profile/account/profile", updates);
+  },
+
+  async changePassword(currentPassword, newPassword) {
+    return apiClient.patch("/students/profile/account/password", {
+      currentPassword,
+      newPassword,
+    });
+  },
+
+  async deleteAccount(password, confirmation) {
+    const token = localStorage.getItem("authToken");
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    const response = await fetch(
+      `http://localhost:4000/students/profile/account`,
+      {
+        method: "DELETE",
+        headers,
+        body: JSON.stringify({ password, confirmation }),
+      }
+    );
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.error || "Failed to delete account");
+    }
+
+    return response.json();
   },
 };
