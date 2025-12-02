@@ -214,6 +214,14 @@ const Jobs = () => {
     return true;
   });
 
+  // Sort jobs: unapplied jobs first, then applied jobs
+  const sorted = [...filtered].sort((a, b) => {
+    // If one has applied and the other hasn't, unapplied comes first
+    if (a.hasApplied && !b.hasApplied) return 1;
+    if (!a.hasApplied && b.hasApplied) return -1;
+    return 0; // Keep original order for jobs with same applied status
+  });
+
   const allTags = useMemo(() => {
     const tagsSet = new Map();
     jobs.forEach((job) => {
@@ -274,7 +282,7 @@ const Jobs = () => {
           {error && <div className="jobs-error">Error: {error}</div>}
           {!loading && !error && (
             <div className="jobs-grid">
-              {filtered
+              {sorted
                 .filter(job => job.postingStatus !== "ARCHIVED") // 👈 hide archived
                 .map(job => (
                   <JobCard
