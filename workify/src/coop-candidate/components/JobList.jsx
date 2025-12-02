@@ -6,7 +6,6 @@ import ArchiveIcon from '@mui/icons-material/Archive';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useNavigate } from "react-router-dom";
 import { employerApi } from "../../api/employers";
 
 const JobList = ({ jobs, selectedJob, onSelectJob, onEditJob }) => {
@@ -17,10 +16,6 @@ const JobList = ({ jobs, selectedJob, onSelectJob, onEditJob }) => {
       onSelectJob(job);
     }
   };
-
-  // const handleJobEdit = (job) => {
-  //   navigate("/edit-job", { state: { job } });
-  // };
 
   const handleArchiving = async (job) => {
     try {
