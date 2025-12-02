@@ -69,7 +69,7 @@ function HeaderBar({ profileData }) {
           </button>
           <button 
             className="ep-btn-icon" 
-            onClick={() => navigate('/settings')}
+            onClick={() => navigate('/settings-employer')}
             title="Settings"
             style={{ 
               marginLeft: '0.5rem',
@@ -314,29 +314,35 @@ const EmployerProfile = () => {
   const [interviewsLoading, setInterviewsLoading] = useState(true);
   const [completedInterviews, setCompletedInterviews] = useState([]);
   const [completedLoading, setCompletedLoading] = useState(true);
+  const [colleagues, setColleagues] = useState([]);
+  const [colleaguesLoading, setColleaguesLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         console.log("Fetching profile and interviews...");
-        const [profileResponse, interviewsResponse, completedResponse] =
+        const [profileResponse, interviewsResponse, completedResponse, colleaguesResponse] =
           await Promise.all([
             employerApi.getProfile(),
             employerApi.getAllInterviews(),
             employerApi.getCompletedInterviews(),
+            employerApi.getColleagues(),
           ]);
         console.log("Profile response:", profileResponse);
         console.log("Interviews response:", interviewsResponse);
         console.log("Completed interviews response:", completedResponse);
+        console.log("Colleagues response:", colleaguesResponse);
         setProfileData(profileResponse.profile);
         setInterviews(interviewsResponse.interviews || []);
         setCompletedInterviews(completedResponse.interviews || []);
+        setColleagues(colleaguesResponse.colleagues || []);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
         setInterviewsLoading(false);
         setCompletedLoading(false);
+        setColleaguesLoading(false);
       }
     };
 
@@ -437,6 +443,62 @@ const EmployerProfile = () => {
               <h2 className="ep-section-title">
                 Colleagues at {profileData?.company?.name || "Company"}
               </h2>
+              {colleaguesLoading ? (
+                <div style={{ padding: "20px", textAlign: "center" }}>
+                  Loading colleagues...
+                </div>
+              ) : colleagues.length === 0 ? (
+                <div style={{ padding: "20px", textAlign: "center", color: "#666" }}>
+                  No colleagues found at this company yet.
+                </div>
+              ) : (
+                <div style={{ display: "grid", gap: "1rem", marginTop: "1rem" }}>
+                  {colleagues.map((colleague) => (
+                    <div
+                      key={colleague.id}
+                      style={{
+                        padding: "1rem",
+                        border: "1px solid #e5e7eb",
+                        borderRadius: "8px",
+                        backgroundColor: "white",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "1rem"
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "48px",
+                          height: "48px",
+                          borderRadius: "50%",
+                          backgroundColor: "#e5e7eb",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "20px",
+                          fontWeight: "600",
+                          color: "#6b7280"
+                        }}
+                      >
+                        {colleague.user?.name?.charAt(0).toUpperCase() || "?"}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: "600", marginBottom: "0.25rem" }}>
+                          {colleague.user?.name || "Unknown"}
+                        </div>
+                        <div style={{ fontSize: "14px", color: "#6b7280" }}>
+                          {colleague.user?.email || ""}
+                        </div>
+                        {colleague.workPhone && (
+                          <div style={{ fontSize: "14px", color: "#6b7280" }}>
+                            {colleague.workPhone}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

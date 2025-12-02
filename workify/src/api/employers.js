@@ -135,6 +135,14 @@ export const employerApi = {
 
     return;
   },
+
+  async getColleagues() {
+    return apiClient.get("/employers/colleagues");
+  },
+
+  async searchCompanies(query) {
+    return apiClient.get(`/employers/companies/search?query=${encodeURIComponent(query)}`);
+  },
 };
 
 const API_BASE_URL = "http://localhost:4000";

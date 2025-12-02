@@ -87,7 +87,9 @@ router.patch('/complete-profile', getEmployerProfile, async (req: Request, res: 
         const data = validation.data;
         let companyId = data.companyId;
 
-        if (data.companyName && !companyId) {
+        // If companyId is provided, use it (existing company selected)
+        // Otherwise, create a new company if company name is provided
+        if (!companyId && data.companyName) {
             const company = await prisma.company.create({
                 data: {
                     name: data.companyName,
@@ -397,6 +399,60 @@ router.get('/stats', getEmployerProfile, async (req: Request, res: Response) => 
     } catch (error) {
         console.error('Error fetching stats:', error);
         res.status(500).json({ error: 'Failed to fetch statistics' });
+    }
+});
+
+router.get('/colleagues', getEmployerProfile, async (req: Request, res: Response) => {
+    try {
+        if (!req.employerProfile.companyId) {
+            return res.status(200).json({ colleagues: [] });
+        }
+
+        const colleagues = await prisma.employerProfile.findMany({
+            where: {
+                companyId: req.employerProfile.companyId,
+                id: { not: req.employerProfile.id }, // Exclude current user
+            },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    },
+                },
+            },
+        });
+
+        res.status(200).json({ colleagues });
+    } catch (error) {
+        console.error('Error fetching colleagues:', error);
+        res.status(500).json({ error: 'Failed to fetch colleagues' });
+    }
+});
+
+router.get('/companies/search', async (req: Request, res: Response) => {
+    try {
+        const { query } = req.query;
+
+        if (!query || typeof query !== 'string') {
+            return res.status(400).json({ error: 'Query parameter is required' });
+        }
+
+        const companies = await prisma.company.findMany({
+            where: {
+                name: {
+                    contains: query,
+                    mode: 'insensitive',
+                },
+            },
+            take: 10,
+        });
+
+        res.status(200).json({ companies });
+    } catch (error) {
+        console.error('Error searching companies:', error);
+        res.status(500).json({ error: 'Failed to search companies' });
     }
 });
 
