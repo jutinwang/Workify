@@ -14,6 +14,7 @@ import interviewRouter from './routes/interviews';
 import savedJobsRouter from './routes/students/savedJobs';
 import savedSearchesRouter from './routes/students/savedSearches';
 import employerSavedSearchesRouter from './routes/employer/savedSearches';
+import adminRouter from "./routes/admin";
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use("/students/saved-searches", savedSearchesRouter);
 app.use("/students", jobRouter); 
 app.use("/company", companyRouter); 
 app.use("/interviews", interviewRouter); 
+app.use("/admin", adminRouter); 
 
 const PORT = Number(process.env.PORT) || 4000;
 
