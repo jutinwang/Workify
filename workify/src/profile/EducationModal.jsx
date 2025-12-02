@@ -1,26 +1,19 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import "../jobs/jobs-filter.css";
+import { AVAILABLE_PROGRAMS } from "../constants/programs";
 
 // Stable ID helper so React doesn't remount inputs while typing
 const mkId = () => Math.random().toString(36).slice(2);
 
 const EMPTY_ROW = () => ({
   _id: mkId(),
-  jobTitle: "",
-  company: "",
-  location: "",
-  startDate: "",
-  endDate: "",
-  current: false,
-  details: "",
+  program: "",
+  schoolName: "",
+  yearOfStudy: "",
+  gradDate: "",
 });
 
-export default function ExperiencesModal({
-  isOpen,
-  onClose,
-  values,
-  onChange,
-}) {
+export default function EducationModal({ isOpen, onClose, values, onChange }) {
   // Initialize once on open; keep all edits local
   const [draft, setDraft] = useState([]);
   const firstInputRef = useRef(null);
@@ -29,9 +22,7 @@ export default function ExperiencesModal({
     setDraft((prev) =>
       prev.map((row) => {
         if (row._id !== id) return row;
-        const next = { ...row, [field]: value };
-        if (field === "current" && value) next.endDate = "";
-        return next;
+        return { ...row, [field]: value };
       })
     );
   }, []);
@@ -42,13 +33,10 @@ export default function ExperiencesModal({
     setDraft(
       seeded.map((e) => ({
         _id: mkId(),
-        jobTitle: e.title || "",
-        company: e.company || "",
-        location: e.location || "",
-        startDate: e.startDate ? e.startDate.split("T")[0].substring(0, 7) : "",
-        endDate: e.endDate ? e.endDate.split("T")[0].substring(0, 7) : "",
-        current: !e.endDate,
-        details: e.description || "",
+        program: e.program || "",
+        schoolName: e.schoolName || "",
+        yearOfStudy: e.yearOfStudy?.toString() || "",
+        gradDate: e.gradDate ? e.gradDate.split("T")[0] : "",
       }))
     );
   }, [isOpen]);
@@ -62,7 +50,7 @@ export default function ExperiencesModal({
 
   if (!isOpen) return null;
 
-  const addExperience = () => {
+  const addEducation = () => {
     setDraft((prev) => {
       const next = [...prev, EMPTY_ROW()];
       return next;
@@ -72,7 +60,7 @@ export default function ExperiencesModal({
     });
   };
 
-  const removeExperience = (id) => {
+  const removeEducation = (id) => {
     setDraft((prev) => prev.filter((e) => e._id !== id));
   };
 
@@ -80,13 +68,12 @@ export default function ExperiencesModal({
 
   const apply = () => {
     const cleaned = draft
-      .filter((e) => e.jobTitle.trim() && e.company.trim() && e.startDate)
-      .map(({ _id, current, jobTitle, details, location, ...rest }) => ({
-        title: jobTitle,
-        description: details,
-        company: rest.company,
-        startDate: rest.startDate,
-        endDate: current ? null : rest.endDate || null,
+      .filter((e) => e.program.trim() && e.schoolName.trim())
+      .map(({ _id, ...rest }) => ({
+        program: rest.program,
+        schoolName: rest.schoolName,
+        yearOfStudy: rest.yearOfStudy ? parseInt(rest.yearOfStudy) : null,
+        gradDate: rest.gradDate || null,
       }));
     onChange(cleaned);
     onClose();
@@ -110,12 +97,12 @@ export default function ExperiencesModal({
         className="jobs-filter-modal"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="exp-modal-title"
+        aria-labelledby="edu-modal-title"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="jobs-modal-header">
-          <h3 id="exp-modal-title" className="jobs-modal-title">
-            Experiences
+          <h3 id="edu-modal-title" className="jobs-modal-title">
+            Education
           </h3>
           <button
             className="jobs-close-button"
@@ -147,13 +134,13 @@ export default function ExperiencesModal({
             >
               <div style={{ display: "flex", alignItems: "center" }}>
                 <h4 className="jobs-filter-section-title" style={{ margin: 0 }}>
-                  {`Experience ${idx + 1}`}
+                  {`Education ${idx + 1}`}
                 </h4>
                 <button
                   type="button"
                   title="Remove"
                   aria-label="Remove"
-                  onClick={() => removeExperience(e._id)}
+                  onClick={() => removeEducation(e._id)}
                   className="edit-icon-btn"
                   style={{ marginLeft: "auto" }}
                 >
@@ -182,94 +169,65 @@ export default function ExperiencesModal({
                 style={{ display: "grid", gap: 12, marginTop: 8 }}
               >
                 <div>
-                  <label style={labelStyle}>Job title</label>
-                  <input
+                  <label style={labelStyle}>Program</label>
+                  <select
                     ref={idx === draft.length - 1 ? firstInputRef : null}
                     style={inputStyle}
-                    type="text"
-                    placeholder="Software Engineer"
-                    value={e.jobTitle}
+                    value={e.program}
                     onChange={(ev) =>
-                      updateField(e._id, "jobTitle", ev.target.value)
+                      updateField(e._id, "program", ev.target.value)
                     }
-                  />
+                  >
+                    <option value="">Select a program...</option>
+                    {AVAILABLE_PROGRAMS.map((program) => (
+                      <option key={program} value={program}>
+                        {program}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
-                  <label style={labelStyle}>Company</label>
+                  <label style={labelStyle}>School Name</label>
                   <input
                     style={inputStyle}
                     type="text"
-                    placeholder="Example Corp"
-                    value={e.company}
+                    placeholder="University of Ottawa"
+                    value={e.schoolName}
                     onChange={(ev) =>
-                      updateField(e._id, "company", ev.target.value)
+                      updateField(e._id, "schoolName", ev.target.value)
                     }
                   />
                 </div>
 
                 <div style={twoCol}>
                   <div>
-                    <label style={labelStyle}>Start date</label>
+                    <label style={labelStyle}>Year of Study (optional)</label>
                     <input
                       style={inputStyle}
-                      type="month"
-                      value={e.startDate}
+                      type="number"
+                      min="1"
+                      max="6"
+                      placeholder="3"
+                      value={e.yearOfStudy}
                       onChange={(ev) =>
-                        updateField(e._id, "startDate", ev.target.value)
+                        updateField(e._id, "yearOfStudy", ev.target.value)
                       }
                     />
                   </div>
                   <div>
-                    <label style={labelStyle}>End date</label>
+                    <label style={labelStyle}>
+                      Expected Graduation (optional)
+                    </label>
                     <input
                       style={inputStyle}
-                      type="month"
-                      value={e.current ? "" : e.endDate}
+                      type="date"
+                      value={e.gradDate}
                       onChange={(ev) =>
-                        updateField(e._id, "endDate", ev.target.value)
+                        updateField(e._id, "gradDate", ev.target.value)
                       }
-                      disabled={e.current}
                     />
                   </div>
-                </div>
-
-                <label
-                  style={{ display: "flex", alignItems: "center", gap: 8 }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={!!e.current}
-                    onChange={(ev) =>
-                      updateField(e._id, "current", ev.target.checked)
-                    }
-                  />
-                  I currently work here
-                </label>
-
-                <div>
-                  <label style={labelStyle}>Location (optional)</label>
-                  <input
-                    style={inputStyle}
-                    type="text"
-                    placeholder="Toronto, ON • Hybrid"
-                    value={e.location}
-                    onChange={(ev) =>
-                      updateField(e._id, "location", ev.target.value)
-                    }
-                  />
-                </div>
-
-                <div>
-                  <label style={labelStyle}>Details</label>
-                  <textarea
-                    style={{ ...inputStyle, minHeight: 90, resize: "vertical" }}
-                    placeholder="Briefly describe what you worked on, notable projects, impact, tools…"
-                    value={e.details}
-                    onChange={(ev) =>
-                      updateField(e._id, "details", ev.target.value)
-                    }
-                  />
                 </div>
               </div>
             </div>
@@ -279,10 +237,10 @@ export default function ExperiencesModal({
             <button
               type="button"
               className="jobs-filter-option"
-              onClick={addExperience}
+              onClick={addEducation}
               style={{ fontWeight: 600 }}
             >
-              + Add experience
+              + Add education
             </button>
           </div>
         </div>

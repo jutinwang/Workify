@@ -95,6 +95,11 @@ export const studentApi = {
     return apiClient.get("/students/saved-searches");
   },
 
+  // Interviews
+  async getInterviews() {
+    return apiClient.get("/users/me/interviews");
+  },
+
   // Account Management
   async updateAccountInfo(updates) {
     return apiClient.patch("/students/profile/account/profile", updates);

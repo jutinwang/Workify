@@ -137,7 +137,7 @@ const CandidateModal = ({ candidate, jobId, onClose, onShortlistChange }) => {
             )}
 
             {experiences.length > 0 && (
-              <Accordion defaultExpanded>
+              <Accordion>
                 <AccordionSummary
                   expandIcon={<ChevronDownIcon />}
                   aria-controls="panel-exp-content"

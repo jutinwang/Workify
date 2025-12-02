@@ -9,9 +9,34 @@ const router = Router();
 const prisma = new PrismaClient();
 
 const UpdateStudentProfileSchema = z.object({
-    gender: z.string().optional(),
+    gender: z.string().nullable().optional(),
     ethnicity: z.array(z.string()).optional(),
     optional: z.array(z.string()).optional(),
+    aboutMe: z.string().optional(),
+    major: z.string().optional(),
+    year: z.number().optional(),
+    phoneNumber: z.string().optional(),
+    linkedInUrl: z.string().optional(),
+    githubUrl: z.string().optional(),
+    portfolio: z.string().optional(),
+    resumeUrl: z.string().optional(),
+    transcript: z.string().optional(),
+    coverLetter: z.string().optional(),
+    experiences: z.array(z.object({
+        id: z.number().optional(),
+        title: z.string(),
+        company: z.string(),
+        startDate: z.string(),
+        endDate: z.string().optional().nullable(),
+        description: z.string().optional(),
+    })).optional(),
+    education: z.array(z.object({
+        id: z.number().optional(),
+        program: z.string(),
+        schoolName: z.string(),
+        yearOfStudy: z.number().nullable().optional(),
+        gradDate: z.string().nullable().optional(),
+    })).optional(),
 });
 
 const UpdateAccountInfoSchema = z.object({
@@ -220,21 +245,79 @@ router.patch('/', requireAuth, requireRole('STUDENT'), async (req: Request, res:
 
         const raw = UpdateStudentProfileSchema.parse(req.body);
 
-        const normalizeEnum = (val?: string | null) => val ? val.toUpperCase().replace(/\s+/g, "_") : undefined; // "Prefer not to say" -> "PREFER_NOT_TO_SAY"
+        const normalizeEnum = (val?: string | null) => val ? val.toUpperCase().replace(/\s+/g, "_").replace(/-/g, "_") : undefined; // "Two-Spirit" or "Two Spirit" -> "TWO_SPIRIT"
 
-        const genderEnum = raw.gender ? (normalizeEnum(raw.gender) as Gender) : undefined;
+        const genderEnum = raw.gender !== undefined ? (raw.gender ? normalizeEnum(raw.gender) as Gender : null) : undefined;
 
         const ethnicityEnums = (raw.ethnicity ?? []).map((e) => normalizeEnum(e) as Ethnicity);
 
         const optionalEnums = (raw.optional ?? []).map((f) => normalizeEnum(f) as IdentityFlag);
 
+        // Handle experiences if provided
+        if (raw.experiences) {
+            // Delete existing experiences and create new ones
+            await prisma.experience.deleteMany({
+                where: { userId: user.student.id },
+            });
+
+            await Promise.all(
+                raw.experiences.map((exp) =>
+                    prisma.experience.create({
+                        data: {
+                            userId: user.student!.id,
+                            title: exp.title,
+                            company: exp.company,
+                            startDate: new Date(exp.startDate),
+                            endDate: exp.endDate ? new Date(exp.endDate) : null,
+                            description: exp.description ?? null,
+                        },
+                    })
+                )
+            );
+        }
+
+        // Handle education if provided
+        if (raw.education) {
+            // Delete existing education and create new ones
+            await prisma.education.deleteMany({
+                where: { studentId: user.student.id },
+            });
+
+            await Promise.all(
+                raw.education.map((edu) =>
+                    prisma.education.create({
+                        data: {
+                            studentId: user.student!.id,
+                            program: edu.program,
+                            schoolName: edu.schoolName,
+                            yearOfStudy: edu.yearOfStudy ?? null,
+                            gradDate: edu.gradDate ? new Date(edu.gradDate) : null,
+                        },
+                    })
+                )
+            );
+        }
+
+        // Build update data object
+        const updateData: any = {};
+        
+        if (genderEnum !== undefined) updateData.gender = genderEnum;
+        if (ethnicityEnums.length) updateData.ethnicity = ethnicityEnums;
+        if (optionalEnums.length) updateData.optional = optionalEnums;
+        if (raw.aboutMe !== undefined) updateData.aboutMe = raw.aboutMe;
+        if (raw.major !== undefined) updateData.major = raw.major;
+        if (raw.year !== undefined) updateData.year = raw.year;
+        if (raw.phoneNumber !== undefined) updateData.phoneNumber = raw.phoneNumber;
+        if (raw.linkedInUrl !== undefined) updateData.linkedInUrl = raw.linkedInUrl;
+        if (raw.githubUrl !== undefined) updateData.githubUrl = raw.githubUrl;
+        if (raw.portfolio !== undefined) updateData.portfolio = raw.portfolio;
+        if (raw.resumeUrl !== undefined) updateData.resumeUrl = raw.resumeUrl;
+        if (raw.transcript !== undefined) updateData.transcript = raw.transcript;
+        if (raw.coverLetter !== undefined) updateData.coverLetter = raw.coverLetter;
+
         const updated = await prisma.studentProfile.update({
             where: { userId },
-            data: {
-                ...(genderEnum && { gender: genderEnum }),
-                ...(ethnicityEnums.length && { ethnicity: ethnicityEnums }),
-                ...(optionalEnums.length && { optional: optionalEnums }),
-            },
+            data: updateData,
         });
 
         return res.json({

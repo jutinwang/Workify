@@ -6,6 +6,7 @@ import Section from "../common/Section";
 import Modal from "../common/Modal";
 import DemographicsModal from "./DemographicsModal";
 import ExperiencesModal from "./ExperiencesModal";
+import EducationModal from "./EducationModal";
 import Header from "../common/Header";
 import "./Profile.css";
 
@@ -49,7 +50,6 @@ function HeaderBar({ profile, user }) {
         </div>
         <div className="header-actions">
           <button className="btn-secondary">Share</button>
-          <button className="btn-primary">Edit Profile</button>
           <button 
             className="btn-icon" 
             onClick={() => navigate('/settings')}
@@ -118,11 +118,11 @@ function getOrdinalSuffix(num) {
   return "th";
 }
 
-function Stats() {
+function Stats({ interviews = 0, offers = 0, savedJobs = 0 }) {
   const stats = [
-    ['7', 'Upcoming\ninterviews'],
-    ['2', 'Pending\noffers'],
-    ['5', 'Saved\nroles']
+    [interviews.toString(), 'Upcoming\ninterviews'],
+    [offers.toString(), 'Pending\noffers'],
+    [savedJobs.toString(), 'Saved\nroles']
   ];
 
   return (
@@ -177,6 +177,11 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userData, setUserData] = useState(null);
+  const [stats, setStats] = useState({
+    interviews: 0,
+    offers: 0,
+    savedJobs: 0
+  });
 
   const [modals, setModals] = useState({
     about: false,
@@ -235,7 +240,37 @@ const Profile = () => {
       }
     };
 
+    const fetchStats = async () => {
+      try {
+        // Fetch interviews
+        const interviewsData = await studentApi.getInterviews();
+        const upcomingInterviews = interviewsData.filter(
+          interview => interview.status === 'PENDING' || interview.status === 'SCHEDULED'
+        ).length;
+
+        // Fetch applications for offers
+        const applicationsData = await studentApi.getApplications();
+        const pendingOffers = applicationsData.applications.filter(
+          app => app.status === 'OFFER'
+        ).length;
+
+        // Fetch saved jobs
+        const savedJobsData = await studentApi.getSavedJobs();
+        const savedJobsCount = savedJobsData.savedJobs.length;
+
+        setStats({
+          interviews: upcomingInterviews,
+          offers: pendingOffers,
+          savedJobs: savedJobsCount
+        });
+      } catch (err) {
+        console.error('Error fetching stats:', err);
+        // Keep default stats on error
+      }
+    };
+
     fetchProfile();
+    fetchStats();
   }, []);
 
   const openModal = (type) => {
@@ -249,6 +284,16 @@ const Profile = () => {
   const handleUpdateAbout = async () => {
     try {
       await studentApi.updateProfile({ aboutMe: formData.about });
+      
+      // Update userData to reflect the change
+      setUserData(prev => ({
+        ...prev,
+        profile: {
+          ...prev.profile,
+          aboutMe: formData.about
+        }
+      }));
+      
       closeModal('about');
     } catch (err) {
       console.error('Error updating about:', err);
@@ -282,6 +327,15 @@ const Profile = () => {
       await studentApi.updateProfile({
         experiences: nextExperiences,
       });
+      
+      // Refresh the full profile to get updated experience data
+      const data = await studentApi.getProfile();
+      setUserData(data);
+      setFormData(prev => ({
+        ...prev,
+        experiences: data.experience || [],
+      }));
+      
       closeModal('experiences');
     } catch (err) {
       console.error('Error updating experiences:', err);
@@ -301,8 +355,47 @@ const Profile = () => {
           ...(nextDemo.isVeteran ? ['VETERAN'] : []),
         ],
       });
+      
+      // Update userData to reflect changes
+      setUserData(prev => ({
+        ...prev,
+        profile: {
+          ...prev.profile,
+          gender: nextDemo.genders[0] || null,
+          ethnicity: nextDemo.ethnicities || [],
+          optional: [
+            ...(nextDemo.isIndigenous ? ['INDIGENOUS'] : []),
+            ...(nextDemo.hasDisability ? ['DISABILITY'] : []),
+            ...(nextDemo.isVeteran ? ['VETERAN'] : []),
+          ],
+        }
+      }));
+      
+      closeModal('demographics');
     } catch (err) {
       console.error('Error updating demographics:', err);
+    }
+  };
+
+  const handleUpdateEducation = async (nextEducation) => {
+    try {
+      setFormData(prev => ({ ...prev, background: nextEducation }));
+
+      await studentApi.updateProfile({
+        education: nextEducation,
+      });
+      
+      // Refresh the full profile to get updated education data
+      const data = await studentApi.getProfile();
+      setUserData(data);
+      setFormData(prev => ({
+        ...prev,
+        background: data.education || [],
+      }));
+      
+      closeModal('background');
+    } catch (err) {
+      console.error('Error updating education:', err);
     }
   };
 
@@ -416,16 +509,21 @@ const Profile = () => {
 
             <Card title="Quick wins">
               <ul className="quick-wins-list">
-                {!userData?.profile?.aboutMe && <li>Add a 2–3 line About summary</li>}
-                {!userData?.profile?.resumeUrl && <li>Upload résumé (PDF)</li>}
-                {formData.experiences.length === 0 && <li>Add work experience</li>}
-                {formData.background.length === 0 && <li>Add education details</li>}
+                {getQuickWins(userData?.profile, formData).map((win, index) => (
+                  <li key={index}>{win}</li>
+                ))}
+                {getQuickWins(userData?.profile, formData).length === 0 && (
+                  <li>Your profile is looking great! 🎉</li>
+                )}
               </ul>
-              <button className="btn-full">Open checklist</button>
             </Card>
 
             <Card title="Key stats">
-              <Stats />
+              <Stats 
+                interviews={stats.interviews}
+                offers={stats.offers}
+                savedJobs={stats.savedJobs}
+              />
             </Card>
           </aside>
         </div>
@@ -458,6 +556,13 @@ const Profile = () => {
           values={formData.experiences}
           onChange={handleUpdateExperiences}
         />
+
+        <EducationModal
+          isOpen={modals.background}
+          onClose={() => closeModal('background')}
+          values={formData.background}
+          onChange={handleUpdateEducation}
+        />
       </div>
     </div>
   );
@@ -479,6 +584,32 @@ function calculateProfileCompletion(profile) {
   
   const completed = fields.filter(Boolean).length;
   return Math.round((completed / fields.length) * 100);
+}
+
+// Helper function to get quick wins
+function getQuickWins(profile, formData) {
+  const wins = [];
+  
+  if (!profile?.aboutMe) {
+    wins.push('Add a 2–3 line About summary');
+  }
+  if (!profile?.resumeUrl) {
+    wins.push('Upload résumé (PDF)');
+  }
+  if (formData.experiences.length === 0) {
+    wins.push('Add work experience');
+  }
+  if (formData.background.length === 0) {
+    wins.push('Add education details');
+  }
+  if (!profile?.linkedInUrl && !profile?.githubUrl) {
+    wins.push('Add LinkedIn or GitHub profile');
+  }
+  if (!profile?.phoneNumber) {
+    wins.push('Add phone number for contact');
+  }
+  
+  return wins;
 }
 
 export default Profile;
