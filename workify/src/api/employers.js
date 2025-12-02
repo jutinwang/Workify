@@ -105,6 +105,36 @@ export const employerApi = {
 
     return response.json();
   },
+
+  // Saved Searches
+  async saveSearch(name, filters) {
+    return apiClient.post("/employers/saved-searches", { name, filters });
+  },
+
+  async getSavedSearches() {
+    return apiClient.get("/employers/saved-searches");
+  },
+
+  async deleteSearch(searchId) {
+    const token = localStorage.getItem("authToken");
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    const response = await fetch(
+      `http://localhost:4000/employers/saved-searches/${searchId}`,
+      {
+        method: "DELETE",
+        headers,
+      }
+    );
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.error || "Failed to delete search");
+    }
+
+    return;
+  },
 };
 
 const API_BASE_URL = "http://localhost:4000";

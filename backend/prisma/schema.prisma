@@ -73,6 +73,7 @@ model EmployerProfile {
   interviews         InterviewRequest[]
   jobs               Job[]
   unavailableTimes   Json?
+  savedSearches      EmployerSavedSearch[]
 
   @@index([companyId])
 }
@@ -267,4 +268,15 @@ model SavedSearch {
   student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@index([studentId])
+}
+
+model EmployerSavedSearch {
+  id         Int             @id @default(autoincrement())
+  employerId Int
+  name       String
+  filters    Json
+  createdAt  DateTime        @default(now())
+  employer   EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+
+  @@index([employerId])
 }

@@ -3,6 +3,7 @@ import "../styles/App.css";
 import "../styles/ApplicantFilter.css";
 import FilterIcon from "../../assets/filter.png";
 import SearchIcon from "../../assets/search.png";
+import { AVAILABLE_PROGRAMS } from "../../constants/programs";
 
 const ApplicantFilter = ({
   selectedJob,
@@ -10,30 +11,40 @@ const ApplicantFilter = ({
   filteredCount,
   searchTerm,
   yearFilter,
-  courseFilter,
-  skillsFilter,
+  programFilter,
+  statusFilter,
+  hasExperienceFilter,
+  graduationDateFilter,
   sortBy,
   showShortlistedOnly,
   onSearchChange,
   onYearChange,
-  onCourseChange,
-  onSkillsChange,
+  onProgramChange,
+  onStatusChange,
+  onHasExperienceChange,
+  onGraduationDateChange,
   onSortChange,
   onShortlistedFilterChange,
+  onSaveSearch,
+  onViewSavedSearches,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const activeFiltersCount =
     yearFilter.length +
-    courseFilter.length +
-    skillsFilter.length +
+    programFilter.length +
+    (statusFilter ? 1 : 0) +
+    (hasExperienceFilter !== null ? 1 : 0) +
+    (graduationDateFilter ? 1 : 0) +
     (sortBy ? 1 : 0);
 
   const clearAllFilters = () => {
     onYearChange([]);
-    onCourseChange([]);
+    onProgramChange([]);
+    onStatusChange("");
+    onHasExperienceChange(null);
+    onGraduationDateChange("");
     onShortlistedFilterChange(false);
-    onSkillsChange([]);
     onSortChange("");
   };
 
@@ -78,6 +89,24 @@ const ApplicantFilter = ({
           {activeFiltersCount > 0 && (
             <span className="filter-badge">{activeFiltersCount}</span>
           )}
+        </button>
+
+        {activeFiltersCount > 0 && (
+          <button
+            className="filters-button"
+            onClick={onSaveSearch}
+            title="Save this search"
+          >
+            Save Search
+          </button>
+        )}
+
+        <button
+          className="filters-button"
+          onClick={onViewSavedSearches}
+          title="View saved searches"
+        >
+          Saved Searches
         </button>
       </div>
 
@@ -126,47 +155,107 @@ const ApplicantFilter = ({
               </div>
 
               <div className="filter-section">
-                <h4 className="filter-section-title">Courses</h4>
+                <h4 className="filter-section-title">Application Status</h4>
                 <div className="filter-options">
                   {[
-                    { value: "CEG2136", label: "CEG2136" },
-                    { value: "CSI2106", label: "CSI2106" },
-                    { value: "CSI3105", label: "CSI3105" },
-                    { value: "CSI4106", label: "CSI4106" },
-                  ].map((course) => (
+                    { value: "PENDING", label: "Pending" },
+                    { value: "OFFER", label: "Offered" },
+                    { value: "REJECTED", label: "Rejected" },
+                    { value: "ACCEPTED", label: "Accepted" },
+                  ].map((status) => (
                     <button
-                      key={course.value}
+                      key={status.value}
                       className={`filter-option ${
-                        courseFilter.includes(course.value) ? "selected" : ""
+                        statusFilter === status.value ? "selected" : ""
                       }`}
                       onClick={() =>
-                        toggleFilter(courseFilter, course.value, onCourseChange)
+                        onStatusChange(
+                          statusFilter === status.value ? "" : status.value
+                        )
                       }
                     >
-                      {course.label}
+                      {status.label}
                     </button>
                   ))}
                 </div>
               </div>
 
               <div className="filter-section">
-                <h4 className="filter-section-title">Skills</h4>
+                <h4 className="filter-section-title">Program / Major</h4>
+                <div
+                  className="filter-options"
+                  style={{ maxHeight: "200px", overflowY: "auto" }}
+                >
+                  {AVAILABLE_PROGRAMS.map((program) => (
+                    <button
+                      key={program}
+                      className={`filter-option ${
+                        programFilter.includes(program) ? "selected" : ""
+                      }`}
+                      onClick={() =>
+                        toggleFilter(programFilter, program, onProgramChange)
+                      }
+                    >
+                      {program}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="filter-section">
+                <h4 className="filter-section-title">Work Experience</h4>
                 <div className="filter-options">
-                  {["javascript", "python", "react", "node.js", "java"].map(
-                    (skill) => (
-                      <button
-                        key={skill}
-                        className={`filter-option ${
-                          skillsFilter.includes(skill) ? "selected" : ""
-                        }`}
-                        onClick={() =>
-                          toggleFilter(skillsFilter, skill, onSkillsChange)
-                        }
-                      >
-                        {skill.charAt(0).toUpperCase() + skill.slice(1)}
-                      </button>
-                    )
-                  )}
+                  <button
+                    className={`filter-option ${
+                      hasExperienceFilter === true ? "selected" : ""
+                    }`}
+                    onClick={() =>
+                      onHasExperienceChange(
+                        hasExperienceFilter === true ? null : true
+                      )
+                    }
+                  >
+                    Has Experience
+                  </button>
+                  <button
+                    className={`filter-option ${
+                      hasExperienceFilter === false ? "selected" : ""
+                    }`}
+                    onClick={() =>
+                      onHasExperienceChange(
+                        hasExperienceFilter === false ? null : false
+                      )
+                    }
+                  >
+                    No Experience
+                  </button>
+                </div>
+              </div>
+
+              <div className="filter-section">
+                <h4 className="filter-section-title">Graduation Date</h4>
+                <div className="filter-options">
+                  {[
+                    { value: "2025", label: "2025" },
+                    { value: "2026", label: "2026" },
+                    { value: "2027", label: "2027" },
+                    { value: "2028", label: "2028" },
+                    { value: "2029+", label: "2029+" },
+                  ].map((year) => (
+                    <button
+                      key={year.value}
+                      className={`filter-option ${
+                        graduationDateFilter === year.value ? "selected" : ""
+                      }`}
+                      onClick={() =>
+                        onGraduationDateChange(
+                          graduationDateFilter === year.value ? "" : year.value
+                        )
+                      }
+                    >
+                      {year.label}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -174,7 +263,6 @@ const ApplicantFilter = ({
                 <h4 className="filter-section-title">Sort By</h4>
                 <div className="filter-options">
                   {[
-                    { value: "match", label: "Match Score" },
                     { value: "recent", label: "Most Recent" },
                     { value: "visited", label: "Visited" },
                   ].map((sort) => (
