@@ -3,20 +3,41 @@ import { useNavigate } from "react-router-dom";
 import "./saved-section.css";
 import "../var.css"
 
-const SavedSection = ({ savedJobs = [], savedSearches = [], onRemoveJob }) => {
+const SavedSection = ({ savedJobs = [], savedSearches = [], onRemoveJob, onRemoveSearch, onViewSearch }) => {
   const navigate = useNavigate();
   const [isSearchesExpanded, setIsSearchesExpanded] = useState(false);
   const [isJobsExpanded, setIsJobsExpanded] = useState(false);
 
   const onClickView = (jobId) => {
-    navigate(`/jobs/${jobId}`);
-    // navigate(`/jobs/1`);
+    navigate(`/students/${jobId}`);
   };
 
   const onClickRemove = (jobId) => {
     if (onRemoveJob) {
       onRemoveJob(jobId);
     }
+  };
+
+  const onClickRemoveSearch = (searchId) => {
+    if (onRemoveSearch) {
+      onRemoveSearch(searchId);
+    }
+  };
+
+  const onClickViewSearch = (search) => {
+    if (onViewSearch) {
+      onViewSearch(search);
+    }
+  };
+
+  const getSearchCriteria = (filters) => {
+    const parts = [];
+    if (filters.searchTerm) parts.push(`"${filters.searchTerm}"`);
+    if (filters.locations?.length) parts.push(filters.locations.join(", "));
+    if (filters.postingTags?.length) parts.push(filters.postingTags.join(", "));
+    if (filters.datePosted) parts.push(filters.datePosted);
+    
+    return parts.length > 0 ? parts.join(" • ") : "No filters";
   };
 
   return (
@@ -50,13 +71,10 @@ const SavedSection = ({ savedJobs = [], savedSearches = [], onRemoveJob }) => {
                 <div key={search.id} className="saved-search-card">
                   <div className="saved-search-content">
                     <h4 className="saved-search-name">{search.name}</h4>
-                    <p className="saved-search-criteria">{search.criteria}</p>
-                    {search.newJobs > 0 && (
-                      <span className="new-jobs-badge">{search.newJobs} new</span>
-                    )}
+                    <p className="saved-search-criteria">{getSearchCriteria(search.filters)}</p>
                   </div>
-                  <button className="saved-item-action">X</button>
-                  <button className="saved-item-action">View</button>
+                  <button className="saved-item-action" onClick={() => onClickRemoveSearch(search.id)}>X</button>
+                  <button className="saved-item-action" onClick={() => onClickViewSearch(search)}>Apply</button>
                 </div>
               ))
             ) : (

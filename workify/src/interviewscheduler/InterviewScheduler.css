@@ -1,115 +1,148 @@
 /* Container for the whole scheduler */
 .interviewscheduler-container {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 20px;
+  flex-direction: column;
+  gap: 15px;
   box-sizing: border-box;
   width: 100%;
-  min-height: calc(100vh - 40px); 
+  padding: 20px 30px;
   background-color: #FAF9F6;
+  min-height: 100vh;
 }
 
-/* Left calendar section */
-.calendar-section {
-  flex: 2; /* takes more space than the details section */
-  border: 1.5px solid black;
-  border-radius: 8px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Calendar title area (icon + text inline) */
-.inviteTitle {
+/* Header section */
+.header-section {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
+  gap: 12px;
+  margin-bottom: 5px;
 }
 
-.inviteTitle p {
+.header-section h1 {
+  font-family: 'Domine', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: #2d3748;
+}
+
+.headerIcon {
+  color: #3f5e5a;
+  font-size: 28px;
+}
+
+/* Two column wrapper for date selection and how-to */
+.content-wrapper {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 8px;
+  justify-content: flex-start;
+}
+
+.left-section,
+.right-section {
+  flex: 0 0 auto;
+  width: 350px;
+}
+
+/* Date selection section */
+.date-selection-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  padding: 18px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.date-selection-section h3 {
+  font-family: 'Domine', sans-serif;
+  margin: 0 0 5px 0;
+  color: #2d3748;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* How to use section */
+.how-to-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  padding: 18px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  height: 100%;
+}
+
+.how-to-section h3 {
+  font-family: 'Domine', sans-serif;
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: #2d3748;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.how-to-section ul {
+  margin: 0;
+  padding-left: 20px;
+  font-family: 'Domine', sans-serif;
+  color: #4a5568;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.how-to-section li {
+  margin-bottom: 6px;
+}
+
+/* Calendar section */
+.calendar-section {
+  border: none;
+  border-radius: 12px;
+  padding: 18px;
+  background-color: white;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-section h3 {
+  font-family: 'Domine', sans-serif;
+  margin: 0 0 12px 0;
+  color: #2d3748;
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 600;
+}
+
+/* Save button */
+.saveButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #3f5e5a 0%, #2d4540 100%);
+  color: white;
+  width: 100%;
+  font-family: 'Domine', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+  box-shadow: 0 2px 6px rgba(63, 94, 90, 0.3);
+}
+
+.saveButton:hover {
+  background: linear-gradient(135deg, #2d4540 0%, #1f332e 100%);
+  box-shadow: 0 4px 8px rgba(63, 94, 90, 0.4);
+  transform: translateY(-1px);
 }
 
 .sendIcon {
   filter: brightness(0) invert(1);
-}
-
-.peopleIcon, .clockIcon, .locationIcon, .typeIcon {
-  margin: auto;
-} 
-
-.pageIcon {
-  padding-top: 10px;
-}
-
-/* The calendar itself should stretch */
-.schedulerCalendar {
-  flex: 1;
-  height: 100%;
-}
-
-/* Right-side details panel */
-.invitedetails-section {
-  flex: 1;
-  border: 1.5px solid black;
-  border-radius: 8px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  align-items: center;
-}
-
-/* Send button at top */
-.sendButton {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border: 1.5px solid black;
-  border-radius: 8px;
-  cursor: pointer;
-  background: #3f5e5a;
-  color: white;
-  width: auto;   
-  max-width: fit-content; 
-  align-self: flex-start;   /* overrides parent centering */
-  font-family: 'Domine', sans-serif;
-}
-
-.inviteInput, .durationInput, .locationInput, .interviewInput, .messageInput {
-  min-height: 40px;
-  resize: none;
-  overflow-y: auto;
-  overflow: hidden;
-  width: 300px;
-  height: 25px;
-  border: 1.5px;
-  border-style: solid;
-  border-color: black;
-  border-radius: 8px;
-  padding: 10px;
-  font-size: 14px;
-  box-sizing: border-box;
-}
-
-.messageInput {
-  height: 355px;
-}
-
-/* Each details row (icon + input) */
-.inviteOthersSection,
-.duration-section,
-.location-section,
-.interviewtype-section,
-.message-section {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
 }
 
 p {

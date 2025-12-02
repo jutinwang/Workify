@@ -1,3 +1,32 @@
+/* Application Status Row Styling */
+.ep-status-accepted {
+  background-color: #d1fae5 !important;
+  border-left: 4px solid #10b981;
+}
+
+.ep-status-accepted td {
+  background-color: transparent !important;
+}
+
+.ep-status-rejected {
+  background-color: #f3f4f6 !important;
+  border-left: 4px solid #9ca3af;
+}
+
+.ep-status-rejected td {
+  background-color: transparent !important;
+  color: #6b7280 !important;
+}
+
+.ep-status-offer {
+  background-color: #fef3c7 !important;
+  border-left: 4px solid #f59e0b;
+}
+
+.ep-status-offer td {
+  background-color: transparent !important;
+}
+
 .ep-header-bar {
   background: white;
   border: 1px solid #ddd;

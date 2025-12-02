@@ -83,6 +83,8 @@ router.get("/jobs/:jobId/applications", requireAuth, requireRole(Role.EMPLOYER),
                     },
                 };
             }
+            // Exclude withdrawn applications from employer view
+            where.status = where.status ? where.status : { not: ApplicationStatus.WITHDRAWN };
 
             const [applications, total] = await Promise.all([
                 prisma.application.findMany({
@@ -195,6 +197,8 @@ router.get("/applications", requireAuth, requireRole(Role.EMPLOYER),
                     },
                 };
             }
+            // Exclude withdrawn applications from employer view
+            where.status = where.status ? where.status : { not: ApplicationStatus.WITHDRAWN };
 
             const [applications, total] = await Promise.all([
                 prisma.application.findMany({
@@ -516,7 +520,7 @@ router.get("/stats/applications", requireAuth, requireRole(Role.EMPLOYER),
                 accepted,
                 rejected,
             ] = await Promise.all([
-                prisma.application.count({ where: { job: { employerId } } }),
+                prisma.application.count({ where: { job: { employerId }, status: { not: ApplicationStatus.WITHDRAWN } } }),
                 prisma.application.count({
                     where: { job: { employerId }, status: ApplicationStatus.PENDING },
                 }),
@@ -527,7 +531,7 @@ router.get("/stats/applications", requireAuth, requireRole(Role.EMPLOYER),
                     where: { job: { employerId }, status: ApplicationStatus.SHORTLISTED },
                 }),
                 prisma.application.count({
-                    where: { job: { employerId }, shortlisted: true },
+                    where: { job: { employerId }, shortlisted: true, status: { not: ApplicationStatus.WITHDRAWN } },
                 }),
                 prisma.application.count({
                     where: { job: { employerId }, status: ApplicationStatus.INTERVIEW },
@@ -599,7 +603,7 @@ router.get("/jobs/:jobId/stats", requireAuth, requireRole(Role.EMPLOYER),
                 accepted,
                 rejected,
             ] = await Promise.all([
-                prisma.application.count({ where: { jobId } }),
+                prisma.application.count({ where: { jobId, status: { not: ApplicationStatus.WITHDRAWN } } }),
                 prisma.application.count({
                     where: { jobId, status: ApplicationStatus.PENDING },
                 }),
@@ -610,7 +614,7 @@ router.get("/jobs/:jobId/stats", requireAuth, requireRole(Role.EMPLOYER),
                     where: { jobId, status: ApplicationStatus.SHORTLISTED },
                 }),
                 prisma.application.count({
-                    where: { jobId, shortlisted: true },
+                    where: { jobId, shortlisted: true, status: { not: ApplicationStatus.WITHDRAWN } },
                 }),
                 prisma.application.count({
                     where: { jobId, status: ApplicationStatus.INTERVIEW },

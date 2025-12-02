@@ -10,6 +10,8 @@ const CandidateCard = ({ candidate, onClick, viewed }) => {
     <div
       className={`employer candidate-card ${
         viewed ? "employer candidate-card-viewed" : ""
+      } ${
+        candidate.shortlisted ? "employer candidate-card-shortlisted" : ""
       }`}
       onClick={onClick}
     >
@@ -28,11 +30,13 @@ const CandidateCard = ({ candidate, onClick, viewed }) => {
           </div>
         </div>
 
-        {candidate.candidateMatch != null && (
-          <span className="employer candidate-match">
-            {candidate.candidateMatch}% match
-          </span>
-        )}
+        <div className="employer candidate-badges">
+          {candidate.shortlisted && (
+            <span className="employer candidate-shortlisted-badge">
+              Shortlisted
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="employer candidate-details">

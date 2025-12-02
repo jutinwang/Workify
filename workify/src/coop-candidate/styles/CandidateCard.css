@@ -18,6 +18,16 @@
   background-color: rgb(224, 224, 236);
 }
 
+.employer.candidate-card-shortlisted {
+  border-color: #10b981;
+  background: linear-gradient(to bottom, #f0fdf4 0%, #ffffff 100%);
+}
+
+.employer.candidate-card-shortlisted:hover {
+  border-color: #059669;
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+}
+
 .employer.candidate-header {
   display: flex;
   justify-content: space-between;
@@ -52,6 +62,13 @@
   color: #6b7280;
 }
 
+.employer.candidate-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
 .employer.candidate-match {
   font-size: 0.875rem;
   color: #3b82f6;
@@ -60,6 +77,19 @@
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   white-space: nowrap;
+}
+
+.employer.candidate-shortlisted-badge {
+  font-size: 0.75rem;
+  color: #059669;
+  font-weight: 600;
+  background: #d1fae5;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .employer.candidate-details {

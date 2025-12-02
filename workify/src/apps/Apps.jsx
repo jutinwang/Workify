@@ -11,6 +11,8 @@ import ApplicationsList from "./ApplicationsList";
 import Pagination from "./Pagination";
 import EmptyState from "./EmptyState";
 import InterviewComponent from "./InterviewComponent";
+import OfferModal from "./OfferModal";
+import WithdrawModal from "./WithdrawModal";
 
 const PAGE_SIZE = 8;
 
@@ -27,8 +29,43 @@ const Apps = () => {
   const [length, setLength] = useState("All");
   const [activeTab, setActiveTab] = useState(0);
   const [sortBy, setSortBy] = useState("lastUpdatedDesc");
+  const [selectedOffer, setSelectedOffer] = useState(null);
+  const [applicationToWithdraw, setApplicationToWithdraw] = useState(null);
+  const [pendingInterviewCount, setPendingInterviewCount] = useState(0);
+  const [pendingOfferCount, setPendingOfferCount] = useState(0);
   // Pagination
   const [page, setPage] = useState(1);
+
+  // Getting pending interview count on mount
+  useEffect(() => {
+    const fetchPendingInterviews = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) return;
+
+        const res = await fetch("http://localhost:4000/users/me/interviews", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+
+        const data = await res.json().catch(() => []);
+        if (res.ok && Array.isArray(data)) {
+          const pendingCount = data.filter(
+            (req) => req.status === "PENDING"
+          ).length;
+          setPendingInterviewCount(pendingCount);
+        }
+      } catch (err) {
+        console.error("Failed to fetch interview count:", err);
+      }
+    };
+
+    fetchPendingInterviews();
+  }, []);
 
   // Fetch applications on mount
   useEffect(() => {
@@ -42,6 +79,7 @@ const Apps = () => {
         console.log(response);
         const transformed = response.applications.map((app) => ({
           id: app.id,
+          jobId: app.job.id,
           company: app.job.company.name,
           role: app.job.title,
           length: app.job.length,
@@ -49,6 +87,8 @@ const Apps = () => {
           appliedAt: app.appliedAt,
           status: app.status,
           lastUpdated: app.updatedAt,
+          job: app.job,
+          offerLetterUrl: app.offerLetterUrl,
         }));
 
         setApplications(transformed);
@@ -63,8 +103,115 @@ const Apps = () => {
     fetchApplications();
   }, []);
 
+  // Update pending offer count whenever applications change
+  useEffect(() => {
+    const offerCount = applications.filter(
+      (app) => app.status === "OFFER"
+    ).length;
+    setPendingOfferCount(offerCount);
+  }, [applications]);
+
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
+  };
+
+  const handleViewOffer = (application) => {
+    setSelectedOffer(application);
+  };
+
+  const handleAcceptOffer = async (applicationId) => {
+    try {
+      await studentApi.acceptOffer(applicationId);
+      console.log("Accepting offer for application:", applicationId);
+      alert("Offer accepted! Congratulations!");
+
+      // Refresh applications
+      const response = await studentApi.getApplications();
+      const transformed = response.applications.map((app) => ({
+        id: app.id,
+        jobId: app.job.id,
+        company: app.job.company.name,
+        role: app.job.title,
+        length: app.job.length,
+        location: app.job.location,
+        appliedAt: app.appliedAt,
+        status: app.status,
+        lastUpdated: app.updatedAt,
+        job: app.job,
+        offerLetterUrl: app.offerLetterUrl,
+      }));
+      setApplications(transformed);
+      setSelectedOffer(null);
+    } catch (err) {
+      console.error("Failed to accept offer:", err);
+      alert("Failed to accept offer. Please try again.");
+    }
+  };
+
+  const handleRejectOffer = async (applicationId) => {
+    try {
+      await studentApi.rejectOffer(applicationId);
+      console.log("Rejecting offer for application:", applicationId);
+      alert("Offer declined.");
+
+      // Refresh applications
+      const response = await studentApi.getApplications();
+      const transformed = response.applications.map((app) => ({
+        id: app.id,
+        jobId: app.job.id,
+        company: app.job.company.name,
+        role: app.job.title,
+        length: app.job.length,
+        location: app.job.location,
+        appliedAt: app.appliedAt,
+        status: app.status,
+        lastUpdated: app.updatedAt,
+        job: app.job,
+        offerLetterUrl: app.offerLetterUrl,
+      }));
+      setApplications(transformed);
+      setSelectedOffer(null);
+    } catch (err) {
+      console.error("Failed to reject offer:", err);
+      alert("Failed to reject offer. Please try again.");
+    }
+  };
+
+  const handleWithdrawClick = (application) => {
+    setApplicationToWithdraw(application);
+  };
+
+  const handleConfirmWithdraw = async (applicationId) => {
+    try {
+      await studentApi.withdrawApplication(applicationId);
+      console.log("Withdrawing application:", applicationId);
+      alert("Application withdrawn successfully.");
+
+      // Refresh applications
+      const response = await studentApi.getApplications();
+      const transformed = response.applications.map((app) => ({
+        id: app.id,
+        jobId: app.job.id,
+        company: app.job.company.name,
+        role: app.job.title,
+        length: app.job.length,
+        location: app.job.location,
+        appliedAt: app.appliedAt,
+        status: app.status,
+        lastUpdated: app.updatedAt,
+        job: app.job,
+        offerLetterUrl: app.offerLetterUrl,
+      }));
+      setApplications(transformed);
+      setApplicationToWithdraw(null);
+    } catch (err) {
+      console.error("Failed to withdraw application:", err);
+      const errorMessage =
+        err.response?.data?.error ||
+        "Failed to withdraw application. Please try again.";
+      alert(errorMessage);
+      throw err; // Re-throw so modal can handle loading state
+    }
   };
 
   const filtered = useMemo(() => {
@@ -166,7 +313,11 @@ const Apps = () => {
           <EmptyState />
         ) : (
           <>
-            <ApplicationsList applications={paged} />
+            <ApplicationsList
+              applications={paged}
+              onViewOffer={handleViewOffer}
+              onWithdraw={handleWithdrawClick}
+            />
             <Pagination
               page={pageSafe}
               totalPages={totalPages}
@@ -188,15 +339,60 @@ const Apps = () => {
 
   console.log(paged);
 
+  // Check if student has already accepted an offer
+  const hasAcceptedOffer = applications.some(
+    (app) => app.status === "ACCEPTED"
+  );
+
   return (
     <div className="applications-page-container">
       <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
         <Tabs value={activeTab} onChange={handleTabChange}>
-          <Tab label="Applications" />
-          <Tab label="Interviews" />
+          <Tab
+            label={
+              <span>
+                Applications
+                {pendingOfferCount > 0 && (
+                  <span className="apps-tab-badge">{pendingOfferCount}</span>
+                )}
+              </span>
+            }
+          />
+          <Tab
+            label={
+              <span>
+                Interviews
+                {pendingInterviewCount > 0 && (
+                  <span className="apps-tab-badge">
+                    {pendingInterviewCount}
+                  </span>
+                )}
+              </span>
+            }
+          />
         </Tabs>
       </Box>
-      {activeTab === 0 ? <ApplicationsComponent /> : <InterviewComponent />}
+      {activeTab === 0 ? (
+        <ApplicationsComponent />
+      ) : (
+        <InterviewComponent onPendingCountChange={setPendingInterviewCount} />
+      )}
+      {selectedOffer && (
+        <OfferModal
+          application={selectedOffer}
+          onClose={() => setSelectedOffer(null)}
+          onAccept={handleAcceptOffer}
+          onReject={handleRejectOffer}
+          hasAcceptedOffer={hasAcceptedOffer}
+        />
+      )}
+      {applicationToWithdraw && (
+        <WithdrawModal
+          application={applicationToWithdraw}
+          onClose={() => setApplicationToWithdraw(null)}
+          onConfirm={handleConfirmWithdraw}
+        />
+      )}
     </div>
   );
 };

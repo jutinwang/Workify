@@ -115,13 +115,16 @@ export default function JobsFilter({
   setFilters,
   totalJobs,
   filteredCount,
+  showUnappliedOnly,
+  onToggleUnappliedOnly,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const activeFiltersCount =
     (filters.locations?.length || 0) +
     (filters.datePosted ? 1 : 0) +
-    (filters.postingTags?.length || 0);
+    (filters.postingTags?.length || 0) +
+    (showUnappliedOnly ? 1 : 0);
 
   const clearAllFilters = () => {
     setFilters({
@@ -130,6 +133,9 @@ export default function JobsFilter({
       datePosted: "",
       postingTags: [],
     });
+    if (onToggleUnappliedOnly) {
+      onToggleUnappliedOnly(false);
+    }
   };
 
   const toggleFilter = (key, value) => {
@@ -175,6 +181,15 @@ export default function JobsFilter({
             <span className="jobs-filter-badge">{activeFiltersCount}</span>
           )}
         </button>
+
+        {onToggleUnappliedOnly && (
+          <button
+            className={`jobs-filters-button ${showUnappliedOnly ? "has-value" : ""}`}
+            onClick={() => onToggleUnappliedOnly(!showUnappliedOnly)}
+          >
+            {showUnappliedOnly ? "Show All Jobs" : "Show Unapplied Only"}
+          </button>
+        )}
       </div>
 
       <br></br>

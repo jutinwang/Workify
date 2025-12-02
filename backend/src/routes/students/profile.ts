@@ -3,6 +3,7 @@ import { Gender, PrismaClient, Ethnicity, IdentityFlag } from '@prisma/client';
 import { CompleteStudentProfileSchema } from '../../schema/studentProfile';
 import { requireAuth, requireRole } from '../../middleware/requireAuth';
 import { z } from "zod";
+import bcrypt from 'bcrypt';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -11,6 +12,22 @@ const UpdateStudentProfileSchema = z.object({
     gender: z.string().optional(),
     ethnicity: z.array(z.string()).optional(),
     optional: z.array(z.string()).optional(),
+});
+
+const UpdateAccountInfoSchema = z.object({
+    name: z.string().min(1).optional(),
+    email: z.string().email().regex(/@uottawa\.ca$/, 'Email must be a uOttawa email (@uottawa.ca)').transform(s => s.trim().toLowerCase()).optional(),
+    phoneNumber: z.string().optional(),
+});
+
+const ChangePasswordSchema = z.object({
+    currentPassword: z.string(),
+    newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+const DeleteAccountSchema = z.object({
+    password: z.string(),
+    confirmation: z.literal('DELETE'),
 });
 
 const GENDER_MAP: Record<string, Gender> = {
@@ -44,15 +61,15 @@ router.post('/', requireAuth, requireRole('STUDENT'), async (req: Request, res: 
                 linkedInUrl: validatedData.contact.linkedInUrl,
                 githubUrl: validatedData.contact.githubUrl,
                 portfolio: validatedData.contact.portfolio,
-            
+
                 resumeUrl: validatedData.files.resumeUrl || undefined,
                 transcript: validatedData.files.transcript || undefined,
                 coverLetter: validatedData.files.coverLetter || undefined,
-            
+
                 aboutMe: validatedData.aboutMe,
                 major: validatedData.major,
                 year: validatedData.year,
-            
+
                 ...(validatedData.demographics && {
                     gender: validatedData.demographics.gender as Gender,
                     ethnicity: validatedData.demographics.ethnicity,
@@ -131,12 +148,12 @@ router.post('/', requireAuth, requireRole('STUDENT'), async (req: Request, res: 
     } catch (error: any) {
         console.error('Error creating student profile:', error);
         if (error.name === 'ZodError') {
-            return res.status(400).json({ 
-                error: 'Validation failed', 
-                details: error.errors 
+            return res.status(400).json({
+                error: 'Validation failed',
+                details: error.errors
             });
         }
-        
+
         return res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -145,7 +162,7 @@ router.post('/', requireAuth, requireRole('STUDENT'), async (req: Request, res: 
 router.get('/', requireAuth, async (req: Request, res: Response) => {
     try {
         const userId = Number(req.user?.sub);
-        
+
         if (!Number.isFinite(userId)) {
             return res.status(401).json({ error: 'No user in auth context' });
         }
@@ -187,7 +204,7 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
 router.patch('/', requireAuth, requireRole('STUDENT'), async (req: Request, res: Response) => {
     try {
         const userId = Number(req.user?.sub);
-        
+
         if (!Number.isFinite(userId)) {
             return res.status(401).json({ error: 'No user in auth context' });
         }
@@ -226,6 +243,172 @@ router.patch('/', requireAuth, requireRole('STUDENT'), async (req: Request, res:
         });
     } catch (error) {
         console.error('Error updating student profile:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Update account information (name, email, phone)
+router.patch('/account/profile', requireAuth, requireRole('STUDENT'), async (req: Request, res: Response) => {
+    try {
+        const userId = Number(req.user?.sub);
+
+        if (!Number.isFinite(userId)) {
+            return res.status(401).json({ error: 'No user in auth context' });
+        }
+
+        const validation = UpdateAccountInfoSchema.safeParse(req.body);
+
+        if (!validation.success) {
+            return res.status(400).json({
+                error: 'Validation failed',
+                details: validation.error.issues
+            });
+        }
+
+        const data = validation.data;
+
+        // Check if email is already taken
+        if (data.email) {
+            const existingUser = await prisma.user.findUnique({
+                where: { email: data.email },
+            });
+
+            if (existingUser && existingUser.id !== userId) {
+                return res.status(409).json({ error: 'Email already in use' });
+            }
+        }
+
+        // Perform updates in a transaction
+        await prisma.$transaction(async (tx) => {
+            const userUpdate: any = {};
+            const profileUpdate: any = {};
+
+            if (data.name !== undefined) userUpdate.name = data.name;
+            if (data.email !== undefined) userUpdate.email = data.email;
+            if (data.phoneNumber !== undefined) profileUpdate.phoneNumber = data.phoneNumber;
+
+            if (Object.keys(userUpdate).length > 0) {
+                await tx.user.update({
+                    where: { id: userId },
+                    data: userUpdate,
+                });
+            }
+
+            if (Object.keys(profileUpdate).length > 0) {
+                await tx.studentProfile.update({
+                    where: { userId },
+                    data: profileUpdate,
+                });
+            }
+        });
+
+        return res.json({
+            message: 'Account information updated successfully',
+        });
+    } catch (error) {
+        console.error('Error updating account info:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Change password
+router.patch('/account/password', requireAuth, requireRole('STUDENT'), async (req: Request, res: Response) => {
+    try {
+        const userId = Number(req.user?.sub);
+
+        if (!Number.isFinite(userId)) {
+            return res.status(401).json({ error: 'No user in auth context' });
+        }
+
+        const validation = ChangePasswordSchema.safeParse(req.body);
+
+        if (!validation.success) {
+            return res.status(400).json({
+                error: 'Validation failed',
+                details: validation.error.issues
+            });
+        }
+
+        const { currentPassword, newPassword } = validation.data;
+
+        // Verify current password
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: 'Current password is incorrect' });
+        }
+
+        // Hash new password and update
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+        await prisma.user.update({
+            where: { id: userId },
+            data: { password: hashedPassword },
+        });
+
+        return res.json({
+            message: 'Password updated successfully',
+        });
+    } catch (error) {
+        console.error('Error changing password:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Delete account
+router.delete('/account', requireAuth, requireRole('STUDENT'), async (req: Request, res: Response) => {
+    try {
+        const userId = Number(req.user?.sub);
+
+        if (!Number.isFinite(userId)) {
+            return res.status(401).json({ error: 'No user in auth context' });
+        }
+
+        const validation = DeleteAccountSchema.safeParse(req.body);
+
+        if (!validation.success) {
+            return res.status(400).json({
+                error: 'Validation failed. Password and confirmation required.',
+                details: validation.error.issues
+            });
+        }
+
+        const { password } = validation.data;
+
+        // Verify password
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: 'Invalid password' });
+        }
+
+        // Delete user (cascade will delete student profile and related data)
+        await prisma.user.delete({
+            where: { id: userId },
+        });
+
+        return res.json({
+            message: 'Account deleted successfully',
+            deleted: true,
+        });
+    } catch (error) {
+        console.error('Error deleting account:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
 });
