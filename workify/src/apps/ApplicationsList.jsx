@@ -1,9 +1,7 @@
 import ApplicationRow from "./ApplicationRow";
 
-const ApplicationsList = ({ applications, onViewOffer }) => {
+const ApplicationsList = ({ applications, onViewOffer, onWithdraw }) => {
   const rows = Array.isArray(applications) ? applications.filter(Boolean) : [];
-
-  console.log(rows);
 
   return (
     <div className="apps-table-wrapper">
@@ -26,6 +24,7 @@ const ApplicationsList = ({ applications, onViewOffer }) => {
               key={app?.id ?? crypto.randomUUID()}
               app={app}
               onViewOffer={onViewOffer}
+              onWithdraw={onWithdraw}
             />
           ))}
         </tbody>

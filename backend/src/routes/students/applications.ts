@@ -464,18 +464,15 @@ router.post("/:applicationId/withdraw", requireAuth, requireRole(Role.STUDENT),
                 return res.status(404).json({ error: "Application not found" });
             }
 
-            if (application.status === ApplicationStatus.ACCEPTED || application.status === ApplicationStatus.REJECTED) {
+            if (application.status === ApplicationStatus.ACCEPTED || application.status === ApplicationStatus.REJECTED || application.status === ApplicationStatus.OFFER) {
                 return res.status(400).json({
                     error: `Cannot withdraw application with status: ${application.status}`,
                 });
             }
 
-            // Note: You mentioned adding WITHDRAWN status in schema.prisma
-            // For now, using REJECTED to mark withdrawn applications
-            // TODO: Add WITHDRAWN to ApplicationStatus enum and use here
             const updated = await prisma.application.update({
                 where: { id: applicationId },
-                data: { status: ApplicationStatus.REJECTED },
+                data: { status: ApplicationStatus.WITHDRAWN },
                 select: {
                     id: true,
                     status: true,

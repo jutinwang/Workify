@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { fmtDate } from "./progress";
 
-const ApplicationRow = ({ app, onViewOffer }) => {
+const ApplicationRow = ({ app, onViewOffer, onWithdraw }) => {
   const navigate = useNavigate();
   const handleViewJob = () => {
     if (app.jobId) {
@@ -27,18 +27,34 @@ const ApplicationRow = ({ app, onViewOffer }) => {
       <td>{app.status}</td>
       <td>{fmtDate(app.lastUpdated)}</td>
       <td style={{ textAlign: "center" }}>
-        {app.status === "OFFER" || app.status === "ACCEPTED" ? (
-          <button
-            className="btn apps-btn-small apps-btn-success"
-            onClick={() => onViewOffer(app)}
-          >
-            View Offer
-          </button>
-        ) : (
-          <button className="btn apps-btn-small" onClick={handleViewJob}>
-            View Co-Op
-          </button>
-        )}
+        <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
+          {app.status === "OFFER" || app.status === "ACCEPTED" ? (
+            <button
+              className="btn apps-btn-small apps-btn-success"
+              onClick={() => onViewOffer(app)}
+            >
+              View Offer
+            </button>
+          ) : (
+            <>
+              <button className="btn apps-btn-small" onClick={handleViewJob}>
+                View Co-Op
+              </button>
+              {app.status !== "ACCEPTED" &&
+                app.status !== "OFFER" &&
+                app.status !== "REJECTED" &&
+                app.status !== "WITHDRAWN" && (
+                  <button
+                    className="btn apps-btn-small"
+                    onClick={() => onWithdraw(app)}
+                    style={{ backgroundColor: "#dc3545", color: "white" }}
+                  >
+                    Withdraw
+                  </button>
+                )}
+            </>
+          )}
+        </div>
       </td>
     </tr>
   );

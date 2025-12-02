@@ -30,4 +30,8 @@ export const studentApi = {
   async rejectOffer(applicationId) {
     return apiClient.post(`/applications/${applicationId}/reject`);
   },
+
+  async withdrawApplication(applicationId) {
+    return apiClient.post(`/applications/${applicationId}/withdraw`);
+  },
 };

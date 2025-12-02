@@ -226,6 +226,7 @@ enum ApplicationStatus {
   INTERVIEW
   OFFER
   ACCEPTED
+  WITHDRAWN
 }
 
 enum InterviewStatus {

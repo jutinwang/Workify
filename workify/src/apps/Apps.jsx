@@ -12,6 +12,7 @@ import Pagination from "./Pagination";
 import EmptyState from "./EmptyState";
 import InterviewComponent from "./InterviewComponent";
 import OfferModal from "./OfferModal";
+import WithdrawModal from "./WithdrawModal";
 
 const PAGE_SIZE = 8;
 
@@ -29,6 +30,7 @@ const Apps = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [sortBy, setSortBy] = useState("lastUpdatedDesc");
   const [selectedOffer, setSelectedOffer] = useState(null);
+  const [applicationToWithdraw, setApplicationToWithdraw] = useState(null);
   // Pagination
   const [page, setPage] = useState(1);
 
@@ -81,7 +83,7 @@ const Apps = () => {
       await studentApi.acceptOffer(applicationId);
       console.log("Accepting offer for application:", applicationId);
       alert("Offer accepted! Congratulations!");
-      
+
       // Refresh applications
       const response = await studentApi.getApplications();
       const transformed = response.applications.map((app) => ({
@@ -110,7 +112,7 @@ const Apps = () => {
       await studentApi.rejectOffer(applicationId);
       console.log("Rejecting offer for application:", applicationId);
       alert("Offer declined.");
-      
+
       // Refresh applications
       const response = await studentApi.getApplications();
       const transformed = response.applications.map((app) => ({
@@ -131,6 +133,43 @@ const Apps = () => {
     } catch (err) {
       console.error("Failed to reject offer:", err);
       alert("Failed to reject offer. Please try again.");
+    }
+  };
+
+  const handleWithdrawClick = (application) => {
+    setApplicationToWithdraw(application);
+  };
+
+  const handleConfirmWithdraw = async (applicationId) => {
+    try {
+      await studentApi.withdrawApplication(applicationId);
+      console.log("Withdrawing application:", applicationId);
+      alert("Application withdrawn successfully.");
+
+      // Refresh applications
+      const response = await studentApi.getApplications();
+      const transformed = response.applications.map((app) => ({
+        id: app.id,
+        jobId: app.job.id,
+        company: app.job.company.name,
+        role: app.job.title,
+        length: app.job.length,
+        location: app.job.location,
+        appliedAt: app.appliedAt,
+        status: app.status,
+        lastUpdated: app.updatedAt,
+        job: app.job,
+        offerLetterUrl: app.offerLetterUrl,
+      }));
+      setApplications(transformed);
+      setApplicationToWithdraw(null);
+    } catch (err) {
+      console.error("Failed to withdraw application:", err);
+      const errorMessage =
+        err.response?.data?.error ||
+        "Failed to withdraw application. Please try again.";
+      alert(errorMessage);
+      throw err; // Re-throw so modal can handle loading state
     }
   };
 
@@ -236,6 +275,7 @@ const Apps = () => {
             <ApplicationsList
               applications={paged}
               onViewOffer={handleViewOffer}
+              onWithdraw={handleWithdrawClick}
             />
             <Pagination
               page={pageSafe}
@@ -259,7 +299,9 @@ const Apps = () => {
   console.log(paged);
 
   // Check if student has already accepted an offer
-  const hasAcceptedOffer = applications.some(app => app.status === "ACCEPTED");
+  const hasAcceptedOffer = applications.some(
+    (app) => app.status === "ACCEPTED"
+  );
 
   return (
     <div className="applications-page-container">
@@ -277,6 +319,13 @@ const Apps = () => {
           onAccept={handleAcceptOffer}
           onReject={handleRejectOffer}
           hasAcceptedOffer={hasAcceptedOffer}
+        />
+      )}
+      {applicationToWithdraw && (
+        <WithdrawModal
+          application={applicationToWithdraw}
+          onClose={() => setApplicationToWithdraw(null)}
+          onConfirm={handleConfirmWithdraw}
         />
       )}
     </div>
