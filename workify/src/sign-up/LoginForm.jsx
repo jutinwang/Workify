@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authApi } from "../api/auth";
 import "./LoginForm.css";
@@ -6,7 +6,7 @@ import "../var.css";
 import { Link } from "react-router-dom";
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const LoginForm = ({ isEmployer, onSwitchToSignup }) => {
+const LoginForm = ({ onSwitchToSignup }) => {
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -59,11 +59,10 @@ const LoginForm = ({ isEmployer, onSwitchToSignup }) => {
       localStorage.setItem("authToken", response.token);
       localStorage.setItem("user", JSON.stringify(response.user));
 
-      console.log("Token: ", JSON.stringify(response.token))
-      console.log("User: ", JSON.stringify(response.user))
-
-      // Navigate based on user role
-      if (response.user.role === "EMPLOYER") {
+      // Navigate to a default route - Header will handle status-based redirects
+      if (response.user.role === "ADMIN") {
+        navigate("/admin");
+      } else if (response.user.role === "EMPLOYER") {
         navigate("/profile-employer");
       } else {
         navigate("/profile");

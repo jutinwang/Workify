@@ -10,10 +10,10 @@ async function main() {
     const hashedPassword = await bcrypt.hash('TEJWAB4900', 10);
     
     const adminUser = await prisma.user.upsert({
-        where: { email: 'admin@workify' },
+        where: { email: 'admin@workify.ca' },
         update: {},
         create: {
-            email: 'admin@workify',
+            email: 'admin@workify.ca',
             password: hashedPassword,
             name: 'Admin',
             role: 'ADMIN',

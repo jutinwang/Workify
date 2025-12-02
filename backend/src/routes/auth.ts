@@ -267,4 +267,113 @@ router.post("/employers/register", async (req, res, next) => {
 });
 
 
+// Get current user status - used for dynamic UI rendering
+router.get("/status", async (req, res, next) => {
+    try {
+        const token = (req.headers.authorization || "").replace(/^Bearer\s+/i, "").trim();
+        
+        if (!token) {
+            return res.status(200).json({ 
+                authenticated: false,
+                user: null,
+                status: 'unauthenticated'
+            });
+        }
+
+        // Verify token without throwing
+        let claims;
+        try {
+            const { verifyToken } = await import('../lib/jwt');
+            claims = verifyToken(token);
+        } catch (err) {
+            return res.status(200).json({ 
+                authenticated: false,
+                user: null,
+                status: 'invalid_token'
+            });
+        }
+
+        const userId = typeof claims.sub === 'string' ? parseInt(claims.sub, 10) : claims.sub;
+        
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                role: true,
+                suspended: true,
+                employer: {
+                    select: { 
+                        approved: true,
+                        id: true
+                    }
+                },
+                student: {
+                    select: { id: true }
+                },
+                admin: {
+                    select: { id: true }
+                }
+            },
+        });
+
+        if (!user) {
+            return res.status(200).json({ 
+                authenticated: false,
+                user: null,
+                status: 'user_not_found'
+            });
+        }
+
+        // Determine status
+        let status = 'active';
+        let allowedRoutes: string[] = [];
+        
+        if (user.suspended) {
+            status = 'suspended';
+        } else if (user.role === 'EMPLOYER' && user.employer && !user.employer.approved) {
+            status = 'pending_approval';
+        } else {
+            // Set allowed routes based on role
+            if (user.role === 'ADMIN') {
+                allowedRoutes = ['/admin'];
+            } else if (user.role === 'EMPLOYER') {
+                allowedRoutes = [
+                    '/profile-employer',
+                    '/employer-candidates', 
+                    '/employer-interviews',
+                    '/employer-job-writing'
+                ];
+            } else if (user.role === 'STUDENT') {
+                allowedRoutes = [
+                    '/',
+                    '/jobs',
+                    '/applications',
+                    '/profile'
+                ];
+            }
+        }
+
+        return res.status(200).json({
+            authenticated: true,
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                role: user.role,
+            },
+            status,
+            allowedRoutes,
+            message: status === 'suspended' 
+                ? 'Your account has been suspended. Please contact support.'
+                : status === 'pending_approval'
+                ? 'Your employer account is pending admin approval. You will be notified once approved.'
+                : null
+        });
+    } catch (e: any) {
+        next(e);
+    }
+});
+
 export default router;

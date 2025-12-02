@@ -37,9 +37,7 @@ export default function ReviewStepEmployer({ state, onBack, onGoto }) {
         profilePhotoUrl: state.recruiter?.profilePhoto || undefined,
       };
 
-      console.log("Submitting employer profile payload:", payload);
-      const response = await employerApi.completeProfile(payload);
-      console.log("Employer profile created successfully:", response);
+      await employerApi.completeProfile(payload);
       setSubmitted(true);
     } catch (err) {
       console.error("Error submitting employer profile:", err);
@@ -52,14 +50,40 @@ export default function ReviewStepEmployer({ state, onBack, onGoto }) {
   if (submitted) {
     return (
       <div className="section-card">
-        <h2 className="section-title">All set 🎉</h2>
-        <p className="section-sub">Your employer profile has been submitted.</p>
+        <h2 className="section-title">Profile Submitted Successfully! 🎉</h2>
+        <p className="section-sub" style={{ marginBottom: "1rem" }}>
+          Your employer profile has been submitted for admin review.
+        </p>
+        <div
+          style={{
+            padding: "1.5rem",
+            backgroundColor: "#fff3cd",
+            border: "1px solid #ffc107",
+            borderRadius: "8px",
+            marginBottom: "1.5rem",
+          }}
+        >
+          <h3
+            style={{
+              color: "#856404",
+              marginBottom: "0.5rem",
+              fontSize: "1.1rem",
+            }}
+          >
+            ⏳ Pending Admin Approval
+          </h3>
+          <p style={{ color: "#856404", margin: 0 }}>
+            Your account is currently under review. You will receive an email
+            notification once an administrator approves your account. You will
+            be redirected to a status page.
+          </p>
+        </div>
         <div className="actions">
-          <button className="btn" onClick={() => onGoto(0)}>
-            Edit Profile
-          </button>
-          <button className="btn" onClick={() => navigate("/profile-employer")}>
-            View Profile
+          <button
+            className="btn primary"
+            onClick={() => navigate("/account-status")}
+          >
+            Continue
           </button>
         </div>
       </div>

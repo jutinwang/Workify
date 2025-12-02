@@ -14,6 +14,8 @@ import EmployerCandidateContainer from "./coop-candidate/candidate-page-containe
 import ExpandedJobView from "./jobs/ExpandedView/ExpandedJobView.jsx";
 import Apps from "./apps/Apps.jsx";
 import Settings from "./settings/Settings.jsx";
+import Admin from "./admin/Admin.jsx";
+import AccountStatus from "./common/AccountStatus.jsx";
 
 export default function App() {
   const location = useLocation();
@@ -36,8 +38,10 @@ export default function App() {
         <Route path="/applications" element={<Apps />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/settings-employer" element={<Settings />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/account-status" element={<AccountStatus />} />
 
-        <Route path="/students/:id" element={<ExpandedJobView/>}></Route>
+        <Route path="/students/:id" element={<ExpandedJobView />}></Route>
 
         {/* Routes for employer stuff */}
         {/* For all employer routing please include employer in the path name */}

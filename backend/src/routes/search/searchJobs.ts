@@ -16,7 +16,10 @@ function normalizeTags(tags?: string[] | null): string[] {
 export async function searchJobs(params: JobSearchParams) {
     const { title, tags, studentId } = params;
 
-    const where: any = {};
+    const where: any = {
+        // Only show ACTIVE jobs to students
+        postingStatus: "ACTIVE",
+    };
 
     if (title && title.trim().length > 0) {
             where.title = {

@@ -92,8 +92,11 @@ router.get("/:jobId", async (req, res, next) => {
             return res.status(400).json({ error: "Invalid job ID" });
         }
 
-        const job = await prisma.job.findUnique({
-            where: { id: jobId },
+        const job = await prisma.job.findFirst({
+            where: { 
+                id: jobId,
+                postingStatus: "ACTIVE", // Only show ACTIVE jobs
+            },
             include: {
                 tags: {
                     select: {

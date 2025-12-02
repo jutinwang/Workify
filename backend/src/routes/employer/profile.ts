@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
-import { requireAuth, requireRole } from '../../middleware/requireAuth';
+import { requireAuth, requireAuthOnly, requireRole } from '../../middleware/requireAuth';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -44,8 +44,6 @@ const changePasswordSchema = z.object({
     newPassword: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
-//comment to delete
-
 const getEmployerProfile = async (req: Request, res: Response, next: Function) => {
     try {
         const userId = typeof req.user?.sub === 'string' ? parseInt(req.user.sub, 10) : req.user?.sub;
@@ -70,10 +68,34 @@ const getEmployerProfile = async (req: Request, res: Response, next: Function) =
     }
 };
 
-router.use(requireAuth);
-router.use(requireRole('EMPLOYER'));
+// Public endpoint - no auth required for searching companies during signup
+router.get('/companies/search', async (req: Request, res: Response) => {
+    try {
+        const { query } = req.query;
 
-router.patch('/complete-profile', getEmployerProfile, async (req: Request, res: Response) => {
+        if (!query || typeof query !== 'string') {
+            return res.status(400).json({ error: 'Query parameter is required' });
+        }
+
+        const companies = await prisma.company.findMany({
+            where: {
+                name: {
+                    contains: query,
+                    mode: 'insensitive',
+                },
+            },
+            take: 10,
+        });
+
+        res.status(200).json({ companies });
+    } catch (error) {
+        console.error('Error searching companies:', error);
+        res.status(500).json({ error: 'Failed to search companies' });
+    }
+});
+
+// Complete profile endpoint - uses requireAuthOnly to allow unapproved employers to finish signup
+router.patch('/complete-profile', requireAuthOnly, requireRole('EMPLOYER'), getEmployerProfile, async (req: Request, res: Response) => {
     try {
         const validation = completeProfileSchema.safeParse(req.body);
         
@@ -136,6 +158,10 @@ router.patch('/complete-profile', getEmployerProfile, async (req: Request, res: 
         res.status(500).json({ error: 'Failed to complete profile' });
     }
 });
+
+// Apply full auth middleware (with approval check) to all routes below
+router.use(requireAuth);
+router.use(requireRole('EMPLOYER'));
 
 router.get('/profile', getEmployerProfile, async (req: Request, res: Response) => {
     try {
@@ -428,31 +454,6 @@ router.get('/colleagues', getEmployerProfile, async (req: Request, res: Response
     } catch (error) {
         console.error('Error fetching colleagues:', error);
         res.status(500).json({ error: 'Failed to fetch colleagues' });
-    }
-});
-
-router.get('/companies/search', async (req: Request, res: Response) => {
-    try {
-        const { query } = req.query;
-
-        if (!query || typeof query !== 'string') {
-            return res.status(400).json({ error: 'Query parameter is required' });
-        }
-
-        const companies = await prisma.company.findMany({
-            where: {
-                name: {
-                    contains: query,
-                    mode: 'insensitive',
-                },
-            },
-            take: 10,
-        });
-
-        res.status(200).json({ companies });
-    } catch (error) {
-        console.error('Error searching companies:', error);
-        res.status(500).json({ error: 'Failed to search companies' });
     }
 });
 

@@ -20,8 +20,6 @@ export const apiClient = {
 
       const data = await response.json();
 
-      console.log(data)
-
       if (!response.ok) {
         throw new Error(data.error || 'Request failed');
       }
@@ -45,7 +43,9 @@ export const apiClient = {
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Request failed');
+      if (!response.ok) {
+        throw new Error(data.error || 'Request failed');
+      }
       return data;
     } catch (error) {
       console.error('API Error:', error);
@@ -66,7 +66,9 @@ export const apiClient = {
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Request failed');
+      if (!response.ok) {
+        throw new Error(data.error || 'Request failed');
+      }
       return data;
     } catch (error) {
       console.error('API Error:', error);

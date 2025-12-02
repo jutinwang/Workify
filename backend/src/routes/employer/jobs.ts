@@ -62,8 +62,9 @@ router.get("/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
 
         const query = JobsListQuery.parse(req.query);
 
-        const where = {
+        const where: Prisma.JobWhereInput = {
             employerId: employer.id,
+            postingStatus: { not: CoopPostingStatus.DELETED }, // Hide deleted jobs from employer's list
         };
 
         const [jobs, total] = await Promise.all([

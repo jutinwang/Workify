@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Prisma, PrismaClient, Role, ApplicationStatus, Gender, Ethnicity, IdentityFlag, InterviewStatus } from "@prisma/client";
+import { Prisma, PrismaClient, Role, ApplicationStatus, Gender, Ethnicity, IdentityFlag, InterviewStatus, CoopPostingStatus } from "@prisma/client";
 import { z } from "zod";
 import { requireAuth, requireRole } from "../../middleware/requireAuth";
 
@@ -161,7 +161,12 @@ router.get("/me/applications", async (req, res, next) => {
         const studentId = await getStudentProfileId(userId);
 
         const apps = await prisma.application.findMany({
-            where: { student: { id: studentId } }, 
+            where: { 
+                student: { id: studentId },
+                job: {
+                    postingStatus: { not: CoopPostingStatus.DELETED }
+                }
+            }, 
             orderBy: [{ id: "desc" }],
             select: {
                 id: true,

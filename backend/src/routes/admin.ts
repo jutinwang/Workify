@@ -99,6 +99,39 @@ router.post('/employers/:id/approve', async (req, res) => {
     }
 });
 
+// POST decline/reject employer
+router.post('/employers/:id/decline', async (req, res) => {
+    try {
+        const userId = parseInt(req.params.id);
+
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            include: { employer: true }
+        });
+
+        if (!user || user.role !== 'EMPLOYER') {
+            return res.status(404).json({ error: 'Employer not found' });
+        }
+
+        if (!user.employer) {
+            return res.status(400).json({ error: 'User has no employer profile' });
+        }
+
+        // Delete the employer account (cascade will handle related data)
+        await prisma.user.delete({
+            where: { id: userId }
+        });
+
+        res.json({ 
+            message: 'Employer declined and removed successfully',
+            userId: userId 
+        });
+    } catch (error) {
+        console.error('Error declining employer:', error);
+        res.status(500).json({ error: 'Failed to decline employer' });
+    }
+});
+
 router.get('/students', async (req, res) => {
     try {
         const students = await prisma.user.findMany({

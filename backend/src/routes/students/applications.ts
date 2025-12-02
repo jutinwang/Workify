@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { PrismaClient, Role, ApplicationStatus } from "@prisma/client";
+import { PrismaClient, Role, ApplicationStatus, CoopPostingStatus } from "@prisma/client";
 import { requireAuth, requireRole } from "../../middleware/requireAuth";
 import { z } from "zod";
 
@@ -155,7 +155,12 @@ router.get("/", requireAuth, requireRole(Role.STUDENT),
             const studentId = await getStudentProfileId(userId);
             const query = ApplicationQueryParams.parse(req.query);
 
-            const where: any = { studentId };
+            const where: any = { 
+                studentId,
+                job: {
+                    postingStatus: { not: CoopPostingStatus.DELETED }
+                }
+            };
             if (query.status) {
                 where.status = query.status;
             }
@@ -229,6 +234,9 @@ router.get("/:applicationId", requireAuth, requireRole(Role.STUDENT),
                 where: {
                     id: applicationId,
                     studentId: studentId,
+                    job: {
+                        postingStatus: { not: CoopPostingStatus.DELETED }
+                    }
                 },
                 select: {
                     id: true,

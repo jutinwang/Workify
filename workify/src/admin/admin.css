@@ -1,0 +1,351 @@
+.admin-container {
+  width: 100%;
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: var(--primary-background);
+  font-family: "Domine", sans-serif;
+}
+
+.admin-header {
+  margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.admin-header p {
+  color: #666;
+  font-size: 1rem;
+}
+
+/* Stats Grid */
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.admin-stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1.5px solid #e0e0e0;
+  transition: all 0.2s ease;
+}
+
+.admin-stat-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.admin-stat-card h3 {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-stat-card .stat-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--secondary-green);
+  margin-bottom: 0.25rem;
+}
+
+.admin-stat-card .stat-label {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+/* Tabs Section */
+.admin-tabs-container {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1.5px solid #e0e0e0;
+}
+
+.admin-tab-content {
+  margin-top: 1.5rem;
+}
+
+/* Loading & Error States */
+.admin-loading,
+.admin-error {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.1rem;
+}
+
+.admin-loading {
+  color: #666;
+}
+
+.admin-error {
+  color: #c33;
+  background-color: #fee;
+  border-radius: 8px;
+  border: 1.5px solid #c33;
+}
+
+/* Tables */
+.admin-table-container {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.admin-table th {
+  background-color: #f5f5f5;
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+}
+
+.admin-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  color: #555;
+}
+
+.admin-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.admin-table-empty {
+  text-align: center;
+  padding: 3rem;
+  color: #999;
+  font-style: italic;
+}
+
+/* Action Buttons */
+.admin-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: "Domine", sans-serif;
+  margin-right: 0.5rem;
+}
+
+.admin-btn:last-child {
+  margin-right: 0;
+}
+
+.admin-btn-primary {
+  background-color: var(--secondary-green);
+  color: white;
+}
+
+.admin-btn-primary:hover {
+  background-color: #2f4e4a;
+  transform: translateY(-1px);
+}
+
+.admin-btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.admin-btn-danger:hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+}
+
+.admin-btn-warning {
+  background-color: #ffc107;
+  color: #333;
+}
+
+.admin-btn-warning:hover {
+  background-color: #e0a800;
+  transform: translateY(-1px);
+}
+
+.admin-btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.admin-btn-secondary:hover {
+  background-color: #5a6268;
+  transform: translateY(-1px);
+}
+
+.admin-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Badges */
+.admin-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-badge-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.admin-badge-warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.admin-badge-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.admin-badge-info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+/* Modal Styles */
+.admin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.admin-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.admin-modal h2 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.admin-modal p {
+  color: #666;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.admin-modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+/* User Info */
+.admin-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-user-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.admin-user-email {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.admin-user-id {
+  font-size: 0.75rem;
+  color: #999;
+}
+
+/* Company Info */
+.admin-company-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-company-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.admin-company-url {
+  font-size: 0.85rem;
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.admin-company-url:hover {
+  text-decoration: underline;
+}
+
+/* Job Info */
+.admin-job-title {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.admin-job-meta {
+  font-size: 0.85rem;
+  color: #666;
+  display: flex;
+  gap: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 1rem;
+  }
+
+  .admin-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-btn {
+    display: block;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    margin-right: 0;
+  }
+
+  .admin-modal {
+    width: 95%;
+    padding: 1.5rem;
+  }
+
+  .admin-modal-actions {
+    flex-direction: column;
+  }
+}
