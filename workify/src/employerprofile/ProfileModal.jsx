@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Modal from "@mui/material/Modal";
 import ScheduleInterviewModal from "../coop-candidate/components/ScheduleInterviewModal";
+import { employerApi } from "../api/employers";
 import "./ProfileModal.css";
 
 const ProfileModal = ({
@@ -9,31 +10,15 @@ const ProfileModal = ({
   selectedCandidate,
   activeTab,
   onOpenScheduleModal,
+  onCompleteInterview,
+  onSendOffer,
 }) => {
   const [showOfferConfirm, setShowOfferConfirm] = useState(false);
   const [showRejectConfirm, setShowRejectConfirm] = useState(false);
   const [offerFile, setOfferFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [offeredCandidates, setOfferedCandidates] = useState(new Set());
-  const [rejectedCandidates, setRejectedCandidates] = useState(new Set());
   const fileInputRef = useRef(null);
-
-  // Load offered/rejected candidates from localStorage on mount
-  useEffect(() => {
-    const offered = JSON.parse(
-      localStorage.getItem("offeredCandidates") || "[]"
-    );
-    const rejected = JSON.parse(
-      localStorage.getItem("rejectedCandidates") || "[]"
-    );
-    setOfferedCandidates(new Set(offered));
-    setRejectedCandidates(new Set(rejected));
-  }, []);
-
-  const getCandidateId = (candidate) => {
-    return candidate?.studentId || candidate?.id || candidate?.candidate;
-  };
 
   const handleOfferClick = () => {
     setShowOfferConfirm(true);
@@ -58,32 +43,36 @@ const ProfileModal = ({
       setLoading(true);
       setError("");
 
-      // TODO: Backend integration - update application status to OFFER
-      // If file is attached, upload it first
-      // Example endpoint: POST /applications/:id/offer
-      // const token = localStorage.getItem("authToken");
-      // For now, we'll simulate the action
+      const applicationId = selectedCandidate?.applicationId;
 
-      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API call
+      if (!applicationId) {
+        setError("Application ID not found. Unable to send offer.");
+        console.error(
+          "Missing applicationId in selectedCandidate:",
+          selectedCandidate
+        );
+        setLoading(false);
+        return;
+      }
 
-      console.log("Offering candidate:", selectedCandidate);
+      // TODO: If file is attached, upload it first before sending offer
+      // For now, we'll just send the offer without the file upload
+
+      await employerApi.sendOffer(applicationId);
+
+      console.log("Offer sent to:", selectedCandidate);
+      console.log("Application ID:", applicationId);
       console.log("Offer letter attached:", offerFile?.name || "None");
 
-      // Mark candidate as offered
-      const candidateId = getCandidateId(selectedCandidate);
-      const newOffered = new Set(offeredCandidates);
-      newOffered.add(candidateId);
-      setOfferedCandidates(newOffered);
-      localStorage.setItem(
-        "offeredCandidates",
-        JSON.stringify([...newOffered])
+      alert(
+        `Offer successfully sent to ${selectedCandidate.candidate} for ${selectedCandidate.interviewInfo}!`
       );
 
-      alert(
-        `Offer sent to ${selectedCandidate.candidate}${
-          offerFile ? " with attached offer letter" : ""
-        }`
-      );
+      // Refresh data to show updated offer status
+      if (onSendOffer) {
+        await onSendOffer();
+      }
+
       onClose();
     } catch (e) {
       console.error("Error sending offer:", e);
@@ -105,22 +94,11 @@ const ProfileModal = ({
 
       // TODO: Backend integration - update application status to REJECTED
       // Example endpoint: PATCH /applications/:id with { status: "REJECTED" }
-      // const token = localStorage.getItem("authToken");
-      // For now, we'll simulate the action
+      // await employerApi.rejectApplication(selectedCandidate?.applicationId);
 
       await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API call
 
       console.log("Rejecting candidate:", selectedCandidate);
-
-      // Mark candidate as rejected
-      const candidateId = getCandidateId(selectedCandidate);
-      const newRejected = new Set(rejectedCandidates);
-      newRejected.add(candidateId);
-      setRejectedCandidates(newRejected);
-      localStorage.setItem(
-        "rejectedCandidates",
-        JSON.stringify([...newRejected])
-      );
 
       alert(`${selectedCandidate.candidate} has been rejected`);
       onClose();
@@ -168,7 +146,8 @@ const ProfileModal = ({
           <div className="profile-modal-body">
             <p className="confirm-text">
               Are you sure you want to send an offer to{" "}
-              {selectedCandidate.candidate}?
+              {selectedCandidate.candidate} for{" "}
+              {selectedCandidate.interviewInfo}?
             </p>
 
             <div className="file-upload-section">
@@ -291,15 +270,29 @@ const ProfileModal = ({
               >
                 Join Interview
               </button>
+              {/* TODO: Add API implementation here. */}
+              <button
+                className="action-btn"
+                onClick={async () => {
+                  if (selectedCandidate?.interviewId) {
+                    await onCompleteInterview(selectedCandidate.interviewId);
+                  } else {
+                    alert("Interview ID not found");
+                  }
+                }}
+              >
+                Mark Interview as Completed
+              </button>
             </div>
           </div>
         </div>
       );
     } else {
-      // Completed tab actions
-      const candidateId = getCandidateId(selectedCandidate);
-      const isOffered = offeredCandidates.has(candidateId);
-      const isRejected = rejectedCandidates.has(candidateId);
+      // Completed tab - use application status from API data
+      const applicationStatus = selectedCandidate?.outcome; // This is application.status
+      const isOffered =
+        applicationStatus === "OFFER" || applicationStatus === "ACCEPTED";
+      const isRejected = applicationStatus === "REJECTED";
 
       return (
         <div className="profile-modal-content">
@@ -314,12 +307,12 @@ const ProfileModal = ({
               <div className="status-message">
                 {isOffered && (
                   <p className="status-offered">
-                    ✓ Offer has been sent to this candidate
+                    ✓ Offer has been sent to this candidate for this position
                   </p>
                 )}
                 {isRejected && (
                   <p className="status-rejected">
-                    ✗ This candidate has been rejected
+                    ✗ This candidate has been rejected for this position
                   </p>
                 )}
               </div>

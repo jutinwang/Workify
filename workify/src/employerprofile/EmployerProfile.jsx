@@ -16,6 +16,7 @@ import Button from "@mui/material/Button";
 import ProfileModal from "./ProfileModal";
 import ScheduleInterviewModal from "../coop-candidate/components/ScheduleInterviewModal";
 import { employerApi } from "../api/employers";
+import { formatDateTime } from "../common/utility";
 
 function HeaderBar({ profileData }) {
   const [formData, setFormData] = useState({
@@ -96,60 +97,33 @@ function HeaderBar({ profileData }) {
 }
 
 // Table for Completed
-function BasicTable({ handleActionClick }) {
-  function createData(
-    candidate,
-    interviewInfo,
-    interviewer,
-    feedback,
-    outcome,
-    action
-  ) {
-    return { candidate, interviewInfo, interviewer, feedback, outcome, action };
+function BasicTable({ handleActionClick, interviews = [], loading }) {
+  const getRowClassName = (status) => {
+    if (status === "ACCEPTED") return "ep-status-accepted";
+    if (status === "REJECTED") return "ep-status-rejected";
+    if (status === "OFFER") return "ep-status-offer";
+    return "";
+  };
+
+  if (loading) {
+    return (
+      <TableContainer component={Paper}>
+        <div style={{ padding: "20px", textAlign: "center" }}>
+          Loading completed interviews...
+        </div>
+      </TableContainer>
+    );
   }
 
-  const rows = [
-    createData(
-      "Ali Bhangu",
-      "SWE Interview",
-      "John Doe",
-      "GOOD",
-      "Hired",
-      "View"
-    ),
-    createData(
-      "Justin Wang",
-      "Frontend Interview",
-      "Jane Smith",
-      "EXCELLENT",
-      "Hired",
-      "View"
-    ),
-    createData(
-      "Bilal Khan",
-      "Backend Interview",
-      "Alex Brown",
-      "FAIR",
-      "Rejected",
-      "View"
-    ),
-    createData(
-      "Sara Li",
-      "Design Interview",
-      "Chris Lee",
-      "STRONG",
-      "Pending",
-      "View"
-    ),
-    createData(
-      "Toluwanimi Emoruwa",
-      "Data Interview",
-      "Emily White",
-      "GOOD",
-      "Hired",
-      "View"
-    ),
-  ];
+  if (interviews.length === 0) {
+    return (
+      <TableContainer component={Paper}>
+        <div style={{ padding: "20px", textAlign: "center" }}>
+          No completed interviews
+        </div>
+      </TableContainer>
+    );
+  }
 
   return (
     <TableContainer component={Paper}>
@@ -164,29 +138,45 @@ function BasicTable({ handleActionClick }) {
             <TableCell className="ep-table-header-label">
               Interview Info.
             </TableCell>
-            <TableCell className="ep-table-header-label">Interviewer</TableCell>
-            <TableCell className="ep-table-header-label">Status</TableCell>
+            <TableCell className="ep-table-header-label">
+              Interview Date
+            </TableCell>
+            <TableCell className="ep-table-header-label">
+              Application Status
+            </TableCell>
             <TableCell align="center" className="ep-table-header-label">
               Next Steps
             </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {interviews.map((interview) => (
             <TableRow
-              key={row.candidate}
+              key={interview.id}
+              className={getRowClassName(interview?.application?.status)}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               <TableCell component="th" scope="row">
-                {row.candidate}
+                {interview.student?.user?.name || "Unknown"}
               </TableCell>
-              <TableCell>{row.interviewInfo}</TableCell>
-              <TableCell>{row.interviewer}</TableCell>
-              <TableCell>{row.outcome}</TableCell>
+              <TableCell>{interview.job?.title || "N/A"}</TableCell>
+              <TableCell>{formatDateTime(interview.chosenStart)}</TableCell>
+              <TableCell>{interview?.application?.status || "N/A"}</TableCell>
               <TableCell>
                 <button
                   className="action-btn schedule"
-                  onClick={() => handleActionClick(row)}
+                  onClick={() =>
+                    handleActionClick({
+                      candidate: interview.student?.user?.name,
+                      interviewInfo: interview.job?.title,
+                      date: formatDateTime(interview.chosenStart),
+                      outcome: interview.application?.status,
+                      interviewId: interview.id,
+                      studentId: interview.student?.id,
+                      jobId: interview.job?.id,
+                      applicationId: interview.application?.id,
+                    })
+                  }
                 >
                   Open Next Steps
                 </button>
@@ -200,21 +190,31 @@ function BasicTable({ handleActionClick }) {
 }
 
 // Table for Upcoming
-function UpcomingTable({ handleActionClick }) {
-  function createData(candidate, posting, date, interviewer, action, link) {
-    return { candidate, posting, date, interviewer, action, link };
+function UpcomingTable({ handleActionClick, interviews = [], loading }) {
+  // Filter for non-completed interviews (PENDING or SCHEDULED)
+  const upcomingInterviews = (interviews || []).filter(
+    (interview) => interview.status !== "COMPLETED"
+  );
+
+  if (loading) {
+    return (
+      <TableContainer component={Paper}>
+        <div style={{ padding: "20px", textAlign: "center" }}>
+          Loading interviews...
+        </div>
+      </TableContainer>
+    );
   }
 
-  const rows = [
-    createData(
-      "Ali Bhangu",
-      "SWE Interview",
-      "10:00AM on Sept 20, 2024",
-      "John Doe",
-      "Action",
-      "Link"
-    ),
-  ];
+  if (upcomingInterviews.length === 0) {
+    return (
+      <TableContainer component={Paper}>
+        <div style={{ padding: "20px", textAlign: "center" }}>
+          No upcoming interviews
+        </div>
+      </TableContainer>
+    );
+  }
 
   return (
     <TableContainer component={Paper}>
@@ -231,36 +231,43 @@ function UpcomingTable({ handleActionClick }) {
             </TableCell>
             <TableCell className="ep-table-header-label">
               Interview Date & Time
-            </TableCell>{" "}
-            <TableCell className="ep-table-header-label">Interviewer</TableCell>
-            <TableCell className="ep-table-header-label">Link</TableCell>
+            </TableCell>
+            <TableCell className="ep-table-header-label">Status</TableCell>
             <TableCell align="center" className="ep-table-header-label">
               Action
             </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {upcomingInterviews.map((interview) => (
             <TableRow
-              key={row.candidate}
+              key={interview.id}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               <TableCell component="th" scope="row">
-                {row.candidate}
+                {interview.student?.user?.name || "Unknown"}
               </TableCell>
               <TableCell component="th" scope="row">
-                {row.posting}
+                {interview.job?.title || "N/A"}
               </TableCell>
               <TableCell component="th" scope="row">
-                {row.date}
+                {formatDateTime(interview.chosenStart)}
               </TableCell>
-              <TableCell>{row.interviewer}</TableCell>
-              <TableCell>{row.link}</TableCell>
-
+              <TableCell>{interview.status}</TableCell>
               <TableCell>
                 <button
                   className="action-btn schedule"
-                  onClick={() => handleActionClick(row)}
+                  onClick={() =>
+                    handleActionClick({
+                      candidate: interview.student?.user?.name,
+                      posting: interview.job?.title,
+                      date: formatDateTime(interview.chosenStart),
+                      status: interview.status,
+                      interviewId: interview.id,
+                      studentId: interview.student?.id,
+                      jobId: interview.job?.id,
+                    })
+                  }
                 >
                   Action
                 </button>
@@ -282,20 +289,37 @@ const EmployerProfile = () => {
   const [loading, setLoading] = useState(true);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [scheduleCandidate, setScheduleCandidate] = useState(null);
+  const [interviews, setInterviews] = useState([]);
+  const [interviewsLoading, setInterviewsLoading] = useState(true);
+  const [completedInterviews, setCompletedInterviews] = useState([]);
+  const [completedLoading, setCompletedLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchData = async () => {
       try {
-        const response = await employerApi.getProfile();
-        setProfileData(response.profile);
+        console.log("Fetching profile and interviews...");
+        const [profileResponse, interviewsResponse, completedResponse] =
+          await Promise.all([
+            employerApi.getProfile(),
+            employerApi.getAllInterviews(),
+            employerApi.getCompletedInterviews(),
+          ]);
+        console.log("Profile response:", profileResponse);
+        console.log("Interviews response:", interviewsResponse);
+        console.log("Completed interviews response:", completedResponse);
+        setProfileData(profileResponse.profile);
+        setInterviews(interviewsResponse.interviews || []);
+        setCompletedInterviews(completedResponse.interviews || []);
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
+        setInterviewsLoading(false);
+        setCompletedLoading(false);
       }
     };
 
-    fetchProfile();
+    fetchData();
   }, []);
 
   const handleTabChange = (event, newValue) => {
@@ -305,6 +329,36 @@ const EmployerProfile = () => {
   const handleActionClick = (candidate) => {
     setSelectedCandidate(candidate);
     setIsModalOpen(true);
+  };
+
+  const handleCompleteInterview = async (interviewId) => {
+    try {
+      await employerApi.completeInterview(interviewId);
+      // Refresh data after completing interview
+      const [profileResponse, interviewsResponse, completedResponse] =
+        await Promise.all([
+          employerApi.getProfile(),
+          employerApi.getAllInterviews(),
+          employerApi.getCompletedInterviews(),
+        ]);
+      setProfileData(profileResponse.profile);
+      setInterviews(interviewsResponse.interviews || []);
+      setCompletedInterviews(completedResponse.interviews || []);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error completing interview:", error);
+      alert("Failed to complete interview. Please try again.");
+    }
+  };
+
+  const handleSendOffer = async () => {
+    try {
+      // Refresh data after sending offer
+      const completedResponse = await employerApi.getCompletedInterviews();
+      setCompletedInterviews(completedResponse.interviews || []);
+    } catch (error) {
+      console.error("Error refreshing data after offer:", error);
+    }
   };
 
   const handleCloseModal = () => {
@@ -345,9 +399,17 @@ const EmployerProfile = () => {
                 </Tabs>
               </Box>
               {activeTab === 1 ? (
-                <BasicTable handleActionClick={handleActionClick} />
+                <BasicTable
+                  handleActionClick={handleActionClick}
+                  interviews={completedInterviews}
+                  loading={completedLoading}
+                />
               ) : (
-                <UpcomingTable handleActionClick={handleActionClick} />
+                <UpcomingTable
+                  handleActionClick={handleActionClick}
+                  interviews={interviews}
+                  loading={interviewsLoading}
+                />
               )}
             </div>
             <div className="ep-colleagues-section">
@@ -364,6 +426,8 @@ const EmployerProfile = () => {
         selectedCandidate={selectedCandidate}
         activeTab={activeTab}
         onOpenScheduleModal={handleOpenScheduleModal}
+        onCompleteInterview={handleCompleteInterview}
+        onSendOffer={handleSendOffer}
       />
       {showScheduleModal && scheduleCandidate && (
         <ScheduleInterviewModal

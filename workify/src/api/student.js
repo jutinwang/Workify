@@ -22,4 +22,12 @@ export const studentApi = {
       : "/applications";
     return apiClient.get(endpoint);
   },
+
+  async acceptOffer(applicationId) {
+    return apiClient.post(`/applications/${applicationId}/accept`);
+  },
+
+  async rejectOffer(applicationId) {
+    return apiClient.post(`/applications/${applicationId}/reject`);
+  },
 };

@@ -9,7 +9,7 @@ export const employerApi = {
       qualification: data.qualifications,
       responsibilities: data.responsibilities,
       benefits: data.benefits,
-      tags: data.tags
+      tags: data.tags,
     });
   },
 
@@ -24,19 +24,19 @@ export const employerApi = {
   async updatePostingStatus(data) {
     // Temp and should be improved
     if (data.postingStatus === "ARCHIVED") {
-      data.postingStatus = "ACTIVE"
+      data.postingStatus = "ACTIVE";
     } else {
-      data.postingStatus = "ARCHIVED"
+      data.postingStatus = "ARCHIVED";
     }
-    return apiClient.patch(`/employers/me/jobs/${data.id}`, data)
+    return apiClient.patch(`/employers/me/jobs/${data.id}`, data);
   },
 
-  async updateCoop(data){
-    return apiClient.patch(`/employers/me/jobs/${data.id}`, data)
+  async updateCoop(data) {
+    return apiClient.patch(`/employers/me/jobs/${data.id}`, data);
   },
 
-  async deleteCoop(data){
-    return apiClient.delete(`/employers/me/jobs/${data.id}`)
+  async deleteCoop(data) {
+    return apiClient.delete(`/employers/me/jobs/${data.id}`);
   },
 
   async cloneCoop(data) {
@@ -49,105 +49,122 @@ export const employerApi = {
       qualification: data.qualification,
       responsibilities: data.responsibilities,
       benefits: data.benefits,
-      tags: data.tags
+      tags: data.tags,
     });
-  }
+  },
+
+  async completeInterview(interviewId) {
+    return apiClient.patch(`/interviews/interviews/${interviewId}/complete`);
+  },
+
+  async getCompletedInterviews(limit = 50, offset = 0) {
+    return apiClient.get(
+      `/interviews/interviews/completed?limit=${limit}&offset=${offset}`
+    );
+  },
+
+  async getAllInterviews() {
+    return apiClient.get(`/interviews/interviews`);
+  },
+
+  async sendOffer(applicationId) {
+    return apiClient.post(`/employers/applications/${applicationId}/offer`);
+  },
 };
 
-
-const API_BASE_URL = 'http://localhost:4000';
+const API_BASE_URL = "http://localhost:4000";
 
 const apiClient = {
   async post(endpoint, body) {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem("authToken");
       const headers = {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       };
 
       if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+        headers["Authorization"] = `Bearer ${token}`;
       }
 
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        method: 'POST',
+        method: "POST",
         headers,
         body: JSON.stringify(body),
       });
 
       const data = await response.json();
 
-      console.log(data)
+      console.log(data);
 
       if (!response.ok) {
-        throw new Error(data.error || 'Request failed');
+        throw new Error(data.error || "Request failed");
       }
 
       return data;
     } catch (error) {
-      console.error('API Error:', error);
+      console.error("API Error:", error);
       throw error;
     }
   },
 
   async get(endpoint) {
     try {
-      const token = localStorage.getItem('authToken');
-      const headers = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const token = localStorage.getItem("authToken");
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
 
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        method: 'GET',
+        method: "GET",
         headers,
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Request failed');
+      if (!response.ok) throw new Error(data.error || "Request failed");
       return data;
     } catch (error) {
-      console.error('API Error:', error);
+      console.error("API Error:", error);
       throw error;
     }
   },
 
   async patch(endpoint, body) {
     try {
-      const token = localStorage.getItem('authToken');
-      const headers = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const token = localStorage.getItem("authToken");
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
 
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        method: 'PATCH',
+        method: "PATCH",
         headers,
         body: JSON.stringify(body),
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Request failed');
+      if (!response.ok) throw new Error(data.error || "Request failed");
       return data;
     } catch (error) {
-      console.error('API Error:', error);
+      console.error("API Error:", error);
       throw error;
     }
   },
 
   async delete(endpoint) {
     try {
-      const token = localStorage.getItem('authToken');
-      const headers = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const token = localStorage.getItem("authToken");
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
 
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers,
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Request failed');
+      if (!response.ok) throw new Error(data.error || "Request failed");
       return data;
     } catch (error) {
-      console.error('API Error:', error);
+      console.error("API Error:", error);
       throw error;
     }
-  }
+  },
 };

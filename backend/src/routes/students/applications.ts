@@ -148,6 +148,7 @@ router.get("/", requireAuth, requireRole(Role.STUDENT),
                                 location: true,
                                 length: true,
                                 salary: true,
+                                description: true,
                                 company: {
                                     select: {
                                         id: true,
@@ -295,6 +296,143 @@ router.patch("/:applicationId", requireAuth, requireRole(Role.STUDENT),
             if (e?.name === "ZodError") {
                 return res.status(400).json({ error: "Invalid input", issues: e.issues });
             }
+            if (e?.status === 404) {
+                return res.status(404).json({ error: e.message });
+            }
+            next(e);
+        }
+    }
+);
+
+router.post("/:applicationId/accept", requireAuth, requireRole(Role.STUDENT),
+    async (req, res, next) => {
+        try {
+            const userId = getUserId(req);
+            const studentId = await getStudentProfileId(userId);
+            const applicationId = Number(req.params.applicationId);
+
+            if (!Number.isFinite(applicationId)) {
+                return res.status(400).json({ error: "Invalid application ID" });
+            }
+
+            // Verify ownership and that an offer exists
+            const application = await prisma.application.findFirst({
+                where: {
+                    id: applicationId,
+                    studentId: studentId,
+                },
+                select: {
+                    id: true,
+                    status: true,
+                    job: {
+                        select: {
+                            id: true,
+                            title: true,
+                            company: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+            if (!application) {
+                return res.status(404).json({ error: "Application not found" });
+            }
+
+            if (application.status !== ApplicationStatus.OFFER) {
+                return res.status(400).json({
+                    error: "Can only accept applications with an active offer",
+                    currentStatus: application.status,
+                });
+            }
+
+            // Update status to ACCEPTED
+            const updated = await prisma.application.update({
+                where: { id: applicationId },
+                data: { status: ApplicationStatus.ACCEPTED },
+                select: {
+                    id: true,
+                    status: true,
+                    updatedAt: true,
+                    job: {
+                        select: {
+                            id: true,
+                            title: true,
+                            company: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+            return res.json({
+                application: updated,
+                message: `Offer accepted for ${application.job.title} at ${application.job.company.name}`,
+            });
+        } catch (e: any) {
+            if (e?.status === 404) {
+                return res.status(404).json({ error: e.message });
+            }
+            next(e);
+        }
+    }
+);
+
+router.post("/:applicationId/reject", requireAuth, requireRole(Role.STUDENT),
+    async (req, res, next) => {
+        try {
+            const userId = getUserId(req);
+            const studentId = await getStudentProfileId(userId);
+            const applicationId = Number(req.params.applicationId);
+
+            if (!Number.isFinite(applicationId)) {
+                return res.status(400).json({ error: "Invalid application ID" });
+            }
+
+            // Verify ownership and that an offer exists
+            const application = await prisma.application.findFirst({
+                where: {
+                    id: applicationId,
+                    studentId: studentId,
+                },
+                select: { id: true, status: true },
+            });
+
+            if (!application) {
+                return res.status(404).json({ error: "Application not found" });
+            }
+
+            if (application.status !== ApplicationStatus.OFFER) {
+                return res.status(400).json({
+                    error: "Can only reject applications with an active offer",
+                    currentStatus: application.status,
+                });
+            }
+
+            // Update status to REJECTED
+            const updated = await prisma.application.update({
+                where: { id: applicationId },
+                data: { status: ApplicationStatus.REJECTED },
+                select: {
+                    id: true,
+                    status: true,
+                    updatedAt: true,
+                },
+            });
+
+            return res.json({
+                application: updated,
+                message: "Offer declined",
+            });
+        } catch (e: any) {
             if (e?.status === 404) {
                 return res.status(404).json({ error: e.message });
             }

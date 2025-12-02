@@ -1,10 +1,69 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
+import { Slate, Editable, withReact } from "slate-react";
+import { createEditor } from "slate";
 import "./OfferModal.css";
 
-const OfferModal = ({ application, onClose, onAccept, onReject }) => {
+const OfferModal = ({
+  application,
+  onClose,
+  onAccept,
+  onReject,
+  hasAcceptedOffer,
+}) => {
   const [showAcceptConfirm, setShowAcceptConfirm] = useState(false);
   const [showRejectConfirm, setShowRejectConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const isCurrentlyAccepted = application.status === "ACCEPTED";
+  const cannotAccept = hasAcceptedOffer && !isCurrentlyAccepted;
+
+  const parseSlateContent = (
+    content,
+    fallbackText = "No content available"
+  ) => {
+    if (!content) {
+      return [{ type: "paragraph", children: [{ text: fallbackText }] }];
+    }
+    try {
+      return JSON.parse(content);
+    } catch (e) {
+      console.error("Failed to parse content:", e);
+      return [{ type: "paragraph", children: [{ text: fallbackText }] }];
+    }
+  };
+
+  const Element = ({ attributes, children, element }) => {
+    switch (element.type) {
+      case "code":
+        return (
+          <pre {...attributes}>
+            <code>{children}</code>
+          </pre>
+        );
+      case "bulleted-list":
+        return <ul {...attributes}>{children}</ul>;
+      case "numbered-list":
+        return <ol {...attributes}>{children}</ol>;
+      case "list-item":
+        return <li {...attributes}>{children}</li>;
+      default:
+        return <p {...attributes}>{children}</p>;
+    }
+  };
+
+  const Leaf = ({ attributes, children, leaf }) => {
+    if (leaf.bold) children = <strong>{children}</strong>;
+    if (leaf.code) children = <code>{children}</code>;
+    if (leaf.italic) children = <em>{children}</em>;
+    if (leaf.underline) children = <u>{children}</u>;
+    if (leaf.strikethrough) children = <s>{children}</s>;
+
+    return <span {...attributes}>{children}</span>;
+  };
+
+  const editor = useMemo(() => withReact(createEditor()), []);
+  const renderElement = useCallback((props) => <Element {...props} />, []);
+  const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
 
   const handleAcceptClick = () => {
     setShowAcceptConfirm(true);
@@ -122,6 +181,23 @@ const OfferModal = ({ application, onClose, onAccept, onReject }) => {
           </button>
         </div>
         <div className="offer-modal-body">
+          {isCurrentlyAccepted && (
+            <div className="offer-accepted-banner">
+              <span className="offer-accepted-icon">✓</span>
+              <span className="offer-accepted-text">
+                You have accepted this offer
+              </span>
+            </div>
+          )}
+          {cannotAccept && (
+            <div className="offer-warning-banner">
+              <span className="offer-warning-icon">⚠</span>
+              <span className="offer-warning-text">
+                You have already accepted another offer. You cannot accept
+                multiple offers.
+              </span>
+            </div>
+          )}
           <div className="offer-details">
             <h3>{application.job?.title}</h3>
             <p className="offer-company">{application.job?.company?.name}</p>
@@ -146,9 +222,22 @@ const OfferModal = ({ application, onClose, onAccept, onReject }) => {
               {application.job?.salary && (
                 <div className="offer-info-item">
                   <span className="offer-info-label">Salary:</span>
-                  <span className="offer-info-value">
-                    {application.job.salary}
-                  </span>
+                  <div className="offer-info-value">
+                    <Slate
+                      key={`salary-${application.id}`}
+                      editor={editor}
+                      initialValue={parseSlateContent(
+                        application.job.salary,
+                        "No salary posted"
+                      )}
+                    >
+                      <Editable
+                        readOnly
+                        renderElement={renderElement}
+                        renderLeaf={renderLeaf}
+                      />
+                    </Slate>
+                  </div>
                 </div>
               )}
               {application.job?.length && (
@@ -174,12 +263,15 @@ const OfferModal = ({ application, onClose, onAccept, onReject }) => {
                 </a>
               </div>
             )}
-
             <div className="offer-description">
-              <h4>Co-Op Description</h4>
-              <p>
-                {application.job?.description || "No description available."}
-              </p>
+              <div className="offer-job-link-section">
+                <Link
+                  to={`/students/${application.jobId}`}
+                  className="view-job-btn"
+                >
+                  View Full Job Posting
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -187,12 +279,17 @@ const OfferModal = ({ application, onClose, onAccept, onReject }) => {
           <button
             className="offer-action-btn reject"
             onClick={handleRejectClick}
+            disabled={isCurrentlyAccepted}
           >
             Decline Offer
           </button>
           <button
             className="offer-action-btn accept"
             onClick={handleAcceptClick}
+            disabled={isCurrentlyAccepted || cannotAccept}
+            title={
+              cannotAccept ? "You have already accepted another offer" : ""
+            }
           >
             Accept Offer
           </button>

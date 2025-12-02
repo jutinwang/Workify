@@ -47,3 +47,22 @@ export function formatDate(isoDate) {
     day: "numeric",
   });
 }
+
+/**
+ * Format an ISO date string to a date and time format
+ * @param {string} isoDate - ISO 8601 date string
+ * @returns {string} Formatted date and time (e.g., "Nov 14, 2025, 2:30 PM")
+ */
+export function formatDateTime(isoDate) {
+  if (!isoDate) return "N/A";
+
+  const date = new Date(isoDate);
+  return date.toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
