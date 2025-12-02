@@ -33,21 +33,22 @@ router.get("/search", maybeAuth, async (req, res) => {
             tagList = tags.split(",").map(t => t.trim()).filter(Boolean);
         }
 
-        const jobs = await searchJobs({
-            title: typeof title === "string" ? title.trim() : null,
-            tags: tagList,
-        });
-
-        // Add applied status if user is authenticated as a student
+        // Get studentId if authenticated
         let studentId: number | null = null;
         if (req.user?.role === Role.STUDENT) {
             try {
                 const userId = getUserId(req);
                 studentId = await getStudentProfileId(userId);
             } catch (e) {
-                // If we can't get student profile, just continue without applied status
+                // Continue without studentId if profile doesn't exist
             }
         }
+
+        const jobs = await searchJobs({
+            title: typeof title === "string" ? title.trim() : null,
+            tags: tagList,
+            studentId,
+        });
 
         // If we have a studentId, fetch their applications for these jobs
         if (studentId) {

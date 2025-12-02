@@ -70,6 +70,10 @@ export const employerApi = {
   async sendOffer(applicationId) {
     return apiClient.post(`/employers/applications/${applicationId}/offer`);
   },
+
+  async shortlistApplication(applicationId) {
+    return apiClient.post(`/employers/applications/${applicationId}/shortlist`);
+  },
 };
 
 const API_BASE_URL = "http://localhost:4000";

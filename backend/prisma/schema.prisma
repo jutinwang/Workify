@@ -21,27 +21,29 @@ model User {
 }
 
 model StudentProfile {
-  id           Int                @id @default(autoincrement())
-  userId       Int                @unique
-  major        String?
-  year         Int?
-  resumeUrl    String?
-  ethnicity    Ethnicity[]
-  gender       Gender?
-  githubUrl    String?
-  linkedInUrl  String?
-  optional     IdentityFlag[]
-  aboutMe      String?
-  bookmarks    Int[]
-  coverLetter  String?
-  phoneNumber  String?
-  portfolio    String?
-  transcript   String?
-  applications Application[]
-  educations   Education[]
-  experience   Experience[]
-  interviews   InterviewRequest[]
-  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            Int                @id @default(autoincrement())
+  userId        Int                @unique
+  major         String?
+  year          Int?
+  resumeUrl     String?
+  ethnicity     Ethnicity[]
+  gender        Gender?
+  githubUrl     String?
+  linkedInUrl   String?
+  optional      IdentityFlag[]
+  aboutMe       String?
+  bookmarks     Int[]
+  coverLetter   String?
+  phoneNumber   String?
+  portfolio     String?
+  transcript    String?
+  applications  Application[]
+  educations    Education[]
+  experience    Experience[]
+  interviews    InterviewRequest[]
+  savedJobs     SavedJob[]
+  savedSearches SavedSearch[]
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Experience {
@@ -127,6 +129,7 @@ model Job {
   tags             Tag[]              @relation("JobTags")
   InterviewRequest InterviewRequest[]
   postingStatus    CoopPostingStatus  @default(ACTIVE)
+  savedBy          SavedJob[]
 
   @@index([companyId])
   @@index([employerId])
@@ -240,4 +243,28 @@ enum CoopPostingStatus {
   ACTIVE
   ARCHIVED
   DELETED
+}
+
+model SavedJob {
+  id        Int            @id @default(autoincrement())
+  studentId Int
+  jobId     Int
+  savedAt   DateTime       @default(now())
+  student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  job       Job            @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, jobId])
+  @@index([studentId])
+  @@index([jobId])
+}
+
+model SavedSearch {
+  id        Int            @id @default(autoincrement())
+  studentId Int
+  name      String
+  filters   Json
+  createdAt DateTime       @default(now())
+  student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
 }

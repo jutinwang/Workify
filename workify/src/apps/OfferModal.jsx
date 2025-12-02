@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { Slate, Editable, withReact } from "slate-react";
 import { createEditor } from "slate";
+import { Link } from "react-router-dom";
 import "./OfferModal.css";
 
 const OfferModal = ({

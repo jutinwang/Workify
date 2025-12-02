@@ -10,45 +10,32 @@ import ChevronDownIcon from "../../common/ChevronDownIcon";
 import PDFViewerModal from "./PDFViewerModal";
 import { Link } from "react-router-dom";
 import ScheduleInterviewModal from "./ScheduleInterviewModal";
+import { employerApi } from "../../api/employers";
 
-const CandidateModal = ({ candidate, jobId, onClose }) => {
+const CandidateModal = ({ candidate, jobId, onClose, onShortlistChange }) => {
   const [showPDFModal, setShowPDFModal] = useState(false);
-  const [isShortlisted, setIsShortlisted] = useState(false);
+  const [isShortlisted, setIsShortlisted] = useState(candidate.shortlisted || false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
 
   useEffect(() => {
-    // Load shortlist status for this specific job (local only for now)
-    const shortlistedData = JSON.parse(
-      localStorage.getItem("shortlistedCandidatesByJob") || "{}"
-    );
-    const jobShortlist = shortlistedData[jobId] || [];
-    setIsShortlisted(jobShortlist.includes(candidate.id));
-  }, [candidate.id, jobId]);
+    // Initialize shortlist status from candidate data
+    setIsShortlisted(candidate.shortlisted || false);
+  }, [candidate.shortlisted]);
 
-  const handleShortlist = () => {
-    const shortlistedData = JSON.parse(
-      localStorage.getItem("shortlistedCandidatesByJob") || "{}"
-    );
-
-    if (!shortlistedData[jobId]) {
-      shortlistedData[jobId] = [];
+  const handleShortlist = async () => {
+    try {
+      const response = await employerApi.shortlistApplication(candidate.applicationId);
+      const newShortlistStatus = response.application.shortlisted;
+      setIsShortlisted(newShortlistStatus);
+      
+      // Notify parent to refresh applications
+      if (onShortlistChange) {
+        onShortlistChange();
+      }
+    } catch (error) {
+      console.error("Error toggling shortlist:", error);
+      alert("Failed to update shortlist status. Please try again.");
     }
-
-    if (isShortlisted) {
-      shortlistedData[jobId] = shortlistedData[jobId].filter(
-        (id) => id !== candidate.id
-      );
-    } else {
-      shortlistedData[jobId] = [...shortlistedData[jobId], candidate.id];
-    }
-
-    localStorage.setItem(
-      "shortlistedCandidatesByJob",
-      JSON.stringify(shortlistedData)
-    );
-    setIsShortlisted(!isShortlisted);
-
-    // TODO: later call backend PATCH /applications/:applicationId/shortlist
   };
 
   const handleSchedule = () => {
@@ -231,27 +218,25 @@ const CandidateModal = ({ candidate, jobId, onClose }) => {
 
                       return (
                         <div key={edu.id} className="education-item">
-                          <div className="education-header">
+                          {edu.schoolName && (
+                            <div className="education-school">
+                              {edu.schoolName}
+                            </div>
+                          )}
+                          <div className="education-meta">
                             <span className="education-program">
                               {edu.program}
                             </span>
-                            {edu.schoolName && (
-                              <span className="education-school">
-                                {" "}
-                                • {edu.schoolName}
-                              </span>
-                            )}
-                          </div>
-                          <div className="education-meta">
                             {edu.yearOfStudy && (
-                              <span>Year {edu.yearOfStudy}</span>
-                            )}
-                            {grad && (
-                              <span className="education-grad">
-                                Grad: {grad}
+                              <span className="education-year">
+                                {" "}
+                                | Year {edu.yearOfStudy}
                               </span>
                             )}
                           </div>
+                          {grad && (
+                            <div className="education-grad">Grad: {grad}</div>
+                          )}
                         </div>
                       );
                     })}

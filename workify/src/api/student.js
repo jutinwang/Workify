@@ -34,4 +34,58 @@ export const studentApi = {
   async withdrawApplication(applicationId) {
     return apiClient.post(`/applications/${applicationId}/withdraw`);
   },
+
+  // Saved Jobs
+  async saveJob(jobId) {
+    return apiClient.post("/students/saved-jobs", { jobId });
+  },
+
+  async unsaveJob(jobId) {
+    const token = localStorage.getItem('authToken');
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const response = await fetch(`http://localhost:4000/students/saved-jobs/${jobId}`, {
+      method: 'DELETE',
+      headers,
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.error || 'Failed to unsave job');
+    }
+    
+    return;
+  },
+
+  async getSavedJobs() {
+    return apiClient.get("/students/saved-jobs");
+  },
+
+  // Saved Searches
+  async saveSearch(name, filters) {
+    return apiClient.post("/students/saved-searches", { name, filters });
+  },
+
+  async deleteSearch(searchId) {
+    const token = localStorage.getItem('authToken');
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const response = await fetch(`http://localhost:4000/students/saved-searches/${searchId}`, {
+      method: 'DELETE',
+      headers,
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.error || 'Failed to delete search');
+    }
+    
+    return;
+  },
+
+  async getSavedSearches() {
+    return apiClient.get("/students/saved-searches");
+  },
 };

@@ -25,8 +25,8 @@
 .reject-btn {
   padding: 0.875rem 2rem;
   background-color: transparent;
-  color: var(--text-dark);
-  border: 2px solid var(--text-light-gray);
+  color: #ef4444;
+  border: 2px solid #ef4444;
   border-radius: 0.5rem;
   font-size: 0.9375rem;
   font-weight: 600;
@@ -36,9 +36,9 @@
 }
 
 .reject-btn:hover {
-  background-color: var(--text-light-gray);
-  border-color: var(--text-gray);
-  color: var(--text-dark);
+  background-color: #fef2f2;
+  border-color: #dc2626;
+  color: #dc2626;
 }
 
 .reject-btn:disabled {

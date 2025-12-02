@@ -78,99 +78,95 @@ const EmployerCandidateContainer = () => {
     fetchJobs();
   }, [token]);
 
-  useEffect(() => {
-    const fetchApplications = async () => {
-      if (!selectedJob) {
+  const fetchApplications = async () => {
+    if (!selectedJob) {
+      setApplications([]);
+      return;
+    }
+
+    try {
+      setAppsLoading(true);
+      setAppsError("");
+
+      const res = await fetch(
+        `http://localhost:4000/employers/jobs/${selectedJob.id}/applications`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        setAppsError(data.error || "Failed to load applications.");
         setApplications([]);
+        setAppsLoading(false);
         return;
       }
 
-      try {
-        setAppsLoading(true);
-        setAppsError("");
+      const apps = data.applications || [];
+      console.log(apps)
 
-        const res = await fetch(
-          `http://localhost:4000/employers/jobs/${selectedJob.id}/applications`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+      const mapped = data.applications.map((app) => {
+        const year = app.student.year;
 
-        const data = await res.json().catch(() => ({}));
+        const yearLabel =
+          year === 1 ? "1st" :
+          year === 2 ? "2nd" :
+          year === 3 ? "3rd" :
+          year === 4 ? "4th" :
+          year ? `${year}th` : null;
 
-        if (!res.ok) {
-          setAppsError(data.error || "Failed to load applications.");
-          setApplications([]);
-          setAppsLoading(false);
-          return;
-        }
+        return {
+          id: app.id,
+          applicationId: app.id,
+          studentId: app.student.id,
 
-        const apps = data.applications || [];
-        console.log(apps)
+          name: app.student.user.name,
+          email: app.student.user.email,
 
-        const mapped = data.applications.map((app) => {
-          const year = app.student.year;
+          major: app.student.major || "Computer Science",
+          school: "University of Ottawa",
+          year,
+          yearLabel, 
 
-          const yearLabel =
-            year === 1 ? "1st" :
-            year === 2 ? "2nd" :
-            year === 3 ? "3rd" :
-            year === 4 ? "4th" :
-            year ? `${year}th` : null;
+          resumeUrl: app.student.resumeUrl,
+          linkedInUrl: app.student.linkedInUrl,
+          githubUrl: app.student.githubUrl,
 
-          return {
-            id: app.id,
-            applicationId: app.id,
-            studentId: app.student.id,
+          status: app.status,
+          shortlisted: app.shortlisted,
+          appliedAt: app.appliedAt,
+          updatedAt: app.updatedAt,
+          experience: app.student.experience || [],
+          educations: app.student.educations || [],
 
-            name: app.student.user.name,
-            email: app.student.user.email,
+          skills: [],
+          keyCourses: [],
+        };
+      });
 
-            major: app.student.major || "Computer Science",
-            school: "University of Ottawa",
-            year,
-            yearLabel, 
+      setApplications(mapped);
+      console.log(mapped)
+      setAppsLoading(false);
+    } catch (err) {
+      console.error("Error fetching applications:", err);
+      setAppsError("Unexpected error while loading applications.");
+      setAppsLoading(false);
+    }
+  };
 
-            resumeUrl: app.student.resumeUrl,
-            linkedInUrl: app.student.linkedInUrl,
-            githubUrl: app.student.githubUrl,
-
-            status: app.status,
-            shortlisted: app.shortlisted,
-            appliedAt: app.appliedAt,
-            updatedAt: app.updatedAt,
-            experience: app.student.experience || [],
-            educations: app.student.educations || [],
-
-            skills: [],
-            keyCourses: [],
-          };
-        });
-
-        setApplications(mapped);
-        console.log(mapped)
-        setAppsLoading(false);
-      } catch (err) {
-        console.error("Error fetching applications:", err);
-        setAppsError("Unexpected error while loading applications.");
-        setAppsLoading(false);
-      }
-    };
-
+  useEffect(() => {
     if (token && selectedJob?.id) {
       fetchApplications();
     } else {
       setApplications([]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, selectedJob]);
-
-  const getShortlistedCandidatesForJob = (jobId) => {
-    const shortlistedData = JSON.parse(localStorage.getItem("shortlistedCandidatesByJob") || "{}");
-    return new Set(shortlistedData[jobId] || []);
-  };
 
   const getFilteredApplicants = () => {
     if (!selectedJob) return [];
@@ -178,8 +174,7 @@ const EmployerCandidateContainer = () => {
     let filtered = [...applications];
 
     if (showShortlistedOnly) {
-      const shortlistedIds = getShortlistedCandidatesForJob(selectedJob.id);
-      filtered = filtered.filter((app) => shortlistedIds.has(app.id));
+      filtered = filtered.filter((app) => app.shortlisted === true);
     }
 
     if (searchTerm) {
@@ -276,7 +271,7 @@ const EmployerCandidateContainer = () => {
               <>
                 <ApplicantFilter
                   selectedJob={selectedJob}
-                  totalApplicants={applications.length}
+                  totalApplicants={totalApplicants}
                   filteredCount={filteredApplicants.length}
                   searchTerm={searchTerm}
                   yearFilter={yearFilter}
@@ -319,6 +314,7 @@ const EmployerCandidateContainer = () => {
             candidate={selectedCandidate}
             jobId={selectedJob?.id}
             onClose={handleCloseModal}
+            onShortlistChange={fetchApplications}
           />
         )}
 
