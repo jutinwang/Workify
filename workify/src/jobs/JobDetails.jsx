@@ -120,16 +120,16 @@ export default function JobDetails({ job, onClose, savedJobIds, onSavedChange, o
   const postedDate = formatRelativeDate(job.updatedAt || job.createdAt);
 
   const parseSlateContent = (content, fallbackText = "No content available") => {
-  if (!content) {
-    return [{ type: "paragraph", children: [{ text: fallbackText }] }];
-  }
-  try {
-    return JSON.parse(content);
-  } catch (e) {
-    console.error('Failed to parse content:', e);
-    return [{ type: "paragraph", children: [{ text: fallbackText }] }];
-  }
-};
+    if (!content) {
+      return [{ type: "paragraph", children: [{ text: fallbackText }] }];
+    }
+    try {
+      return JSON.parse(content);
+    } catch (e) {
+      console.error('Failed to parse content:', e);
+      return [{ type: "paragraph", children: [{ text: fallbackText }] }];
+    }
+  };
 
   const Element = ({ attributes, children, element }) => {
   switch (element.type) {

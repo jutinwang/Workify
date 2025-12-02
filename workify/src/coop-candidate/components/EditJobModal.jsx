@@ -80,6 +80,18 @@ const EditJobModal = ({ job, onClose, onSaved }) => {
         setTags(tags.filter((tag) => tag !== tagToRemove));
     };
 
+    const safeSlate = (value, fallback = "No content") => {
+        if (!value || value.length === 0) {
+            return JSON.stringify([
+                { type: "paragraph", children: [{ text: fallback }] }
+            ]);
+        } else if (typeof value == "object") { // if the text is edited, this is handled here
+            return JSON.stringify(value);
+        } else { // this is here because if the text isn't changed when editing, it passes a string and not a stringified slate JSON
+            return JSON.stringify([{ type: "paragraph", children: [{ text: value }] }]);
+        }
+    };
+
     const handleSave = async () => {
         try {
             setSaving(true);
@@ -94,17 +106,19 @@ const EditJobModal = ({ job, onClose, onSaved }) => {
 
             const payload = {
                 title: coopTitle,
-                description: JSON.stringify(coopDescription),
+                description: safeSlate(coopDescription, "No description provided"),
                 location: officeLocation || "Remote",
-                length: jobLength || undefined,
-                type: workModel || undefined,
-                salary: JSON.stringify(salaryRange),
-                responsibilities: JSON.stringify(responsibilities),
-                qualification: JSON.stringify(qualifications),
-                benefits: JSON.stringify(benefits),
+                length: jobLength || "Unspecified",
+                type: workModel || "Remote",
+                salary: safeSlate(salaryRange, "No salary provided"),
+                responsibilities: safeSlate(responsibilities, "No responsibilities listed"),
+                qualification: safeSlate(qualifications, "No qualifications listed"),
+                benefits: safeSlate(benefits, "No benefits listed"),
                 tags,
                 programs,
             };
+
+            console.log("Payload being sent:", payload);
 
             const res = await fetch(
                 `http://localhost:4000/employers/me/jobs/${job.id}`,

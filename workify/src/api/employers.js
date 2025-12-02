@@ -43,13 +43,13 @@ export const employerApi = {
     return apiClient.post("/employers/me/jobs", {
       title: "[DUPLICATE] " + data.title,
       description: data.description,
-      location: data.location,
-      length: data.length,
-      salary: data.salary,
-      qualification: data.qualification,
-      responsibilities: data.responsibilities,
-      benefits: data.benefits,
-      tags: data.tags,
+      location: data.location || "Remote",
+      length: data.length || "Unspecified",
+      salary: data.salary || "No salary provided",
+      qualification: data.qualification || "No qualifications listed",
+      responsibilities: data.responsibilities || "No responsibilities listed",
+      benefits: data.benefits || "No benefits listed",
+      tags: data.tags
     });
   },
 
@@ -232,9 +232,18 @@ const apiClient = {
         headers,
       });
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Request failed");
-      return data;
+      let data = null;
+
+      // Avoid JSON parsing when there's no body
+      if (response.status !== 204) {
+        data = await response.json();
+      }
+
+      if (!response.ok) {
+        throw new Error(data?.error || 'Request failed');
+      }
+
+      return data; // null for 204
     } catch (error) {
       console.error("API Error:", error);
       throw error;
