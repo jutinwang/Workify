@@ -169,13 +169,13 @@ const EditJobModal = ({ job, onClose, onSaved }) => {
                 <div className="modal-body">
                     {error && <div className="error-message">{error}</div>}
 
-                    <div className="positionwriting-container">
-                        <div className="content-wrapper">
-                            <div className="textInput">
+                    <div className="pw-positionwriting-container">
+                        <div className="pw-content-wrapper">
+                            <div className="pw-textInput">
                                 {/* Title */}
                                 <p>Coop Title</p>
                                 <textarea
-                                    className="titleInput"
+                                    className="pw-titleInput"
                                     value={coopTitle}
                                     onChange={(e) => setCoopTitle(e.target.value)}
                                     placeholder="Type something..."
@@ -185,13 +185,13 @@ const EditJobModal = ({ job, onClose, onSaved }) => {
                                 <p style={{ marginTop: "20px" }}>
                                     Eligible Programs For Applicants (Select up to 3)
                                 </p>
-                                <div className="programs-section">
-                                    <div className="program-selection-grid">
+                                <div className="pw-programs-section">
+                                    <div className="pw-program-selection-grid">
                                         {AVAILABLE_PROGRAMS.map((program) => (
                                             <button
                                                 key={program}
                                                 type="button"
-                                                className={`program-select-btn ${
+                                                className={`pw-program-select-btn ${
                                                     programs.includes(program) ? "selected" : ""
                                                 } ${
                                                     programs.length >= 3 && !programs.includes(program)
@@ -207,13 +207,13 @@ const EditJobModal = ({ job, onClose, onSaved }) => {
                                             </button>
                                         ))}
                                     </div>
-                                    <p className="program-help-text">
+                                    <p className="pw-program-help-text">
                                         Click to select up to 3 programs
                                     </p>
                                     {programs.length > 0 && (
-                                        <div className="selected-programs-display">
+                                        <div className="pw-selected-programs-display">
                                             {programs.map((program, index) => (
-                                                <div className="program-item" key={index}>
+                                                <div className="pw-program-item" key={index}>
                                                     <span className="text">{program}</span>
                                                     <span
                                                         className="close"
@@ -227,10 +227,10 @@ const EditJobModal = ({ job, onClose, onSaved }) => {
                                     )}
 
                                     {/* Length + Work Model */}
-                                    <div className="dropdowns">
+                                    <div className="pw-dropdowns">
                                         <p>Coop Length</p>
                                         <select
-                                            className="dropdown job-length-dropdown"
+                                            className="pw-dropdown job-length-dropdown"
                                             value={jobLength}
                                             onChange={(e) => setJobLength(e.target.value)}
                                         >
@@ -245,7 +245,7 @@ const EditJobModal = ({ job, onClose, onSaved }) => {
 
                                         <p>Work Models</p>
                                         <select
-                                            className="dropdown work-model-dropdown"
+                                            className="pw-dropdown work-model-dropdown"
                                             value={workModel}
                                             onChange={(e) => setWorkModel(e.target.value)}
                                         >
@@ -264,7 +264,7 @@ const EditJobModal = ({ job, onClose, onSaved }) => {
                                     <>
                                         <p>Office Location</p>
                                         <textarea
-                                            className="locationInput"
+                                            className="pw-locationInput"
                                             value={officeLocation}
                                             onChange={(e) => setOfficeLocation(e.target.value)}
                                             placeholder="Enter office address or city..."
@@ -278,7 +278,7 @@ const EditJobModal = ({ job, onClose, onSaved }) => {
                                     key={`desc-${job.id}`}
                                     placeholder=" "
                                     initialText={coopDescription}
-                                    className="infoInput"
+                                    className="pw-infoInput"
                                     onChange={setCoopDescription}
                                 />
 
@@ -288,7 +288,7 @@ const EditJobModal = ({ job, onClose, onSaved }) => {
                                     key={`resp-${job.id}`}
                                     placeholder=" "
                                     initialText={responsibilities}
-                                    className="infoInput"
+                                    className="pw-infoInput"
                                     onChange={setResponsibilities}
                                 />
 
@@ -298,7 +298,7 @@ const EditJobModal = ({ job, onClose, onSaved }) => {
                                     key={`qual-${job.id}`}
                                     placeholder=" "
                                     initialText={qualifications}
-                                    className="infoInput"
+                                    className="pw-infoInput"
                                     onChange={setQualifications}
                                 />
 
@@ -308,7 +308,7 @@ const EditJobModal = ({ job, onClose, onSaved }) => {
                                     key={`bene-${job.id}`}
                                     placeholder=" "
                                     initialText={benefits}
-                                    className="infoInput"
+                                    className="pw-infoInput"
                                     onChange={setBenefits}
                                 />
 
@@ -318,7 +318,7 @@ const EditJobModal = ({ job, onClose, onSaved }) => {
                                     key={`sal-${job.id}`}
                                     placeholder=" "
                                     initialText={salaryRange}
-                                    className="infoInput salary-input"
+                                    className="pw-infoInput salary-input"
                                     onChange={setSalaryRange}
                                     customHeight="100px"
                                 />
@@ -326,10 +326,10 @@ const EditJobModal = ({ job, onClose, onSaved }) => {
 
                             {/* Tags */}
                             <p>Role Attributes (Select up to 5)</p>
-                            <div className="tags-section">
+                            <div className="pw-tags-section">
                                 <button
                                     type="button"
-                                    className="select-tags-btn"
+                                    className="pw-select-tags-btn"
                                     onClick={() => setIsTagModalOpen(true)}
                                 >
                                     {tags.length === 0
@@ -340,7 +340,7 @@ const EditJobModal = ({ job, onClose, onSaved }) => {
                                 </button>
 
                                 {tags.length > 0 && (
-                                    <div className="selected-tags-display">
+                                    <div className="pw-selected-tags-display">
                                         {tags.map((tag, index) => (
                                             <div className="tag-item" key={index}>
                                                 <span className="text">{tag}</span>
@@ -366,14 +366,14 @@ const EditJobModal = ({ job, onClose, onSaved }) => {
 
                 <div className="modal-footer">
                     <button
-                        className="cancel-btn"
+                        className="pw-cancel-btn"
                         onClick={onClose}
                         disabled={saving}
                     >
                         Cancel
                     </button>
                     <button
-                        className="post-btn"
+                        className="pw-post-btn"
                         onClick={handleSave}
                         disabled={saving}
                     >
