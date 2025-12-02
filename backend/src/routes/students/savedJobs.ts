@@ -108,7 +108,14 @@ router.get("/", requireAuth, requireRole(Role.STUDENT),
             const studentId = await getStudentProfileId(userId);
 
             const savedJobs = await prisma.savedJob.findMany({
-                where: { studentId },
+                where: { 
+                    studentId,
+                    job: {
+                        postingStatus: {
+                            not: "DELETED"
+                        }
+                    }
+                },
                 orderBy: { savedAt: "desc" },
                 select: {
                     id: true,

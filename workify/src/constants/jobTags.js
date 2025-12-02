@@ -39,37 +39,38 @@ export const JOB_TAGS = [
   { category: "Role Type", tag: "UI/UX Designer" },
 
   // ----------------------------
-  // Discipline Tags
+  // Skills & Frameworks
   // ----------------------------
-  { category: "Discipline", tag: "Software Engineering" },
-  { category: "Discipline", tag: "Computer Science" },
-  { category: "Discipline", tag: "Information Technology" },
-  { category: "Discipline", tag: "Data Science" },
-  { category: "Discipline", tag: "Cybersecurity" },
-  { category: "Discipline", tag: "Business" },
-  { category: "Discipline", tag: "Finance" },
-  { category: "Discipline", tag: "Marketing" },
-  { category: "Discipline", tag: "Communications" },
-  { category: "Discipline", tag: "Human Resources" },
-  { category: "Discipline", tag: "Electrical Engineering" },
-  { category: "Discipline", tag: "Mechanical Engineering" },
-  { category: "Discipline", tag: "Design" },
-
-  // ----------------------------
-  // Program Tags
-  // ----------------------------
-  { category: "Program", tag: "Computer Science" },
-  { category: "Program", tag: "Software Engineering" },
-  { category: "Program", tag: "Data Science" },
-  { category: "Program", tag: "Information Systems" },
-  { category: "Program", tag: "Business Administration" },
-  { category: "Program", tag: "Commerce" },
-  { category: "Program", tag: "Finance" },
-  { category: "Program", tag: "Marketing" },
-  { category: "Program", tag: "Accounting" },
-  { category: "Program", tag: "Engineering" },
-  { category: "Program", tag: "Communications" },
-  { category: "Program", tag: "Human Resources" },
+  { category: "Skills & Frameworks", tag: "React" },
+  { category: "Skills & Frameworks", tag: "JavaScript" },
+  { category: "Skills & Frameworks", tag: "TypeScript" },
+  { category: "Skills & Frameworks", tag: "Python" },
+  { category: "Skills & Frameworks", tag: "Java" },
+  { category: "Skills & Frameworks", tag: "C++" },
+  { category: "Skills & Frameworks", tag: "C#" },
+  { category: "Skills & Frameworks", tag: "Node.js" },
+  { category: "Skills & Frameworks", tag: "Angular" },
+  { category: "Skills & Frameworks", tag: "Vue.js" },
+  { category: "Skills & Frameworks", tag: "SQL" },
+  { category: "Skills & Frameworks", tag: "MongoDB" },
+  { category: "Skills & Frameworks", tag: "PostgreSQL" },
+  { category: "Skills & Frameworks", tag: "MySQL" },
+  { category: "Skills & Frameworks", tag: "Git" },
+  { category: "Skills & Frameworks", tag: "Docker" },
+  { category: "Skills & Frameworks", tag: "Kubernetes" },
+  { category: "Skills & Frameworks", tag: "AWS" },
+  { category: "Skills & Frameworks", tag: "Azure" },
+  { category: "Skills & Frameworks", tag: "REST APIs" },
+  { category: "Skills & Frameworks", tag: "GraphQL" },
+  { category: "Skills & Frameworks", tag: "Agile" },
+  { category: "Skills & Frameworks", tag: "Jira" },
+  { category: "Skills & Frameworks", tag: "Figma" },
+  { category: "Skills & Frameworks", tag: "HTML/CSS" },
+  { category: "Skills & Frameworks", tag: "Django" },
+  { category: "Skills & Frameworks", tag: "Spring Boot" },
+  { category: "Skills & Frameworks", tag: "Flask" },
+  { category: "Skills & Frameworks", tag: "Express.js" },
+  { category: "Skills & Frameworks", tag: "TailwindCSS" },
 ];
 
 // Helper function to get unique categories
