@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../var.css";
 import "./job-card.css";
 import { formatRelativeDate } from "../common/utility";
+import { studentApi } from "../api/student";
 
-export default function JobCard({ job, isSelected, onClick }) {
+export default function JobCard({ job, isSelected, onClick, savedJobIds, onSavedChange }) {
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const postedDate = formatRelativeDate(job?.updatedAt || job?.createdAt);
   const hasApplied = job?.hasApplied || false;
 
@@ -15,14 +17,50 @@ export default function JobCard({ job, isSelected, onClick }) {
     .toUpperCase()
     .slice(0, 2);
 
+  // Update bookmark state when savedJobIds changes
+  useEffect(() => {
+    if (savedJobIds && savedJobIds.has(job.id)) {
+      setIsBookmarked(true);
+    } else {
+      setIsBookmarked(false);
+    }
+  }, [savedJobIds, job.id]);
+
   const handleViewDetails = (e) => {
     e.preventDefault();
     onClick();
   };
 
-  const handleBookmarkClick = (e) => {
+  const handleBookmarkClick = async (e) => {
     e.stopPropagation();
-    setIsBookmarked(!isBookmarked);
+    
+    if (isSaving) return;
+
+    try {
+      setIsSaving(true);
+      
+      if (isBookmarked) {
+        // Unsave
+        await studentApi.unsaveJob(job.id);
+        setIsBookmarked(false);
+        if (onSavedChange) {
+          onSavedChange(job.id, false);
+        }
+      } else {
+        // Save
+        await studentApi.saveJob(job.id);
+        setIsBookmarked(true);
+        if (onSavedChange) {
+          onSavedChange(job.id, true);
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling bookmark:", error);
+      // Revert on error
+      setIsBookmarked(!isBookmarked);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -71,7 +109,11 @@ export default function JobCard({ job, isSelected, onClick }) {
             </span>
           </div>
         </div>
-        <button className="bookmark-btn" onClick={handleBookmarkClick}>
+        <button 
+          className="bookmark-btn" 
+          onClick={handleBookmarkClick}
+          disabled={isSaving}
+        >
           {isBookmarked ? (
             <svg
               width="20"

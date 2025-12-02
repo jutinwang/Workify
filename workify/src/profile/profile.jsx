@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { studentApi } from "../api/student";
 import Card from "../common/Card";
 import Section from "../common/Section";
@@ -21,6 +22,8 @@ function Ring({ value = 75 }) {
 }
 
 function HeaderBar({ profile, user }) {
+  const navigate = useNavigate();
+  
   if (!profile || !user) {
     return <div>Loading...</div>;
   }
@@ -47,6 +50,25 @@ function HeaderBar({ profile, user }) {
         <div className="header-actions">
           <button className="btn-secondary">Share</button>
           <button className="btn-primary">Edit Profile</button>
+          <button 
+            className="btn-icon" 
+            onClick={() => navigate('/settings')}
+            title="Settings"
+            style={{ 
+              marginLeft: '0.5rem',
+              padding: '0.5rem 0.75rem',
+              fontSize: '1.25rem',
+              border: '1px solid #d1d5db',
+              borderRadius: '0.5rem',
+              background: 'white',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseOver={(e) => e.target.style.background = '#f3f4f6'}
+            onMouseOut={(e) => e.target.style.background = 'white'}
+          >
+            ⚙️
+          </button>
         </div>
       </div>
       <div className="header-links">

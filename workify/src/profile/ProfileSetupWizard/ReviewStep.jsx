@@ -33,12 +33,12 @@ export default function ReviewStep({ state, onBack, onGoto }) {
         experience:
           Array.isArray(state.work) && !state.skipWork
             ? state.work
-                .filter((exp) => exp.position && exp.company && exp.startDate)
+                .filter((exp) => exp.title && exp.employer && exp.start)
                 .map((exp) => ({
-                  title: exp.position,
-                  company: exp.company,
-                  startDate: exp.startDate,
-                  endDate: exp.endDate || undefined,
+                  title: exp.title,
+                  company: exp.employer,
+                  startDate: exp.start,
+                  endDate: exp.end || undefined,
                   description: exp.description || "",
                 }))
             : [],

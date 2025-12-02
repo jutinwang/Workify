@@ -1,36 +1,51 @@
 .applications-page-container {
-    display: flex;
-    width: 100%;
-    height: 92vh;
-    box-sizing: border-box;
-    flex-direction: column;
-    padding: 1em;
-    box-sizing: border-box;
-    background-color: var(--primary-background);
+  display: flex;
+  width: 100%;
+  height: 92vh;
+  box-sizing: border-box;
+  flex-direction: column;
+  padding: 1em;
+  box-sizing: border-box;
+  background-color: var(--primary-background);
 }
 .apps-header {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
-    margin-bottom: 1em;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 1em;
 }
 .apps-title {
-    margin: 0;
-    font-size: 2em;
-    line-height: 1.2;
+  margin: 0;
+  font-size: 2em;
+  line-height: 1.2;
 }
 .apps-subtitle {
-    margin: 6px 0 0;
-    color: #475569;
+  margin: 6px 0 0;
+  color: #475569;
 }
 .apps-meta {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.apps-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  padding: 2px 6px;
+  background: #dc2626;
+  color: white;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
 }
 .apps-count {
-    font-weight: 700;
-    font-size: 2em;
+  font-weight: 700;
+  font-size: 2em;
 }
 .apps-count-label {
   color: #64748b;
@@ -38,39 +53,41 @@
 
 .apps-filters {
   background: #fafcff;
-  border: 1px solid #e2e8f0;
+  border: none;
   border-radius: 10px;
   padding: 12px;
   margin-bottom: 16px;
 }
 .filters-row {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }
-.filters-row > input:first-child{
-    flex: 2;
+.filters-row > input:first-child {
+  flex: 2;
 }
-.filters-row > .dropdown{
-    flex: 1;
+.filters-row > .dropdown {
+  flex: 1;
 }
-.input, .select {
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-size: 14px;
-    background: #fff;
-    flex: 1;
+.input,
+.select {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  background: #fff;
+  flex: 1;
 }
-.input:focus, .select:focus {
-    outline: 2px solid #94a3b8;
-    outline-offset: 1px;
-    border: none;
+.input:focus,
+.select:focus {
+  outline: 2px solid #94a3b8;
+  outline-offset: 1px;
+  border: none;
 }
 .apps-table-wrapper {
-    overflow: auto;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    background: #fff;
+  overflow: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
 }
 .apps-table {
   width: 100%;
@@ -90,6 +107,28 @@
   padding: 12px;
   border-bottom: 1px solid #f1f5f9;
   vertical-align: middle;
+}
+.apps-table tbody tr.offer-accepted {
+  background-color: #d1fae5;
+  border-left: 4px solid #10b981;
+}
+.apps-table tbody tr.offer-accepted td {
+  background-color: transparent;
+}
+.apps-table tbody tr.offer-rejected {
+  background-color: #f3f4f6;
+  border-left: 4px solid #9ca3af;
+}
+.apps-table tbody tr.offer-rejected td {
+  background-color: transparent;
+  color: #6b7280;
+}
+.apps-table tbody tr.offer-pending {
+  background-color: #fef3c7;
+  border-left: 4px solid #f59e0b;
+}
+.apps-table tbody tr.offer-pending td {
+  background-color: transparent;
 }
 .cell-strong {
   font-weight: 600;
@@ -177,59 +216,164 @@
 }
 
 .apps-interviews-table-wrapper {
-    overflow: auto;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    background: #fff;
-    margin-top: 16px;
+  overflow: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  margin-top: 16px;
 }
 
 .apps-interviews-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
 }
 
 .apps-interviews-table thead th {
-    text-align: left;
-    padding: 12px;
-    background: #f1f5f9;
-    color: #475569;
-    border-bottom: 1px solid #e2e8f0;
-    position: sticky;
-    top: 0;
+  text-align: left;
+  padding: 12px;
+  background: #f1f5f9;
+  color: #475569;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
 }
 
 .apps-interviews-table tbody td {
-    padding: 12px;
-    border-bottom: 1px solid #f1f5f9;
-    vertical-align: middle;
+  padding: 12px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
 }
 
 .apps-interviews-table tr {
-    display: grid;
-    grid-template-columns: 2fr 2fr 1.5fr 1.5fr 1fr;
-    align-items: center;
+  display: grid;
+  grid-template-columns: 2fr 2fr 1.5fr 1.5fr 1fr;
+  align-items: center;
+}
+
+.apps-upcoming-interviews-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.apps-upcoming-interview-card {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  background: var(--card-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: all 0.2s ease;
+}
+
+.apps-upcoming-interview-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-color: var(--secondary-green);
+}
+
+.apps-interview-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1.5rem;
+}
+
+.apps-interview-job-info {
+  flex: 1;
+}
+
+.apps-interview-datetime {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.apps-datetime-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f0fdf4;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #bbf7d0;
+}
+
+.apps-datetime-icon {
+  font-size: 1.1rem;
+}
+
+.apps-datetime-text {
+  font-weight: 600;
+  color: #166534;
+  font-size: 0.9rem;
+}
+
+.apps-interview-duration {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+}
+
+.apps-interview-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.apps-btn-view {
+  background: var(--secondary-green);
+  color: white;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.apps-btn-view:hover {
+  background: var(--darker-green);
+}
+
+.apps-btn-link {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.apps-btn-link:hover {
+  background: #2563eb;
 }
 
 .apps-interview-actions {
-    display: flex;
-    gap: 8px;
+  display: flex;
+  gap: 8px;
 }
 
 .apps-btn-small {
-    padding: 4px 8px;
-    font-size: 12px;
+  padding: 4px 8px;
+  font-size: 12px;
 }
 
 .apps-btn-danger {
-    background: #fee2e2;
-    border-color: #fca5a5;
-    color: #dc2626;
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
 }
 
 .apps-btn-danger:hover {
-    background: #fecaca;
+  background: #fecaca;
 }
 
 /* Interview Requests Styling */
@@ -244,11 +388,12 @@
   border-radius: 8px;
   padding: 1.5rem;
   background: var(--card-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.2s ease;
 }
 
 .apps-interview-request-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(44, 24, 24, 0.2);
 }
 
 .apps-interview-request-header {
@@ -426,6 +571,17 @@
   border-color: var(--secondary-green);
 }
 
+.apps-btn-success {
+  background: var(--secondary-green);
+  color: var(--text-white);
+  border: 1px solid var(--secondary-green);
+}
+
+.apps-btn-success:hover {
+  background: var(--darker-green);
+  border-color: var(--darker-green);
+}
+
 /* Empty State */
 .apps-empty-state {
   text-align: center;
@@ -449,13 +605,32 @@
     width: 100%;
   }
 
-  .apps-interviews-table-wrapper {
-    font-size: 0.9rem;
+  .apps-interview-card-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .apps-interviews-table th,
-  .apps-interviews-table td {
-    padding: 0.75rem 0.5rem;
+  .apps-interview-datetime {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .apps-datetime-badge {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .apps-interview-card-actions {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .apps-btn-view {
+    width: 100%;
+  }
+
+  .apps-btn-link {
+    width: 100%;
   }
 }
 

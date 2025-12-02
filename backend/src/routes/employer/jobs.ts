@@ -93,7 +93,11 @@ router.get("/me/jobs", requireAuth, requireRole(Role.EMPLOYER),
                     },
                     _count: {
                         select: {
-                            applications: true,
+                            applications: {
+                                where: {
+                                    status: { not: "WITHDRAWN" },
+                                },
+                            },
                         },
                     },
                     postingStatus: true

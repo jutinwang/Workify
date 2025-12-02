@@ -68,20 +68,51 @@ router.post("/", requireAuth, requireRole(Role.STUDENT),
                         studentId: studentId,
                     },
                 },
-                select: { id: true },
+                select: { id: true, status: true },
             });
 
-            if (existing) {
+            // If there's an existing application that's not withdrawn, reject
+            if (existing && existing.status !== ApplicationStatus.WITHDRAWN) {
                 return res.status(409).json({ error: "You have already applied to this job" });
             }
 
-            const application = await prisma.application.create({
-                data: {
-                    studentId,
-                    jobId: input.jobId,
-                    coverLetter: input.coverLetter ?? null,
-                    status: ApplicationStatus.PENDING,
-                },
+            // If withdrawn, update it to pending instead of creating new
+            const application = existing && existing.status === ApplicationStatus.WITHDRAWN
+                ? await prisma.application.update({
+                    where: { id: existing.id },
+                    data: {
+                        coverLetter: input.coverLetter ?? null,
+                        status: ApplicationStatus.PENDING,
+                        appliedAt: new Date(), // Reset the applied date
+                    },
+                    select: {
+                        id: true,
+                        status: true,
+                        appliedAt: true,
+                        coverLetter: true,
+                        job: {
+                            select: {
+                                id: true,
+                                title: true,
+                                location: true,
+                                salary: true,
+                                company: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                })
+                : await prisma.application.create({
+                    data: {
+                        studentId,
+                        jobId: input.jobId,
+                        coverLetter: input.coverLetter ?? null,
+                        status: ApplicationStatus.PENDING,
+                    },
                 select: {
                     id: true,
                     status: true,
@@ -148,6 +179,7 @@ router.get("/", requireAuth, requireRole(Role.STUDENT),
                                 location: true,
                                 length: true,
                                 salary: true,
+                                description: true,
                                 company: {
                                     select: {
                                         id: true,
@@ -303,6 +335,143 @@ router.patch("/:applicationId", requireAuth, requireRole(Role.STUDENT),
     }
 );
 
+router.post("/:applicationId/accept", requireAuth, requireRole(Role.STUDENT),
+    async (req, res, next) => {
+        try {
+            const userId = getUserId(req);
+            const studentId = await getStudentProfileId(userId);
+            const applicationId = Number(req.params.applicationId);
+
+            if (!Number.isFinite(applicationId)) {
+                return res.status(400).json({ error: "Invalid application ID" });
+            }
+
+            // Verify ownership and that an offer exists
+            const application = await prisma.application.findFirst({
+                where: {
+                    id: applicationId,
+                    studentId: studentId,
+                },
+                select: {
+                    id: true,
+                    status: true,
+                    job: {
+                        select: {
+                            id: true,
+                            title: true,
+                            company: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+            if (!application) {
+                return res.status(404).json({ error: "Application not found" });
+            }
+
+            if (application.status !== ApplicationStatus.OFFER) {
+                return res.status(400).json({
+                    error: "Can only accept applications with an active offer",
+                    currentStatus: application.status,
+                });
+            }
+
+            // Update status to ACCEPTED
+            const updated = await prisma.application.update({
+                where: { id: applicationId },
+                data: { status: ApplicationStatus.ACCEPTED },
+                select: {
+                    id: true,
+                    status: true,
+                    updatedAt: true,
+                    job: {
+                        select: {
+                            id: true,
+                            title: true,
+                            company: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+            return res.json({
+                application: updated,
+                message: `Offer accepted for ${application.job.title} at ${application.job.company.name}`,
+            });
+        } catch (e: any) {
+            if (e?.status === 404) {
+                return res.status(404).json({ error: e.message });
+            }
+            next(e);
+        }
+    }
+);
+
+router.post("/:applicationId/reject", requireAuth, requireRole(Role.STUDENT),
+    async (req, res, next) => {
+        try {
+            const userId = getUserId(req);
+            const studentId = await getStudentProfileId(userId);
+            const applicationId = Number(req.params.applicationId);
+
+            if (!Number.isFinite(applicationId)) {
+                return res.status(400).json({ error: "Invalid application ID" });
+            }
+
+            // Verify ownership and that an offer exists
+            const application = await prisma.application.findFirst({
+                where: {
+                    id: applicationId,
+                    studentId: studentId,
+                },
+                select: { id: true, status: true },
+            });
+
+            if (!application) {
+                return res.status(404).json({ error: "Application not found" });
+            }
+
+            if (application.status !== ApplicationStatus.OFFER) {
+                return res.status(400).json({
+                    error: "Can only reject applications with an active offer",
+                    currentStatus: application.status,
+                });
+            }
+
+            // Update status to REJECTED
+            const updated = await prisma.application.update({
+                where: { id: applicationId },
+                data: { status: ApplicationStatus.REJECTED },
+                select: {
+                    id: true,
+                    status: true,
+                    updatedAt: true,
+                },
+            });
+
+            return res.json({
+                application: updated,
+                message: "Offer declined",
+            });
+        } catch (e: any) {
+            if (e?.status === 404) {
+                return res.status(404).json({ error: e.message });
+            }
+            next(e);
+        }
+    }
+);
+
 router.post("/:applicationId/withdraw", requireAuth, requireRole(Role.STUDENT),
     async (req, res, next) => {
         try {
@@ -326,18 +495,15 @@ router.post("/:applicationId/withdraw", requireAuth, requireRole(Role.STUDENT),
                 return res.status(404).json({ error: "Application not found" });
             }
 
-            if (application.status === ApplicationStatus.ACCEPTED || application.status === ApplicationStatus.REJECTED) {
+            if (application.status === ApplicationStatus.ACCEPTED || application.status === ApplicationStatus.REJECTED || application.status === ApplicationStatus.OFFER) {
                 return res.status(400).json({
                     error: `Cannot withdraw application with status: ${application.status}`,
                 });
             }
 
-            // Note: You mentioned adding WITHDRAWN status in schema.prisma
-            // For now, using REJECTED to mark withdrawn applications
-            // TODO: Add WITHDRAWN to ApplicationStatus enum and use here
             const updated = await prisma.application.update({
                 where: { id: applicationId },
-                data: { status: ApplicationStatus.REJECTED },
+                data: { status: ApplicationStatus.WITHDRAWN },
                 select: {
                     id: true,
                     status: true,

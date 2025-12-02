@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { DayPilot, DayPilotCalendar } from "@daypilot/daypilot-lite-react";
+import "../styles/ScheduleInterviewModal.css";
 
 const previewConfig = {
   viewType: "WorkWeek",

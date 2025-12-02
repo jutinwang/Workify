@@ -17,6 +17,7 @@ export default function ReviewStepEmployer({ state, onBack, onGoto }) {
       // Map the wizard state to the backend schema
       const payload = {
         // Company information
+        companyId: state.company?.id || undefined, // Include company ID if existing company selected
         companyName: state.company?.name || undefined,
         companyUrl: state.company?.website || undefined,
         companySize: state.company?.size || undefined,

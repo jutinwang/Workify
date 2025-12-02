@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import "./expanded-job-view.css";
 import "../../var.css";
 import masterCard from "../../assets/mastercard.png";
@@ -7,14 +7,45 @@ import { formatRelativeDate } from "../../common/utility";
 import { useMemo } from "react";
 import { Slate, Editable, withReact } from "slate-react";
 import { createEditor } from "slate";
+import { studentApi } from "../../api/student";
 
 const ExpandedJobDetailsView = () => {
   const jobId = useLocation().pathname.split("s/").pop();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const [coops, setCoops] = useState();
   const [loading, setLoading] = useState(true);
   const [hasApplied, setHasApplied] = useState(false);
   const [applicationStatus, setApplicationStatus] = useState(null);
+  const [isSaved, setIsSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async () => {
+    if (isSaving) return;
+
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      alert("You must be logged in to save jobs.");
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+
+      if (isSaved) {
+        await studentApi.unsaveJob(Number(jobId));
+        setIsSaved(false);
+      } else {
+        await studentApi.saveJob(Number(jobId));
+        setIsSaved(true);
+      }
+    } catch (error) {
+      console.error("Error toggling save:", error);
+      setIsSaved(!isSaved);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleApply = async () => {
     try {
@@ -85,6 +116,19 @@ const ExpandedJobDetailsView = () => {
             }
           } catch (error) {
             console.error("Error fetching application status:", error);
+          }
+        }
+
+        // Fetch saved status
+        if (token) {
+          try {
+            const savedResponse = await studentApi.getSavedJobs();
+            const savedJobIds = new Set(
+              savedResponse.savedJobs.map((s) => s.job.id)
+            );
+            setIsSaved(savedJobIds.has(Number(jobId)));
+          } catch (error) {
+            console.error("Error fetching saved status:", error);
           }
         }
       } catch (error) {
@@ -178,15 +222,15 @@ const ExpandedJobDetailsView = () => {
   const HeroSection = () => {
     return (
       <div className="ejv-hero">
-        <Link className="ejv-back-btn" to="/jobs">
+        <button className="ejv-back-btn" onClick={() => navigate(-1)}>
           <svg width="20" height="20" viewBox="0 0 24 24">
             <path
               fill="currentColor"
               d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
             />
           </svg>
-          Back to Postings
-        </Link>
+          Back 
+        </button>
 
         <div className="ejv-hero-content">
           <img className="ejv-company-logo" src={masterCard}></img>
@@ -206,16 +250,31 @@ const ExpandedJobDetailsView = () => {
             </div>
           </div>
           <div className="ejv-actions">
-            <button className="ejv-btn ejv-btn--save">
-              <svg width="20" height="20" viewBox="0 0 24 24">
-                <path
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"
-                />
-              </svg>
-              Save
+            <button
+              className="ejv-btn ejv-btn--save"
+              onClick={handleSave}
+              disabled={isSaving}
+            >
+              {isSaved ? (
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                  <path
+                    fill="currentColor"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"
+                  />
+                </svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"
+                  />
+                </svg>
+              )}
+              {isSaved ? "Saved" : "Save"}
             </button>
             {hasApplied ? (
               <button className="ejv-btn ejv-btn--applied" disabled>

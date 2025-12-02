@@ -239,6 +239,8 @@ router.post("/", requireAuth, requireRole(Role.EMPLOYER),
 
             // Optional: if jobId is provided, verify it belongs to this employer
             let jobSelect: any = null;
+            let applicationId: number | null = null;
+            
             if (input.jobId) {
                 const job = await prisma.job.findFirst({
                     where: { id: input.jobId, employerId },
@@ -249,6 +251,19 @@ router.post("/", requireAuth, requireRole(Role.EMPLOYER),
                     return res.status(404).json({ error: "Job not found or you don't have access" });
                 }
                 jobSelect = job;
+
+                // Find the application for this student and job
+                const application = await prisma.application.findFirst({
+                    where: {
+                        studentId: input.studentId,
+                        jobId: input.jobId,
+                    },
+                    select: { id: true },
+                });
+
+                if (application) {
+                    applicationId = application.id;
+                }
             }
 
             const interview = await prisma.interviewRequest.create({
@@ -256,6 +271,7 @@ router.post("/", requireAuth, requireRole(Role.EMPLOYER),
                     studentId: input.studentId,
                     employerId,
                     jobId: input.jobId ?? null,
+                    applicationId,
                     durationMinutes: input.durationMinutes,
                     note: input.note ?? null,
                     status: InterviewStatus.PENDING,
@@ -534,7 +550,6 @@ router.patch("/interviews/:interviewId/complete", requireAuth, requireRole(Role.
     }
 );
 
-// Get all completed interviews for employer
 router.get("/interviews/completed", requireAuth, requireRole(Role.EMPLOYER),
     async (req, res, next) => {
         try {

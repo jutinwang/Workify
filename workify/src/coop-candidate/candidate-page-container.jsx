@@ -4,6 +4,9 @@ import ApplicantFilter from "./components/ApplicantFilter";
 import ApplicantResults from "./components/ApplicantResults";
 import CandidateModal from "./components/CandidateModal";
 import EditJobModal from "./components/EditJobModal";
+import SaveSearchModal from "./components/SaveSearchModal";
+import SavedSearchesModal from "./components/SavedSearchesModal";
+import { employerApi } from "../api/employers";
 import "./styles/App.css";
 import "../var.css";
 
@@ -20,8 +23,10 @@ const EmployerCandidateContainer = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [yearFilter, setYearFilter] = useState([]);
-  const [courseFilter, setCourseFilter] = useState([]);
-  const [skillsFilter, setSkillsFilter] = useState([]);
+  const [programFilter, setProgramFilter] = useState([]);
+  const [statusFilter, setStatusFilter] = useState("");
+  const [hasExperienceFilter, setHasExperienceFilter] = useState(null);
+  const [graduationDateFilter, setGraduationDateFilter] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [showShortlistedOnly, setShowShortlistedOnly] = useState(false);
 
@@ -29,6 +34,11 @@ const EmployerCandidateContainer = () => {
   const [viewedCandidatesByJob, setViewedCandidatesByJob] = useState({});
 
   const [jobBeingEdited, setJobBeingEdited] = useState(null);
+
+  const [savedSearches, setSavedSearches] = useState([]);
+  const [isSaveSearchModalOpen, setIsSaveSearchModalOpen] = useState(false);
+  const [isSavedSearchesModalOpen, setIsSavedSearchesModalOpen] =
+    useState(false);
 
   const token = localStorage.getItem("authToken");
 
@@ -78,99 +88,123 @@ const EmployerCandidateContainer = () => {
     fetchJobs();
   }, [token]);
 
+  // Fetch saved searches
   useEffect(() => {
-    const fetchApplications = async () => {
-      if (!selectedJob) {
-        setApplications([]);
-        return;
-      }
-
+    const fetchSavedSearches = async () => {
       try {
-        setAppsLoading(true);
-        setAppsError("");
+        if (!token) return;
 
-        const res = await fetch(
-          `http://localhost:4000/employers/jobs/${selectedJob.id}/applications`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const data = await res.json().catch(() => ({}));
-
-        if (!res.ok) {
-          setAppsError(data.error || "Failed to load applications.");
-          setApplications([]);
-          setAppsLoading(false);
-          return;
-        }
-
-        const apps = data.applications || [];
-        console.log(apps)
-
-        const mapped = data.applications.map((app) => {
-          const year = app.student.year;
-
-          const yearLabel =
-            year === 1 ? "1st" :
-            year === 2 ? "2nd" :
-            year === 3 ? "3rd" :
-            year === 4 ? "4th" :
-            year ? `${year}th` : null;
-
-          return {
-            id: app.id,
-            applicationId: app.id,
-            studentId: app.student.id,
-
-            name: app.student.user.name,
-            email: app.student.user.email,
-
-            major: app.student.major || "Computer Science",
-            school: "University of Ottawa",
-            year,
-            yearLabel, 
-
-            resumeUrl: app.student.resumeUrl,
-            linkedInUrl: app.student.linkedInUrl,
-            githubUrl: app.student.githubUrl,
-
-            status: app.status,
-            shortlisted: app.shortlisted,
-            appliedAt: app.appliedAt,
-            updatedAt: app.updatedAt,
-            experience: app.student.experience || [],
-            educations: app.student.educations || [],
-
-            skills: [],
-            keyCourses: [],
-          };
-        });
-
-        setApplications(mapped);
-        console.log(mapped)
-        setAppsLoading(false);
+        const response = await employerApi.getSavedSearches();
+        const searches = response.savedSearches.map((search) => ({
+          id: search.id,
+          name: search.name,
+          filters: search.filters,
+          createdAt: search.createdAt,
+        }));
+        setSavedSearches(searches);
       } catch (err) {
-        console.error("Error fetching applications:", err);
-        setAppsError("Unexpected error while loading applications.");
-        setAppsLoading(false);
+        console.error("Error fetching saved searches:", err);
       }
     };
 
+    fetchSavedSearches();
+  }, [token]);
+
+  const fetchApplications = async () => {
+    if (!selectedJob) {
+      setApplications([]);
+      return;
+    }
+
+    try {
+      setAppsLoading(true);
+      setAppsError("");
+
+      const res = await fetch(
+        `http://localhost:4000/employers/jobs/${selectedJob.id}/applications`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        setAppsError(data.error || "Failed to load applications.");
+        setApplications([]);
+        setAppsLoading(false);
+        return;
+      }
+
+      const apps = data.applications || [];
+      console.log(apps);
+
+      const mapped = data.applications.map((app) => {
+        const year = app.student.year;
+
+        const yearLabel =
+          year === 1
+            ? "1st"
+            : year === 2
+            ? "2nd"
+            : year === 3
+            ? "3rd"
+            : year === 4
+            ? "4th"
+            : year
+            ? `${year}th`
+            : null;
+
+        return {
+          id: app.id,
+          applicationId: app.id,
+          studentId: app.student.id,
+
+          name: app.student.user.name,
+          email: app.student.user.email,
+
+          major: app.student.major || "Computer Science",
+          school: "University of Ottawa",
+          year,
+          yearLabel,
+
+          resumeUrl: app.student.resumeUrl,
+          linkedInUrl: app.student.linkedInUrl,
+          githubUrl: app.student.githubUrl,
+
+          status: app.status,
+          shortlisted: app.shortlisted,
+          appliedAt: app.appliedAt,
+          updatedAt: app.updatedAt,
+          experience: app.student.experience || [],
+          educations: app.student.educations || [],
+
+          skills: [],
+          keyCourses: [],
+        };
+      });
+
+      setApplications(mapped);
+      console.log(mapped);
+      setAppsLoading(false);
+    } catch (err) {
+      console.error("Error fetching applications:", err);
+      setAppsError("Unexpected error while loading applications.");
+      setAppsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     if (token && selectedJob?.id) {
       fetchApplications();
     } else {
       setApplications([]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, selectedJob]);
-
-  const getShortlistedCandidatesForJob = (jobId) => {
-    const shortlistedData = JSON.parse(localStorage.getItem("shortlistedCandidatesByJob") || "{}");
-    return new Set(shortlistedData[jobId] || []);
-  };
 
   const getFilteredApplicants = () => {
     if (!selectedJob) return [];
@@ -178,8 +212,7 @@ const EmployerCandidateContainer = () => {
     let filtered = [...applications];
 
     if (showShortlistedOnly) {
-      const shortlistedIds = getShortlistedCandidatesForJob(selectedJob.id);
-      filtered = filtered.filter((app) => shortlistedIds.has(app.id));
+      filtered = filtered.filter((app) => app.shortlisted === true);
     }
 
     if (searchTerm) {
@@ -196,6 +229,39 @@ const EmployerCandidateContainer = () => {
       filtered = filtered.filter(
         (app) => app.yearLabel && yearFilter.includes(app.yearLabel)
       );
+    }
+
+    if (programFilter.length > 0) {
+      filtered = filtered.filter(
+        (app) => app.major && programFilter.includes(app.major)
+      );
+    }
+
+    if (statusFilter) {
+      filtered = filtered.filter((app) => app.status === statusFilter);
+    }
+
+    if (hasExperienceFilter !== null) {
+      filtered = filtered.filter((app) => {
+        const hasExp = app.experience && app.experience.length > 0;
+        return hasExperienceFilter ? hasExp : !hasExp;
+      });
+    }
+
+    if (graduationDateFilter) {
+      filtered = filtered.filter((app) => {
+        if (!app.educations || app.educations.length === 0) return false;
+
+        const gradDate = app.educations[0].gradDate;
+        if (!gradDate) return false;
+
+        const gradYear = new Date(gradDate).getFullYear();
+
+        if (graduationDateFilter === "2029+") {
+          return gradYear >= 2029;
+        }
+        return gradYear === parseInt(graduationDateFilter);
+      });
     }
 
     if (sortBy === "recent") {
@@ -219,7 +285,6 @@ const EmployerCandidateContainer = () => {
     return filtered;
   };
 
-
   const handleCloseModal = () => {
     if (selectedCandidate && selectedJob) {
       setViewedCandidatesByJob((prev) => ({
@@ -238,8 +303,58 @@ const EmployerCandidateContainer = () => {
     setShowShortlistedOnly(false);
     setSearchTerm("");
     setYearFilter([]);
-    setCourseFilter([]);
-    setSkillsFilter([]);
+    setProgramFilter([]);
+    setStatusFilter("");
+    setHasExperienceFilter(null);
+    setGraduationDateFilter("");
+  };
+
+  const handleSaveSearch = async (name) => {
+    try {
+      const filters = {
+        searchTerm,
+        yearFilter,
+        programFilter,
+        statusFilter,
+        hasExperienceFilter,
+        graduationDateFilter,
+        sortBy,
+        showShortlistedOnly,
+      };
+
+      await employerApi.saveSearch(name, filters);
+      // Refetch saved searches
+      const response = await employerApi.getSavedSearches();
+      const searches = response.savedSearches.map((search) => ({
+        id: search.id,
+        name: search.name,
+        filters: search.filters,
+        createdAt: search.createdAt,
+      }));
+      setSavedSearches(searches);
+    } catch (error) {
+      console.error("Error saving search:", error);
+    }
+  };
+
+  const handleApplySearch = (search) => {
+    setSearchTerm(search.filters.searchTerm || "");
+    setYearFilter(search.filters.yearFilter || []);
+    setProgramFilter(search.filters.programFilter || []);
+    setStatusFilter(search.filters.statusFilter || "");
+    setHasExperienceFilter(search.filters.hasExperienceFilter ?? null);
+    setGraduationDateFilter(search.filters.graduationDateFilter || "");
+    setSortBy(search.filters.sortBy || "");
+    setShowShortlistedOnly(search.filters.showShortlistedOnly || false);
+  };
+
+  const handleDeleteSearch = async (searchId) => {
+    try {
+      await employerApi.deleteSearch(searchId);
+      setSavedSearches((prev) => prev.filter((s) => s.id !== searchId));
+    } catch (error) {
+      console.error("Error deleting search:", error);
+    }
   };
 
   const filteredApplicants = getFilteredApplicants();
@@ -247,8 +362,8 @@ const EmployerCandidateContainer = () => {
   const currentViewedCandidates = selectedJob
     ? viewedCandidatesByJob[selectedJob.id] || new Set()
     : new Set();
-  const archivedJobs = jobs.filter(job => job.postingStatus === "ARCHIVED");
-  const activeJobs = jobs.filter(job => job.postingStatus !== "ARCHIVED");
+  const archivedJobs = jobs.filter((job) => job.postingStatus === "ARCHIVED");
+  const activeJobs = jobs.filter((job) => job.postingStatus !== "ARCHIVED");
 
   return (
     <div className="app">
@@ -276,20 +391,26 @@ const EmployerCandidateContainer = () => {
               <>
                 <ApplicantFilter
                   selectedJob={selectedJob}
-                  totalApplicants={applications.length}
+                  totalApplicants={totalApplicants}
                   filteredCount={filteredApplicants.length}
                   searchTerm={searchTerm}
                   yearFilter={yearFilter}
-                  courseFilter={courseFilter}
-                  skillsFilter={skillsFilter}
+                  programFilter={programFilter}
+                  statusFilter={statusFilter}
+                  hasExperienceFilter={hasExperienceFilter}
+                  graduationDateFilter={graduationDateFilter}
                   sortBy={sortBy}
                   showShortlistedOnly={showShortlistedOnly}
                   onSearchChange={setSearchTerm}
                   onYearChange={setYearFilter}
-                  onCourseChange={setCourseFilter}
-                  onSkillsChange={setSkillsFilter}
+                  onProgramChange={setProgramFilter}
+                  onStatusChange={setStatusFilter}
+                  onHasExperienceChange={setHasExperienceFilter}
+                  onGraduationDateChange={setGraduationDateFilter}
                   onSortChange={setSortBy}
                   onShortlistedFilterChange={setShowShortlistedOnly}
+                  onSaveSearch={() => setIsSaveSearchModalOpen(true)}
+                  onViewSavedSearches={() => setIsSavedSearchesModalOpen(true)}
                 />
 
                 {applications.length === 0 ? (
@@ -319,6 +440,7 @@ const EmployerCandidateContainer = () => {
             candidate={selectedCandidate}
             jobId={selectedJob?.id}
             onClose={handleCloseModal}
+            onShortlistChange={fetchApplications}
           />
         )}
 
@@ -339,10 +461,36 @@ const EmployerCandidateContainer = () => {
           job={jobBeingEdited}
           onClose={() => setJobBeingEdited(null)}
           onSaved={(updated) => {
-            setJobs(prev => prev.map(j => j.id === updated.id ? updated : j));
+            setJobs((prev) =>
+              prev.map((j) => (j.id === updated.id ? updated : j))
+            );
           }}
         />
       )}
+
+      <SaveSearchModal
+        isOpen={isSaveSearchModalOpen}
+        onClose={() => setIsSaveSearchModalOpen(false)}
+        onSave={handleSaveSearch}
+        currentFilters={{
+          searchTerm,
+          yearFilter,
+          programFilter,
+          statusFilter,
+          hasExperienceFilter,
+          graduationDateFilter,
+          sortBy,
+          showShortlistedOnly,
+        }}
+      />
+
+      <SavedSearchesModal
+        isOpen={isSavedSearchesModalOpen}
+        onClose={() => setIsSavedSearchesModalOpen(false)}
+        savedSearches={savedSearches}
+        onApplySearch={handleApplySearch}
+        onDeleteSearch={handleDeleteSearch}
+      />
     </div>
   );
 };

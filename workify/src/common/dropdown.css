@@ -1,61 +1,72 @@
 .dropdown {
-    position: relative;
-    display: flex;
-    overflow: visible;
+  position: relative;
+  display: flex;
+  overflow: visible;
+  border: none;
 }
 .dropdown-btn {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 10px 12px;
-    background: #fff;
-    font-size: 14px;
-    cursor: pointer;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  font-size: 14px;
+  cursor: pointer;
 }
 .dropdown-btn.open {
-    outline: 2px solid #94a3b8;
-    outline-offset: 1px;
+  outline: 2px solid #94a3b8;
+  outline-offset: 1px;
 }
-.dropdown-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dropdown-placeholder { color: #94a3b8; }
-.dropdown-caret { flex: 0 0 auto; }
+.dropdown-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dropdown-placeholder {
+  color: #94a3b8;
+}
+.dropdown-caret {
+  flex: 0 0 auto;
+}
 
 .dropdown-list {
-    position: absolute;
-    z-index: 0;
-    top: calc(100% + 6px);
-    left: 0;
-    right: 0;
-    max-height: 260px;
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
-    padding: 6px;
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  max-height: 260px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  padding: 6px;
 }
 .dropdown-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 6px;
-    border-radius: 8px;
-    padding: 8px 10px;
-    cursor: pointer;
-    outline: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  outline: none;
 }
 .dropdown-item:hover,
 .dropdown-item.active {
-    background: #f1f5f9;
+  background: #f1f5f9;
 }
 .dropdown-item.selected {
-    font-weight: 600;
+  font-weight: 600;
 }
-.dropdown-check { opacity: 0.75; }
+.dropdown-check {
+  opacity: 0.75;
+}
 
 .filters-row.custom-grid {
-    grid-template-columns: 1fr 160px 160px 220px;
+  grid-template-columns: 1fr 160px 160px 220px;
 }

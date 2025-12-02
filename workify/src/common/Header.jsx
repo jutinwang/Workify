@@ -20,13 +20,13 @@ export default function Header() {
       {isEmployer ? (
         <ul className="nav-links">
           <li>
-            <Link to="/profile-employer">View Your Profile</Link>
+            <Link to="/profile-employer">Profile & Interviews</Link>
           </li>
           <li>
             <Link to="/employer-candidates">Postings & Applicants</Link>
           </li>
           <li>
-            <Link to="/employer-interviews">Interviews & Schedule</Link>
+            <Link to="/employer-interviews">Adjust Interview Availability</Link>
           </li>
         </ul>
       ) : (

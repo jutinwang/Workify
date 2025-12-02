@@ -11,6 +11,9 @@ import employerProfileRouter from './routes/employer/profile';
 import jobRouter from './routes/jobs';
 import companyRouter from './routes/company';
 import interviewRouter from './routes/interviews';
+import savedJobsRouter from './routes/students/savedJobs';
+import savedSearchesRouter from './routes/students/savedSearches';
+import employerSavedSearchesRouter from './routes/employer/savedSearches';
 
 const app = express();
 
@@ -27,8 +30,11 @@ app.use("/auth", authRouter);
 app.use("/employers", employerRouter); 
 app.use("/employers", applicationsRouterEmployer); 
 app.use("/employers", employerProfileRouter);
+app.use("/employers/saved-searches", employerSavedSearchesRouter);
 app.use("/applications", applicationsRouterStudent); 
 app.use("/students/profile", studentProfileRouter); 
+app.use("/students/saved-jobs", savedJobsRouter);
+app.use("/students/saved-searches", savedSearchesRouter);
 app.use("/students", jobRouter); 
 app.use("/company", companyRouter); 
 app.use("/interviews", interviewRouter); 

@@ -3,14 +3,60 @@ import "./job-details.css";
 import "../var.css";
 import { Link } from "react-router-dom";
 import { formatRelativeDate } from "../common/utility";
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState, useEffect } from "react";
 import { Slate, Editable, withReact } from "slate-react";
 import { createEditor } from "slate";
+import { studentApi } from "../api/student";
 
-export default function JobDetails({ job, onClose }) {
+export default function JobDetails({ job, onClose, savedJobIds, onSavedChange, onApplicationSubmitted }) {
+  const [isSaved, setIsSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isApplying, setIsApplying] = useState(false);
+
+  // Update saved state when savedJobIds changes
+  useEffect(() => {
+    if (savedJobIds && savedJobIds.has(job.id)) {
+      setIsSaved(true);
+    } else {
+      setIsSaved(false);
+    }
+  }, [savedJobIds, job.id]);
+
+  const handleSave = async () => {
+    if (isSaving) return;
+
+    try {
+      setIsSaving(true);
+      
+      if (isSaved) {
+        // Unsave
+        await studentApi.unsaveJob(job.id);
+        setIsSaved(false);
+        if (onSavedChange) {
+          onSavedChange(job.id, false);
+        }
+      } else {
+        // Save
+        await studentApi.saveJob(job.id);
+        setIsSaved(true);
+        if (onSavedChange) {
+          onSavedChange(job.id, true);
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling save:", error);
+      // Revert on error
+      setIsSaved(!isSaved);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleApply = async () => {
+    if (isApplying) return;
+    
     try {
+      setIsApplying(true);
       const token = localStorage.getItem("authToken"); 
 
       if (!token) {
@@ -40,9 +86,16 @@ export default function JobDetails({ job, onClose }) {
       }
 
       alert("Application submitted!");
+      
+      // Notify parent component to refresh jobs list
+      if (onApplicationSubmitted) {
+        onApplicationSubmitted(job.id);
+      }
     } catch (err) {
       console.error(err);
       alert("Unexpected error.");
+    } finally {
+      setIsApplying(false);
     }
   };
 
@@ -145,8 +198,20 @@ const Leaf = ({ attributes, children, leaf }) => {
           </div>
         </div>
         <div className="job-details-actions">
-          <button className="jd-btn btn-save">Save</button>
-          <button className="jd-btn btn-primary" onClick={handleApply}>Apply</button>
+          <button 
+            className="jd-btn btn-save" 
+            onClick={handleSave}
+            disabled={isSaving}
+          >
+            {isSaved ? "Unsave" : "Save"}
+          </button>
+          <button 
+            className="jd-btn btn-primary" 
+            onClick={handleApply}
+            disabled={isApplying || job.hasApplied}
+          >
+            {isApplying ? "Applying..." : job.hasApplied ? "Applied" : "Apply"}
+          </button>
           <button className="jd-btn btn-close" onClick={onClose}>
             <svg width="20" height="20" viewBox="0 0 24 24">
               <path

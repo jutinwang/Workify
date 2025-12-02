@@ -1,0 +1,313 @@
+.offer-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1500;
+  padding: 1rem;
+}
+
+.offer-modal-container {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  min-width: 400px;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.offer-modal-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.offer-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.offer-modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.offer-modal-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: #6b7280;
+  transition: color 0.2s;
+  line-height: 1;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.offer-modal-close:hover {
+  color: #111827;
+}
+
+.offer-modal-body {
+  padding: 2rem 1.5rem;
+}
+
+.offer-accepted-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: #d1fae5;
+  border: 2px solid #10b981;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.offer-accepted-icon {
+  font-size: 1.5rem;
+  color: #10b981;
+  font-weight: bold;
+}
+
+.offer-accepted-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #065f46;
+}
+
+.offer-warning-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: #fef3c7;
+  border: 2px solid #f59e0b;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.offer-warning-icon {
+  font-size: 1.5rem;
+  color: #f59e0b;
+  font-weight: bold;
+}
+
+.offer-warning-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.offer-details h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.offer-company {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.125rem;
+  color: #6b7280;
+}
+
+.offer-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: #f9fafb;
+  border-radius: 0.5rem;
+}
+
+.offer-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.offer-info-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.offer-info-value {
+  font-size: 1rem;
+  color: #111827;
+  font-weight: 500;
+}
+
+.offer-letter-section {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: #eff6ff;
+  border-radius: 0.5rem;
+  border: 1px solid #dbeafe;
+}
+
+.offer-letter-section h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.view-offer-letter-btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: var(--secondary-green);
+  color: white;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition: all 0.2s;
+}
+
+.view-offer-letter-btn:hover {
+  background: var(--darker-green);
+  transform: translateY(-2px);
+}
+
+.offer-job-link-section {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.view-job-btn {
+  display: inline-block;
+  margin-top: 1.6rem;
+  padding: 0.75rem 1.5rem;
+  background: #64748b;
+  color: white;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition: all 0.2s;
+}
+
+.view-job-btn:hover {
+  background: #475569;
+  transform: translateY(-2px);
+}
+
+.offer-description {
+  margin-top: 1.5rem;
+}
+
+.offer-description h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.offer-description p {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.offer-modal-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.offer-action-btn {
+  flex: 1;
+  padding: 0.875rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-family: var(--main-font);
+}
+
+.offer-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.offer-action-btn.accept {
+  background: var(--secondary-green);
+  color: var(--text-white);
+  border: 2px solid var(--secondary-green);
+}
+
+.offer-action-btn.accept:hover:not(:disabled) {
+  background: var(--darker-green);
+  border-color: var(--darker-green);
+}
+
+.offer-action-btn.reject {
+  background: white;
+  color: #ef4444;
+  border: 2px solid #ef4444;
+}
+
+.offer-action-btn.reject:hover:not(:disabled) {
+  background: #fef2f2;
+}
+
+.offer-action-btn.secondary {
+  background: white;
+  color: #6b7280;
+  border: 2px solid #d1d5db;
+}
+
+.offer-action-btn.secondary:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.offer-confirm-text {
+  font-size: 1rem;
+  color: #374151;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.offer-confirm-subtext {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .offer-modal-container {
+    min-width: unset;
+    width: 95%;
+    margin: 1rem;
+  }
+
+  .offer-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .offer-modal-actions {
+    flex-direction: column;
+  }
+}

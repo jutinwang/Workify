@@ -3,6 +3,8 @@ import JobsFilter from "./JobsFilter";
 import JobCard from "./JobCard";
 import JobDetails from "./JobDetails";
 import SavedSection from "./SavedSection";
+import SaveSearchModal from "./SaveSearchModal";
+import { studentApi } from "../api/student";
 import "./jobs.css";
 import "../var.css";
 
@@ -18,6 +20,92 @@ const Jobs = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const [savedJobs, setSavedJobs] = useState([]);
+  const [savedJobIds, setSavedJobIds] = useState(new Set());
+  const [savedSearches, setSavedSearches] = useState([]);
+  const [showUnappliedOnly, setShowUnappliedOnly] = useState(false);
+  const [isSaveSearchModalOpen, setIsSaveSearchModalOpen] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Fetch saved jobs
+  useEffect(() => {
+    const fetchSavedJobs = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) return;
+
+        const response = await studentApi.getSavedJobs();
+        const jobs = response.savedJobs.map(saved => ({
+          ...saved.job,
+          id: saved.job.id,
+          title: saved.job.title,
+          company: saved.job.company.name,
+          location: saved.job.location,
+        }));
+        setSavedJobs(jobs);
+        setSavedJobIds(new Set(jobs.map(j => j.id)));
+      } catch (err) {
+        console.error("Error fetching saved jobs:", err);
+      }
+    };
+
+    fetchSavedJobs();
+  }, []);
+
+  // Fetch saved searches
+  useEffect(() => {
+    const fetchSavedSearches = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) return;
+
+        const response = await studentApi.getSavedSearches();
+        const searches = response.savedSearches.map(search => ({
+          id: search.id,
+          name: search.name,
+          filters: search.filters,
+          createdAt: search.createdAt,
+        }));
+        setSavedSearches(searches);
+      } catch (err) {
+        console.error("Error fetching saved searches:", err);
+      }
+    };
+
+    fetchSavedSearches();
+  }, []);
+
+  const handleSaveSearch = async (name, filters) => {
+    try {
+      await studentApi.saveSearch(name, filters);
+      // Refetch saved searches
+      const response = await studentApi.getSavedSearches();
+      const searches = response.savedSearches.map(search => ({
+        id: search.id,
+        name: search.name,
+        filters: search.filters,
+        createdAt: search.createdAt,
+      }));
+      setSavedSearches(searches);
+    } catch (error) {
+      console.error("Error saving search:", error);
+    }
+  };
+
+  const handleRemoveSearch = async (searchId) => {
+    try {
+      await studentApi.deleteSearch(searchId);
+      setSavedSearches(prev => prev.filter(s => s.id !== searchId));
+    } catch (error) {
+      console.error("Error removing saved search:", error);
+    }
+  };
+
+  const handleViewSearch = (search) => {
+    // Apply the saved search filters
+    setFilters(search.filters);
+  };
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -64,41 +152,49 @@ const Jobs = () => {
     };
 
     fetchJobs();
-  }, [filters.searchTerm, filters.postingTags]);
+  }, [filters.searchTerm, filters.postingTags, refreshTrigger]);
 
-  // Mock data for saved items
-  const savedSearches = [
-    {
-      id: 1,
-      name: "Frontend React Jobs",
-      criteria: "React, Remote, Full-time",
-      newJobs: 3,
-    },
-    {
-      id: 2,
-      name: "Senior Backend",
-      criteria: "Node.js, Senior, Ottawa",
-      newJobs: 0,
-    },
-  ];
+  const handleRemoveJob = async (jobId) => {
+    try {
+      await studentApi.unsaveJob(jobId);
+      setSavedJobs((prevJobs) => prevJobs.filter((job) => job.id !== jobId));
+      setSavedJobIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(jobId);
+        return newSet;
+      });
+    } catch (error) {
+      console.error("Error removing saved job:", error);
+    }
+  };
 
-  const [savedJobs, setSavedJobs] = useState([
-    {
-      id: 1,
-      title: "Software Engineer",
-      company: "TechStart Inc.",
-      location: "Remote",
-    },
-    {
-      id: 2,
-      title: "Frontend Developer",
-      company: "TechStart Inc.",
-      location: "Remote",
-    },
-  ]);
+  const handleSavedChange = (jobId, isSaved) => {
+    if (isSaved) {
+      // Refetch saved jobs to get the full job data
+      studentApi.getSavedJobs().then(response => {
+        const jobs = response.savedJobs.map(saved => ({
+          ...saved.job,
+          id: saved.job.id,
+          title: saved.job.title,
+          company: saved.job.company.name,
+          location: saved.job.location,
+        }));
+        setSavedJobs(jobs);
+        setSavedJobIds(new Set(jobs.map(j => j.id)));
+      }).catch(err => console.error("Error refetching saved jobs:", err));
+    } else {
+      setSavedJobs(prev => prev.filter(j => j.id !== jobId));
+      setSavedJobIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(jobId);
+        return newSet;
+      });
+    }
+  };
 
-  const handleRemoveJob = (jobId) => {
-    setSavedJobs((prevJobs) => prevJobs.filter((job) => job.id !== jobId));
+  const handleApplicationSubmitted = (jobId) => {
+    // Trigger a refresh of the jobs list
+    setRefreshTrigger(prev => prev + 1);
   };
 
   // Client-side filtering for location
@@ -109,7 +205,21 @@ const Jobs = () => {
       );
       if (!matchesLocation) return false;
     }
+    
+    // Filter by unapplied status if enabled
+    if (showUnappliedOnly && j.hasApplied) {
+      return false;
+    }
+    
     return true;
+  });
+
+  // Sort jobs: unapplied jobs first, then applied jobs
+  const sorted = [...filtered].sort((a, b) => {
+    // If one has applied and the other hasn't, unapplied comes first
+    if (a.hasApplied && !b.hasApplied) return 1;
+    if (!a.hasApplied && b.hasApplied) return -1;
+    return 0; // Keep original order for jobs with same applied status
   });
 
   const allTags = useMemo(() => {
@@ -132,6 +242,8 @@ const Jobs = () => {
         savedJobs={savedJobs}
         savedSearches={savedSearches}
         onRemoveJob={handleRemoveJob}
+        onRemoveSearch={handleRemoveSearch}
+        onViewSearch={handleViewSearch}
       />
 
       <div className="filters-section">
@@ -141,7 +253,20 @@ const Jobs = () => {
           setFilters={setFilters}
           totalJobs={jobs.length}
           filteredCount={filtered.length}
+          showUnappliedOnly={showUnappliedOnly}
+          onToggleUnappliedOnly={setShowUnappliedOnly}
         />
+        
+        {/* Save Search Button */}
+        <div style={{ padding: "0 2.4rem", marginTop: "1rem" }}>
+          <button
+            className="jobs-filters-button"
+            onClick={() => setIsSaveSearchModalOpen(true)}
+            disabled={!filters.searchTerm && !filters.locations?.length && !filters.postingTags?.length && !filters.datePosted}
+          >
+            💾 Save This Search
+          </button>
+        </div>
       </div>
       <div
         className={`jobs-content ${
@@ -157,7 +282,7 @@ const Jobs = () => {
           {error && <div className="jobs-error">Error: {error}</div>}
           {!loading && !error && (
             <div className="jobs-grid">
-              {filtered
+              {sorted
                 .filter(job => job.postingStatus !== "ARCHIVED") // 👈 hide archived
                 .map(job => (
                   <JobCard
@@ -165,6 +290,8 @@ const Jobs = () => {
                     job={job}
                     isSelected={selectedJob?.id === job.id}
                     onClick={() => setSelectedJob(job)}
+                    savedJobIds={savedJobIds}
+                    onSavedChange={handleSavedChange}
                   />
                 ))
               }
@@ -177,10 +304,20 @@ const Jobs = () => {
             <JobDetails
               job={selectedJob}
               onClose={() => setSelectedJob(null)}
+              savedJobIds={savedJobIds}
+              onSavedChange={handleSavedChange}
+              onApplicationSubmitted={handleApplicationSubmitted}
             />
           </div>
         )}
       </div>
+
+      <SaveSearchModal
+        isOpen={isSaveSearchModalOpen}
+        onClose={() => setIsSaveSearchModalOpen(false)}
+        onSave={handleSaveSearch}
+        currentFilters={filters}
+      />
     </div>
   );
 };
