@@ -43,12 +43,12 @@ export const employerApi = {
     return apiClient.post("/employers/me/jobs", {
       title: "[DUPLICATE] " + data.title,
       description: data.description,
-      location: data.location,
-      length: data.length,
-      salary: data.salary,
-      qualification: data.qualification,
-      responsibilities: data.responsibilities,
-      benefits: data.benefits,
+      location: data.location || "Remote",
+      length: data.length || "Unspecified",
+      salary: data.salary || "No salary provided",
+      qualification: data.qualification || "No qualifications listed",
+      responsibilities: data.responsibilities || "No responsibilities listed",
+      benefits: data.benefits || "No benefits listed",
       tags: data.tags
     });
   }
