@@ -27,6 +27,8 @@ const JobList = ({ jobs, selectedJob, onSelectJob, onEditJob }) => {
       if (response.token) {
         localStorage.setItem("authToken", response.token);
       }
+
+      window.location.reload();
       
     } catch (err) {
       console.error("Error editing position:", err);
@@ -35,9 +37,14 @@ const JobList = ({ jobs, selectedJob, onSelectJob, onEditJob }) => {
 
 const handleDelete = async (job) => {
   try {
-    await employerApi.deleteCoop(job);
-    setJobs(prev => prev.filter(j => j.id !== job.id));
+    const response = await employerApi.deleteCoop(job);
+
+    if (response?.token) {
+      localStorage.setItem("authToken", response.token);
+    }    
+    
     window.location.reload(); 
+
   } catch (error) {
     console.error("Delete failed:", error);
   }
@@ -46,6 +53,7 @@ const handleDelete = async (job) => {
 const handleCloning = async (job) => {
   try {
     await employerApi.cloneCoop(job);
+    window.location.reload();
   } catch (error) {
     console.error("Clone failed:", error);
   }
@@ -56,17 +64,14 @@ const handleCloning = async (job) => {
       <h2 className="section-title">Co-op Listings:</h2>
       <div className="employer job-list">
         {jobs.map(job => (
-          <label key={job.id} className="employer job-item">
+          <div key={job.id} className="employer job-item" onClick={() => handleJobToggle(job)}>
             <span className="employer job-id">Co-op #{job.id}</span>
             <span className="employer job-title">{job.title}</span>
             <span className="employer job-applicants">
               {job.applicants} Applicants
             </span>
             <div className="employer job-actions">
-              <button className="employer job-link" onClick={() => handleJobToggle(job)}>View</button>
-              <button className="employer job-link options"><MoreVertIcon /></button>
-              <div className="dropdown-content">
-                <button 
+              <button 
                   className="employer job-link"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -74,13 +79,15 @@ const handleCloning = async (job) => {
                   }}
                 >
                   <EditIcon />
-                </button>
+              </button>
+              <button className="employer job-link" onClick={() => handleDelete(job)}> <DeleteForeverIcon /> </button>
+              <button className="employer job-link options"><MoreVertIcon /></button>
+              <div className="dropdown-content">
                 <button className="employer job-link" onClick={() => handleArchiving(job)}> <ArchiveIcon /> </button>
-                <button className="employer job-link" onClick={() => handleDelete(job)}> <DeleteForeverIcon /> </button>
                 <button className="employer job-link" onClick={() => handleCloning(job)}> <FileCopyIcon /> </button>
               </div>
             </div>
-          </label>
+          </div>
         ))}
       </div>
     </div>

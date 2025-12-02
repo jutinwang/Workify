@@ -142,9 +142,18 @@ const apiClient = {
         headers,
       });
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Request failed');
-      return data;
+      let data = null;
+
+      // Avoid JSON parsing when there's no body
+      if (response.status !== 204) {
+        data = await response.json();
+      }
+
+      if (!response.ok) {
+        throw new Error(data?.error || 'Request failed');
+      }
+
+      return data; // null for 204
     } catch (error) {
       console.error('API Error:', error);
       throw error;
