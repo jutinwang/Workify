@@ -8,9 +8,10 @@ import { Slate, Editable, withReact } from "slate-react";
 import { createEditor } from "slate";
 import { studentApi } from "../api/student";
 
-export default function JobDetails({ job, onClose, savedJobIds, onSavedChange }) {
+export default function JobDetails({ job, onClose, savedJobIds, onSavedChange, onApplicationSubmitted }) {
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isApplying, setIsApplying] = useState(false);
 
   // Update saved state when savedJobIds changes
   useEffect(() => {
@@ -52,7 +53,10 @@ export default function JobDetails({ job, onClose, savedJobIds, onSavedChange })
   };
 
   const handleApply = async () => {
+    if (isApplying) return;
+    
     try {
+      setIsApplying(true);
       const token = localStorage.getItem("authToken"); 
 
       if (!token) {
@@ -82,9 +86,16 @@ export default function JobDetails({ job, onClose, savedJobIds, onSavedChange })
       }
 
       alert("Application submitted!");
+      
+      // Notify parent component to refresh jobs list
+      if (onApplicationSubmitted) {
+        onApplicationSubmitted(job.id);
+      }
     } catch (err) {
       console.error(err);
       alert("Unexpected error.");
+    } finally {
+      setIsApplying(false);
     }
   };
 
@@ -194,7 +205,13 @@ const Leaf = ({ attributes, children, leaf }) => {
           >
             {isSaved ? "Unsave" : "Save"}
           </button>
-          <button className="jd-btn btn-primary" onClick={handleApply}>Apply</button>
+          <button 
+            className="jd-btn btn-primary" 
+            onClick={handleApply}
+            disabled={isApplying || job.hasApplied}
+          >
+            {isApplying ? "Applying..." : job.hasApplied ? "Applied" : "Apply"}
+          </button>
           <button className="jd-btn btn-close" onClick={onClose}>
             <svg width="20" height="20" viewBox="0 0 24 24">
               <path

@@ -26,6 +26,7 @@ const Jobs = () => {
   const [savedSearches, setSavedSearches] = useState([]);
   const [showUnappliedOnly, setShowUnappliedOnly] = useState(false);
   const [isSaveSearchModalOpen, setIsSaveSearchModalOpen] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Fetch saved jobs
   useEffect(() => {
@@ -151,7 +152,7 @@ const Jobs = () => {
     };
 
     fetchJobs();
-  }, [filters.searchTerm, filters.postingTags]);
+  }, [filters.searchTerm, filters.postingTags, refreshTrigger]);
 
   const handleRemoveJob = async (jobId) => {
     try {
@@ -189,6 +190,11 @@ const Jobs = () => {
         return newSet;
       });
     }
+  };
+
+  const handleApplicationSubmitted = (jobId) => {
+    // Trigger a refresh of the jobs list
+    setRefreshTrigger(prev => prev + 1);
   };
 
   // Client-side filtering for location
@@ -292,6 +298,7 @@ const Jobs = () => {
               onClose={() => setSelectedJob(null)}
               savedJobIds={savedJobIds}
               onSavedChange={handleSavedChange}
+              onApplicationSubmitted={handleApplicationSubmitted}
             />
           </div>
         )}

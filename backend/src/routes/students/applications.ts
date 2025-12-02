@@ -68,20 +68,51 @@ router.post("/", requireAuth, requireRole(Role.STUDENT),
                         studentId: studentId,
                     },
                 },
-                select: { id: true },
+                select: { id: true, status: true },
             });
 
-            if (existing) {
+            // If there's an existing application that's not withdrawn, reject
+            if (existing && existing.status !== ApplicationStatus.WITHDRAWN) {
                 return res.status(409).json({ error: "You have already applied to this job" });
             }
 
-            const application = await prisma.application.create({
-                data: {
-                    studentId,
-                    jobId: input.jobId,
-                    coverLetter: input.coverLetter ?? null,
-                    status: ApplicationStatus.PENDING,
-                },
+            // If withdrawn, update it to pending instead of creating new
+            const application = existing && existing.status === ApplicationStatus.WITHDRAWN
+                ? await prisma.application.update({
+                    where: { id: existing.id },
+                    data: {
+                        coverLetter: input.coverLetter ?? null,
+                        status: ApplicationStatus.PENDING,
+                        appliedAt: new Date(), // Reset the applied date
+                    },
+                    select: {
+                        id: true,
+                        status: true,
+                        appliedAt: true,
+                        coverLetter: true,
+                        job: {
+                            select: {
+                                id: true,
+                                title: true,
+                                location: true,
+                                salary: true,
+                                company: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                })
+                : await prisma.application.create({
+                    data: {
+                        studentId,
+                        jobId: input.jobId,
+                        coverLetter: input.coverLetter ?? null,
+                        status: ApplicationStatus.PENDING,
+                    },
                 select: {
                     id: true,
                     status: true,

@@ -57,6 +57,7 @@ router.get("/search", maybeAuth, async (req, res) => {
                 where: {
                     studentId,
                     jobId: { in: jobIds },
+                    status: { not: "WITHDRAWN" }, // Exclude withdrawn applications
                 },
                 select: {
                     jobId: true,
@@ -162,9 +163,12 @@ router.get("/:jobId/applied", requireAuth, requireRole(Role.STUDENT), async (req
             },
         });
 
+        // Don't count withdrawn applications as "applied"
+        const isApplied = application && application.status !== "WITHDRAWN";
+
         return res.json({
-            applied: !!application,
-            application: application || null,
+            applied: isApplied,
+            application: isApplied ? application : null,
         });
     } catch (e: any) {
         if (e?.status === 404) {

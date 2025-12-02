@@ -39,8 +39,7 @@ const WithdrawModal = ({ application, onClose, onConfirm }) => {
               <strong>{application.company}</strong>?
             </p>
             <p className="offer-confirm-subtext" style={{ color: "#dc2626" }}>
-              This action cannot be undone. You will not be able to reapply for
-              this position through this application.
+              You can re-apply to this position later if you change your mind.
             </p>
           </div>
           <div className="offer-modal-actions">
