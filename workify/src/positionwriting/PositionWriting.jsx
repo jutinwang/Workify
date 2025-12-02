@@ -57,6 +57,16 @@ const PositionWriting = () => {
     setPrograms(programs.filter((program) => program !== programToRemove));
   };
 
+  const safeSlate = (value, fallback = "No content") => {
+    if (!value || value.length === 0) {
+      return JSON.stringify([
+        { type: "paragraph", children: [{ text: fallback }] }
+      ]);
+    }
+    return JSON.stringify(value);
+  };
+
+
   const postJob = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -64,15 +74,15 @@ const PositionWriting = () => {
 
     try {
       const payload = {
-        title: coopTitle,
-        description: JSON.stringify(coopDescription),
-        officeLocation: officeLocation ? officeLocation : "Remote",
-        jobLength: jobLength,
-        salary: JSON.stringify(salaryRange),
-        responsibilities: JSON.stringify(responsibilities),
-        qualifications: JSON.stringify(qualifications),
-        benefits: JSON.stringify(benefits),
-        workModel: workModel,
+        title: coopTitle || "Untitled Position",
+        description: safeSlate(coopDescription, "No description provided"),
+        officeLocation: officeLocation || "Remote",
+        jobLength: jobLength || "Not specified",
+        salary: safeSlate(salaryRange, "No salary provided"),
+        responsibilities: safeSlate(responsibilities, "No responsibilities listed"),
+        qualifications: safeSlate(qualifications, "No qualifications listed"),
+        benefits: safeSlate(benefits, "No benefits listed"),
+        workModel: workModel || "Not specified",
         tags: tags,
         programs: programs,
       };
