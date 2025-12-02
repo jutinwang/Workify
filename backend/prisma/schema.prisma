@@ -14,6 +14,7 @@ model User {
   password  String
   name      String
   role      Role             @default(STUDENT)
+  suspended Boolean          @default(false) 
   createdAt DateTime         @default(now())
   admin     AdminProfile?
   employer  EmployerProfile?
@@ -62,6 +63,7 @@ model Experience {
 model EmployerProfile {
   id                 Int                @id @default(autoincrement())
   userId             Int                @unique
+  approved           Boolean            @default(false)
   availability       String?
   companyId          Int?
   notificationMethod String?
