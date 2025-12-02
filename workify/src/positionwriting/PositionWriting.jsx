@@ -128,17 +128,17 @@ const PositionWriting = () => {
 
   if (isSuccess) {
     return (
-      <div className="positionwriting-container">
-        <div className="content-wrapper success-screen">
-          <div className="success-icon">✓</div>
+      <div className="pw-positionwriting-container">
+        <div className="pw-content-wrapper pw-success-screen">
+          <div className="pw-success-icon">✓</div>
           <h2>Coop Position Posted Successfully!</h2>
           <p>Your co-op posting has been published and is now live.</p>
 
-          <div className="success-buttons">
-            <button className="post-another-btn" onClick={handlePostAnother}>
+          <div className="pw-success-buttons">
+            <button className="pw-post-another-btn" onClick={handlePostAnother}>
               Post Another Coop
             </button>
-            <button className="go-to-profile-btn" onClick={handleGoToProfile}>
+            <button className="pw-go-to-profile-btn" onClick={handleGoToProfile}>
               View My Profile
             </button>
           </div>
@@ -148,14 +148,14 @@ const PositionWriting = () => {
   }
 
   return (
-    <div className="positionwriting-container">
-      <div className="content-wrapper">
+    <div className="pw-positionwriting-container">
+      <div className="pw-content-wrapper">
         <h3>Create Coop Posting</h3>
-        {error && <div className="error-message">{error}</div>}
-        <div className="textInput">
+        {error && <div className="pw-error-message">{error}</div>}
+        <div className="pw-textInput">
           <p>Coop Title</p>
           <textarea
-            className="titleInput"
+            className="pw-titleInput"
             ref={coopTitleRef}
             value={coopTitle}
             onChange={handleCoopTitleChange}
@@ -164,17 +164,17 @@ const PositionWriting = () => {
           <p style={{ marginTop: "20px" }}>
             Eligible Programs For Applicants (Select up to 3)
           </p>
-          <div className="programs-section">
-            <div className="program-selection-grid">
+          <div className="pw-programs-section">
+            <div className="pw-program-selection-grid">
               {AVAILABLE_PROGRAMS.map((program) => (
                 <button
                   key={program}
                   type="button"
-                  className={`program-select-btn ${
-                    programs.includes(program) ? "selected" : ""
+                  className={`pw-program-select-btn ${
+                    programs.includes(program) ? "pw-selected" : ""
                   } ${
                     programs.length >= 3 && !programs.includes(program)
-                      ? "disabled"
+                      ? "pw-disabled"
                       : ""
                   }`}
                   onClick={() => handleProgramClick(program)}
@@ -184,16 +184,16 @@ const PositionWriting = () => {
                 </button>
               ))}
             </div>
-            <p className="program-help-text">
+            <p className="pw-program-help-text">
               Click to select up to 3 programs
             </p>
             {programs.length > 0 && (
-              <div className="selected-programs-display">
+              <div className="pw-selected-programs-display">
                 {programs.map((program, index) => (
-                  <div className="program-item" key={index}>
-                    <span className="text">{program}</span>
+                  <div className="pw-program-item" key={index}>
+                    <span className="pw-text">{program}</span>
                     <span
-                      className="close"
+                      className="pw-close"
                       onClick={() => removeProgram(program)}
                     >
                       &times;
@@ -202,10 +202,10 @@ const PositionWriting = () => {
                 ))}
               </div>
             )}
-            <div className="dropdowns">
+            <div className="pw-dropdowns">
               <p>Coop Length</p>
               <select
-                className="dropdown job-length-dropdown"
+                className="pw-dropdown pw-job-length-dropdown"
                 value={jobLength}
                 onChange={(e) => setJobLength(e.target.value)}
               >
@@ -220,7 +220,7 @@ const PositionWriting = () => {
 
               <p>Work Models</p>
               <select
-                className="dropdown work-model-dropdown"
+                className="pw-dropdown pw-work-model-dropdown"
                 value={workModel}
                 onChange={(e) => setWorkModel(e.target.value)}
               >
@@ -238,7 +238,7 @@ const PositionWriting = () => {
             <>
               <p>Office Location</p>
               <textarea
-                className="locationInput"
+                className="pw-locationInput"
                 ref={textareaRef}
                 value={officeLocation}
                 onChange={handleOfficeLocationChange}
@@ -251,7 +251,7 @@ const PositionWriting = () => {
           <RichTextEditor
             placeholder=" "
             initialText="Write your co-op description here..."
-            className="infoInput"
+            className="pw-infoInput"
             onChange={setCoopDescription}
           />
 
@@ -259,7 +259,7 @@ const PositionWriting = () => {
           <RichTextEditor
             placeholder=" "
             initialText="Write the co-op responsibilities here..."
-            className="infoInput"
+            className="pw-infoInput"
             onChange={setResponsibilities}
           />
 
@@ -267,7 +267,7 @@ const PositionWriting = () => {
           <RichTextEditor
             placeholder=" "
             initialText="Describe the needed qualification..."
-            className="infoInput"
+            className="pw-infoInput"
             onChange={setQualifications}
           />
 
@@ -275,7 +275,7 @@ const PositionWriting = () => {
           <RichTextEditor
             placeholder=" "
             initialText="Write the benefits and perks here..."
-            className="infoInput"
+            className="pw-infoInput"
             onChange={setBenefits}
           />
 
@@ -283,17 +283,17 @@ const PositionWriting = () => {
           <RichTextEditor
             placeholder=" "
             initialText="Put the salary here..."
-            className="infoInput salary-input"
+            className="pw-infoInput pw-salary-input"
             onChange={setSalaryRange}
             customHeight="100px"
           />
         </div>
 
         <p> Role Attributes (Select up to 5)</p>
-        <div className="tags-section">
+        <div className="pw-tags-section">
           <button
             type="button"
-            className="select-tags-btn"
+            className="pw-select-tags-btn"
             onClick={() => setIsTagModalOpen(true)}
           >
             {tags.length === 0
@@ -304,11 +304,11 @@ const PositionWriting = () => {
           </button>
 
           {tags.length > 0 && (
-            <div className="selected-tags-display">
+            <div className="pw-selected-tags-display">
               {tags.map((tag, index) => (
-                <div className="tag-item" key={index}>
-                  <span className="text">{tag}</span>
-                  <span className="close" onClick={() => removeTag(tag)}>
+                <div className="pw-tag-item" key={index}>
+                  <span className="pw-text">{tag}</span>
+                  <span className="pw-close" onClick={() => removeTag(tag)}>
                     &times;
                   </span>
                 </div>
@@ -325,16 +325,16 @@ const PositionWriting = () => {
           maxTags={5}
         />
 
-        <div className="button-container">
+        <div className="pw-button-container">
           <Link
             to={`/profile-employer`}
             className="navigateHome"
             title="Go Back"
           >
-            <button className="cancel-btn">Cancel</button>
+            <button className="pw-cancel-btn">Cancel</button>
           </Link>
           <button
-            className="post-btn"
+            className="pw-post-btn"
             onClick={postJob}
             disabled={isSubmitting}
           >
