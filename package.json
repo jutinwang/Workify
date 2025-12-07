@@ -1,0 +1,15 @@
+{
+  "name": "workify-root",
+  "version": "1.0.0",
+  "description": "Root script to manage Workify full-stack application",
+  "scripts": {
+    "setup": "npm install && cd backend && npm install && cd ../workify && npm install",
+    "db:setup": "cd backend && npx prisma generate && npx prisma db push && npx prisma db seed",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd workify && npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
