@@ -8,7 +8,6 @@ const prisma = new PrismaClient();
 const FIRST_NAMES = ["Alex", "Jordan", "Taylor", "Morgan", "Casey"];
 const LAST_NAMES = ["Smith", "Johnson", "Brown", "Williams", "Davis"];
 
-
 async function main() {
     console.log('Starting seed...');
     const hashedPassword = await bcrypt.hash('TEJWAB4900', 10);
@@ -37,7 +36,7 @@ async function main() {
     });
 
     const company = await prisma.company.upsert({
-        where: { id: 3 },
+        where: { companyId: "test" },
         update: {},
         create: {
             name: 'Workify Ottawa',
@@ -63,31 +62,28 @@ async function main() {
         const firstName = FIRST_NAMES[i];
         const lastName = LAST_NAMES[i];
 
-        const email = `${firstName.toLowerCase()}_${lastName.toLowerCase()}123@workifyOttawa.ca`;
+        const email = `test${i}@email.com`;
 
         const hashedPassword = await bcrypt.hash("Password123!", 10);
 
         // Create employer user
-        const user = await prisma.user.create({
-            data: {
-                email,
+        const user = await prisma.user.upsert({
+            where: { email: email },
+            update: {},
+            create: {
+                email: email,
                 password: hashedPassword,
-                firstName,
-                lastName,
+                name: firstName + " " + lastName,
                 role: "EMPLOYER",
-            }
-        });
-
-        // Create employer profile
-        await prisma.employerProfile.create({
-            data: {
-                userId: user.id,
-                companyId: company.id, // Adjust if your PK is companyId instead of id
-                approved: true,
-                jobTitle: "",
-                department: "",
-                phoneNumber: "",
-                officeLocation: ""
+                employer: {
+                    create: {
+                        companyId: company.id,
+                        notificationMethod: "Email",
+                        workEmail: email,
+                        workPhone: "6137891111",
+                        approved: true,
+                    }
+                }
             }
         });
 
