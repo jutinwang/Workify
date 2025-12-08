@@ -89,9 +89,53 @@ async function main() {
 
         console.log(`Created employer: ${firstName} ${lastName} (${email})`);
     }
-
     console.log("Employer seeding complete!");
 
+    console.log("Seeding user...");
+
+    const hashedStudentPassword = await bcrypt.hash('Student123!', 10);
+
+    const user = await prisma.user.upsert({
+        where: { email: "jgang123@uottawa.ca" },
+        update: {},
+        create: {
+            email: "jgang123@uottawa.ca",
+            password: hashedStudentPassword,
+            name: "Justin Gang",
+            role: "STUDENT",
+            student: {
+                create: {
+                    major: 'Computer Science',
+                    year: 4,
+                    resumeUrl: "",
+                    ethnicity: ["PREFER_NOT_TO_SAY"],
+                    gender: "PREFER_NOT_TO_SAY",
+                    githubUrl: "",
+                    linkedInUrl: "",
+                    aboutMe: "4th year computer science student a burn passion for programming and being the best developer I can be",
+                    phoneNumber: "6136136161",
+                    educations: {
+                        create: {
+                            program: "Honours Bachelor of Computer Science",
+                            yearOfStudy: 4,
+                            schoolName: "University of Ottawa"
+                        }
+                    },
+                    experience: {
+                        create: {
+                            title: "Software Engineer COOP",
+                            company: "Palantir",
+                            startDate: new Date("2024-05-15T12:00:00Z"),
+                            endDate: new Date("2024-08-15T12:00:00Z"),
+                            description: "I coded a lot"
+                        }
+                    },
+                }
+            }
+        }
+    });
+
+    console.log("Student seeding complete!");
 
     console.log('Seed completed successfully!');
 }
