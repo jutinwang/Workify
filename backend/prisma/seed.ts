@@ -117,8 +117,8 @@ const TAGS = [
     "software developer"
 ];
 
-async function main() {
-    console.log('Starting seed...');
+async function createAdmin() {
+    console.log("Seeding admin...");
     const hashedPassword = await bcrypt.hash('TEJWAB4900', 10);
     
     const adminUser = await prisma.user.upsert({
@@ -143,6 +143,10 @@ async function main() {
         email: adminUser.email,
         role: adminUser.role
     });
+}
+
+async function createCompany() {
+    console.log("Seeding company...");
 
     const company = await prisma.company.upsert({
         where: { companyId: "test" },
@@ -162,8 +166,6 @@ async function main() {
         id: company.id,
         name: company.name
     });
-
-    console.log('Company seed completed successfully!');
 
     console.log("Seeding employers...");
 
@@ -187,6 +189,9 @@ async function main() {
                     approved: true,
                 }
             }
+        },
+        include: {
+            employer: true
         }
     });
 
@@ -209,6 +214,9 @@ async function main() {
                     approved: true,
                 }
             }
+        },
+        include: {
+            employer: true
         }
     });
 
@@ -231,6 +239,9 @@ async function main() {
                     approved: true,
                 }
             }
+        },
+        include: {
+            employer: true
         }
     });
 
@@ -253,6 +264,9 @@ async function main() {
                     approved: true,
                 }
             }
+        },
+        include: {
+            employer: true
         }
     });
 
@@ -275,6 +289,9 @@ async function main() {
                     approved: true,
                 }
             }
+        },
+        include: {
+            employer: true
         }
     });
 
@@ -283,8 +300,7 @@ async function main() {
     console.log("Employer seeding complete!");
 
     console.log("Seeding job...");
-    const employers = [employerUser1, employerUser2, employerUser3, employerUser4, employerUser5]
-    // Create 25 jobs (5 per employer)
+
     for (let i = 0; i < 25; i++) {
         const employerIndex = Math.floor(i / 5);
         const salary = `${50 + (i % 5) * 10}k - ${70 + (i % 5) * 10}k`;
@@ -292,7 +308,7 @@ async function main() {
         await prisma.job.create({
             data: {
                 companyId: company.id,
-                employerId: employers[employerIndex].id,
+                employerId: employerUser1.id,
                 description: "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Exciting opportunity to join our team!\"}]}]",
                 title: JOB_TITLES[i],
                 location: JOB_LOCATIONS[i],
@@ -304,7 +320,10 @@ async function main() {
                 tags: {
                     connectOrCreate: {
                         where: { name: TAGS[i] },
-                        create: { name: TAGS[i] }
+                        create: { 
+                            name: TAGS[i],
+                            displayName: TAGS[i]
+                        }
                     }
                 }
             }
@@ -312,7 +331,9 @@ async function main() {
 
         console.log(`Created job ${i + 1}/25: ${JOB_TITLES[i]} (Employer ${employerIndex + 1})`);
     }
+}
 
+async function createStudent() {
     console.log("Seeding user...");
 
     const hashedStudentPassword = await bcrypt.hash('Student123!', 10);
@@ -353,6 +374,9 @@ async function main() {
                     },
                 }
             }
+        },
+        include: {
+            student: true
         }
     });
 
@@ -361,6 +385,14 @@ async function main() {
         email: StudentUser.email,
         role: StudentUser.role
     });
+}
+
+async function main() {
+    console.log('Starting seed...');
+
+    createAdmin()
+    createCompany()
+    createStudent()
 
     console.log('Seed completed successfully!');
 }
