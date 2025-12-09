@@ -117,7 +117,9 @@ const TAGS = [
     "software developer"
 ];
 
-async function createAdmin() {
+async function main() {
+    console.log('Starting seed...');
+
     console.log("Seeding admin...");
     const hashedPassword = await bcrypt.hash('TEJWAB4900', 10);
     
@@ -143,9 +145,7 @@ async function createAdmin() {
         email: adminUser.email,
         role: adminUser.role
     });
-}
 
-async function createCompany() {
     console.log("Seeding company...");
 
     const company = await prisma.company.upsert({
@@ -301,6 +301,7 @@ async function createCompany() {
 
     console.log("Seeding job...");
 
+    const employers = [employerUser1, employerUser2, employerUser3, employerUser4, employerUser5]
     for (let i = 0; i < 25; i++) {
         const employerIndex = Math.floor(i / 5);
         const salary = `${50 + (i % 5) * 10}k - ${70 + (i % 5) * 10}k`;
@@ -308,7 +309,7 @@ async function createCompany() {
         await prisma.job.create({
             data: {
                 companyId: company.id,
-                employerId: employerUser1.id,
+                employerId: employers[employerIndex].employer!.id,
                 description: "[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Exciting opportunity to join our team!\"}]}]",
                 title: JOB_TITLES[i],
                 location: JOB_LOCATIONS[i],
@@ -331,9 +332,7 @@ async function createCompany() {
 
         console.log(`Created job ${i + 1}/25: ${JOB_TITLES[i]} (Employer ${employerIndex + 1})`);
     }
-}
 
-async function createStudent() {
     console.log("Seeding user...");
 
     const hashedStudentPassword = await bcrypt.hash('Student123!', 10);
@@ -385,14 +384,8 @@ async function createStudent() {
         email: StudentUser.email,
         role: StudentUser.role
     });
-}
 
-async function main() {
-    console.log('Starting seed...');
 
-    createAdmin()
-    createCompany()
-    createStudent()
 
     console.log('Seed completed successfully!');
 }
